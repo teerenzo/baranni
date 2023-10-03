@@ -1,0 +1,112 @@
+[
+  {
+    "name": "Central Park",
+    "image": "assets/images/places_images/photo2.jpg",
+    "description": "Central Park, an oasis in the bustling city, spans 843 acres of greenery, featuring serene lakes, winding pathways, and vibrant gardens. It's the perfect escape for picnics, outdoor concerts, and leisurely strolls.",
+    "rating": 4.5,
+    "review": 125,
+    "price": 0.0,
+    "color": "#FFADAD",
+    "quantity": 8,
+    "favorite": true
+  },
+  {
+    "name": "Golden Gate Bridge",
+    "image": "assets/images/places_images/photo3.jpg",
+    "description": "The Golden Gate Bridge, an engineering marvel, offers panoramic views of San Francisco and the Pacific Ocean. Walk or bike across this iconic suspension bridge to experience its breathtaking beauty.",
+    "rating": 3.5,
+    "review": 125,
+    "price": 0.0,
+    "color": "#B1D4F8",
+    "quantity": 5,
+    "favorite": false
+  },
+  {
+    "name": "Statue of Liberty",
+    "image": "assets/images/places_images/photo5.jpg",
+    "description": "A symbol of hope and freedom, the Statue of Liberty stands tall on Liberty Island in New York Harbor. Explore the pedestal and museum to learn about its rich history and enjoy unparalleled views of the city skyline.",
+    "rating": 4.0,
+    "review": 125,
+    "price": 0.0,
+    "color": "#FFC6FF",
+    "quantity": 6,
+    "favorite": true
+  },
+  {
+    "name": "Grand Canyon",
+    "image": "assets/images/places_images/photo10.jpg",
+    "description": "The Grand Canyon, a natural wonder carved by the Colorado River, boasts awe-inspiring landscapes with towering cliffs and colorful rock formations. Hike the trails, take a helicopter tour, or simply soak in the breathtaking vistas.",
+    "rating": 3.0,
+    "review": 125,
+    "price": 0.0,
+    "color": "#FFADAD",
+    "quantity": 3,
+    "favorite": true
+  },
+  {
+    "name": "Eiffel Tower",
+    "image": "assets/images/places_images/photo8.jpg",
+    "description": "The Eiffel Tower, a Parisian icon, offers romance and elegance. Ascend to its observation decks for panoramic views of the City of Light. Savor French cuisine at its restaurants for an unforgettable experience.",
+    "rating": 4.5,
+    "review": 125,
+    "price": 0.0,
+    "color": "#A0C4FF",
+    "quantity": 5,
+    "favorite": false
+  },
+  {
+    "name": "Machu Picchu",
+    "image": "assets/images/places_images/photo7.jpg",
+    "description": "Machu Picchu, the ancient Inca citadel hidden in the Andes Mountains, is a testament to human ingenuity and history. Explore its terraces, temples, and breathtaking vistas on a journey through time.",
+    "rating": 4.2,
+    "review": 125,
+    "price": 0.0,
+    "color": "#fdffb6",
+    "quantity": 9,
+    "favorite": false
+  },
+  {
+    "name": "Great Wall of China",
+    "image": "assets/images/places_images/photo4.jpg",
+    "description": "The Great Wall of China, a UNESCO World Heritage site, winds through China's dramatic landscapes. Immerse yourself in history as you walk along this architectural wonder, marveling at its defensive fortifications.",
+    "rating": 4.0,
+    "review": 125,
+    "price": 0.0,
+    "color": "#9BF6FF",
+    "quantity": 4,
+    "favorite": false
+  },
+  {
+    "name": "Mount Everest",
+    "image": "assets/images/places_images/photo6.jpg",
+    "description": "Mount Everest, Earth's highest peak, beckons adventurers and mountaineers from around the world. Conquer the ultimate challenge or simply enjoy the breathtaking views from Everest Base Camp.",
+    "rating": 3.7,
+    "review": 125,
+    "price": 0.0,
+    "color": "#CAFFBF",
+    "quantity": 8,
+    "favorite": true
+  },
+  {
+    "name": "Niagara Falls",
+    "image": "assets/images/places_images/photo1.jpg",
+    "description": "Niagara Falls, a natural spectacle straddling the US and Canada, captivates with its thundering waterfalls and misty charm. Take a boat tour to get up close and feel the awe-inspiring power of nature.",
+    "rating": 3.8,
+    "review": 125,
+    "price": 0.0,
+    "color": "#BDB2FF",
+    "quantity": 6,
+    "favorite": true
+  },
+  {
+    "name": "The Colosseum",
+    "image": "assets/images/places_images/photo9.jpg",
+    "description": "The Colosseum, an ancient Roman amphitheater, echoes with tales of gladiator battles and historic events. Step back in time as you explore this iconic landmark and marvel at its architectural grandeur.",
+    "rating": 3.5,
+    "review": 125,
+    "price": 0.0,
+    "color": "#ffd6a5",
+    "quantity": 10,
+    "favorite": false
+  }
+]
