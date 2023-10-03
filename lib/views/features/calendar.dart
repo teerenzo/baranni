@@ -42,8 +42,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
 
   List<Appointment> filterAppointments(List<Appointment> appointments) {
     List<Appointment> filteredAppointments = appointments.where((element) {
-      bool isInZone =
-          activeZone == null ? false : element.location == activeZone?.id;
+      bool isInZone = activeZone == null
+          ? widget.isMyCalendar
+          : element.location == activeZone?.id;
       bool isInviter = isUserAppointmentSender(element);
       bool isInvited =
           isUserInvitedToAppointment(element) && !widget.isMyCalendar;
@@ -182,9 +183,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                             } else {
                               final DateTime pickedDate =
                                   calendarTapDetails.date!;
-                              if (isAppointmentExist(pickedDate)) {
-                                return;
-                              }
+                              // if (isAppointmentExist(pickedDate)) {
+                              //   return;
+                              // }
                               if (type.isMobile) {
                                 showModalBottomSheet(
                                   backgroundColor: theme.colorScheme.background,

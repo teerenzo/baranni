@@ -78,6 +78,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
     UserModal hoster = findUser(invitation.senderId);
     List<Invitation> invitations =
         getInvitationsByAppointmentId(widget.appointment.id.toString());
+    String? imgUrl = widget.appointment.recurrenceId?.toString();
     return Container(
       width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
       height: widget.isMobile
@@ -91,73 +92,87 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
             children: [
               Row(
                 children: [
-                  MyText.bodyMedium(
-                    "Zone",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyText.bodyMedium(
-                    widget.appointment.subject,
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ],
-              ),
-              MySpacing.height(16), MySpacing.height(16),
-              Row(
-                children: [
-                  MyText.bodyMedium(
-                    "Date",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyText.bodyMedium(
-                    dateFormatter.format(widget.appointment.endTime),
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ],
-              ),
-              MySpacing.height(16), MySpacing.height(16),
-              Row(
-                children: [
-                  MyText.bodyMedium(
-                    "Host",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyText.bodyMedium(
-                    hoster.names,
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ],
-              ),
-              MySpacing.height(16),
-              MySpacing.height(16),
-              Row(
-                children: [
-                  MyText.bodyMedium(
-                    "Status",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyContainer(
-                    padding: MySpacing.xy(12, 2),
-                    color: getStatusColor(invitation.status, contentTheme),
-                    child: MyText.bodyMedium(
-                      capitalize(invitation.status),
-                      fontSize: 12,
-                      color: getStatusBgColor(invitation.status, contentTheme),
-                    ),
-                  ),
+                  Expanded(
+                      child: Column(
+                    children: [
+                      Row(
+                        children: [
+                          MyText.bodyMedium(
+                            "Zone",
+                            fontWeight: 700,
+                            textAlign: TextAlign.start,
+                          ),
+                          MySpacing.width(16),
+                          MyText.bodyMedium(
+                            widget.appointment.subject,
+                            fontWeight: 600,
+                            muted: true,
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                      MySpacing.height(16),
+                      MySpacing.height(16),
+                      Row(
+                        children: [
+                          MyText.bodyMedium(
+                            "Date",
+                            fontWeight: 700,
+                            textAlign: TextAlign.start,
+                          ),
+                          MySpacing.width(16),
+                          MyText.bodyMedium(
+                            dateFormatter.format(widget.appointment.endTime),
+                            fontWeight: 600,
+                            muted: true,
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                      MySpacing.height(16),
+                      MySpacing.height(16),
+                      Row(
+                        children: [
+                          MyText.bodyMedium(
+                            "Host",
+                            fontWeight: 700,
+                            textAlign: TextAlign.start,
+                          ),
+                          MySpacing.width(16),
+                          MyText.bodyMedium(
+                            hoster.names,
+                            fontWeight: 600,
+                            muted: true,
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                      MySpacing.height(16),
+                      MySpacing.height(16),
+                      Row(
+                        children: [
+                          MyText.bodyMedium(
+                            "Status",
+                            fontWeight: 700,
+                            textAlign: TextAlign.start,
+                          ),
+                          MySpacing.width(16),
+                          MyContainer(
+                            padding: MySpacing.xy(12, 2),
+                            color:
+                                getStatusColor(invitation.status, contentTheme),
+                            child: MyText.bodyMedium(
+                              capitalize(invitation.status),
+                              fontSize: 12,
+                              color: getStatusBgColor(
+                                  invitation.status, contentTheme),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )),
+                  if (imgUrl != null) Expanded(child: Image.network(imgUrl))
                 ],
               ),
               MySpacing.height(16),

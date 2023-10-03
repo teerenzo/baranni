@@ -18,6 +18,7 @@ Appointment fromMap(Map<String, dynamic> p) {
     color: Colors.green,
     subject: p['subject'],
     notes: p['notes'],
+    recurrenceId: p['recurrenceId'],
   );
 }
 
@@ -28,5 +29,6 @@ Map<String, dynamic> toMap(Appointment p) {
     'location': p.location,
     'subject': p.subject,
     'notes': p.notes,
+    'recurrenceId': p.recurrenceId,
   };
 }

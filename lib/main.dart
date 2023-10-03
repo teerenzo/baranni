@@ -67,8 +67,6 @@ class ReceivedNotification {
 
 String? selectedNotificationPayload;
 
-const String urlLaunchActionId = 'id_1';
-
 const String navigationActionId = 'id_3';
 
 const String darwinNotificationCategoryText = 'textCategory';
@@ -226,7 +224,6 @@ Future<void> main() async {
   );
 }
 
-<<<<<<< HEAD
 Future<void> _configureLocalTimeZone() async {
   if (kIsWeb || Platform.isLinux) {
     return;
@@ -236,10 +233,7 @@ Future<void> _configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName!));
 }
 
-class MyApp extends ConsumerWidget {
-=======
 class MyApp extends ConsumerStatefulWidget {
->>>>>>> 0f214ff (fix calendar and profile issues)
   final List<NavigatorObserver> navigatorObservers;
 
   const MyApp({
