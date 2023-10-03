@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:barrani/constants.dart';
 import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/config.dart';
+import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/models/ChatAppointment.dart';
 import 'package:barrani/models/ChatInvitation.dart';
 import 'package:barrani/models/GroupChat.dart';
@@ -286,6 +287,16 @@ abstract class FirebaseWebHelper {
       'names': firstName,
       if (imageUrl != null)
         'profile_url': imageUrl, // Only update imageUrl if it's not null
+    }).then((value) async {
+      var userData_ = UserModal.fromJSON({
+        'email': userData!.email,
+        'names': firstName,
+        'userId': userData!.userId,
+        'profile_url': imageUrl,
+        'role': userData!.role
+      });
+      userData = userData_;
+      await LocalStorage.storeUserdata(userData_);
     });
   }
 
@@ -346,6 +357,7 @@ abstract class FirebaseWebHelper {
   // Logout function
   static Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
+    await LocalStorage.removeUserData();
     userData = null;
   }
 

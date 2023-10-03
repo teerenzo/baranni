@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/config.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/views/auth/forgot_password.dart';
@@ -65,8 +66,6 @@ class ReceivedNotification {
 }
 
 String? selectedNotificationPayload;
-
-const String urlLaunchActionId = 'id_1';
 
 const String navigationActionId = 'id_3';
 
@@ -234,7 +233,7 @@ Future<void> _configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName!));
 }
 
-class MyApp extends ConsumerWidget {
+class MyApp extends ConsumerStatefulWidget {
   final List<NavigatorObserver> navigatorObservers;
 
   const MyApp({
@@ -243,7 +242,18 @@ class MyApp extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    userData = LocalStorage.getLocalUserData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
@@ -285,7 +295,7 @@ class MyApp extends ConsumerWidget {
       ],
       supportedLocales: Language.getLocales(),
       navigatorObservers: [
-        ...navigatorObservers,
+        ...widget.navigatorObservers,
       ],
     );
   }

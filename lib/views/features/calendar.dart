@@ -42,8 +42,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
 
   List<Appointment> filterAppointments(List<Appointment> appointments) {
     List<Appointment> filteredAppointments = appointments.where((element) {
-      bool isInZone =
-          activeZone == null ? true : element.location == activeZone?.id;
+      bool isInZone = activeZone == null
+          ? widget.isMyCalendar
+          : element.location == activeZone?.id;
       bool isInviter = isUserAppointmentSender(element);
       bool isInvited =
           isUserInvitedToAppointment(element) && !widget.isMyCalendar;
@@ -66,6 +67,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
     var appointmentStream = ref.watch(kIsWeb
         ? FirebaseWebHelper.allAppointmentsStreamProvider
         : allAppointmentsStreamProvider);
+    ref.watch(kIsWeb
+        ? FirebaseWebHelper.allZonesStreamProvider
+        : allZonesStreamProvider);
 
     return Layout(
       child: Column(
@@ -154,6 +158,7 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                   height: 700,
                   child: appointmentStream.whenData(
                     (value) {
+                      filterAppointments(value);
                       return SfCalendar(
                         key: UniqueKey(),
                         view: widget.isMyCalendar
@@ -178,9 +183,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                             } else {
                               final DateTime pickedDate =
                                   calendarTapDetails.date!;
-                              if (isAppointmentExist(pickedDate)) {
-                                return;
-                              }
+                              // if (isAppointmentExist(pickedDate)) {
+                              //   return;
+                              // }
                               if (type.isMobile) {
                                 showModalBottomSheet(
                                   backgroundColor: theme.colorScheme.background,

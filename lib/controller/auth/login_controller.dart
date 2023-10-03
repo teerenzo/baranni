@@ -50,7 +50,7 @@ class LoginController extends MyController {
           ? await WebAuthService.loginUser(basicValidator.getData())
           : await AuthService.loginUser(basicValidator.getData());
       if (errors != null) {
-        basicValidator.addErrors(errors);
+        basicValidator.addErrors({});
         basicValidator.validateForm();
         basicValidator.clearErrors();
       } else {

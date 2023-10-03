@@ -111,10 +111,11 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
             'password': password,
           })
         : await AuthService.loginUser({'email': email, 'password': password});
-    if (errors != null) {
+    if ((kIsWeb && errors == null) || (!kIsWeb && errors != null)) {
+      print(errors);
       var error = {'error': 'Email or password is incorrect'};
       state = state.copyWith(errors: error);
-      state.basicValidator.addErrors(errors);
+      state.basicValidator.addErrors(error);
       state.basicValidator.validateForm();
       state.basicValidator.clearErrors();
     } else {

@@ -42,7 +42,6 @@ class DashboardPageState extends ConsumerState<DashboardPage>
   @override
   Widget build(BuildContext context) {
     var dashProvider = ref.watch(dashboardProvider);
-    // FirebaseWebHelper firebaseWebHelper = new FirebaseWebHelper(){};
     ref.watch(kIsWeb
         ? FirebaseWebHelper.allUsersStreamProvider
         : allUsersStreamProvider);

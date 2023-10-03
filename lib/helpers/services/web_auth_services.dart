@@ -8,23 +8,22 @@ import '../storage/local_storage.dart';
 class WebAuthService {
   static bool isLoggedIn = false;
 
-  static Future<Map<String, String>?> loginUser(
-      Map<String, dynamic> data) async {
+  static Future<UserModal?> loginUser(Map<String, dynamic> data) async {
     try {
-      var user = await FirebaseWebHelper.signIn(
+      await FirebaseWebHelper.signIn(
           email: data['email'], password: data['password']);
 
       Map<String, dynamic>? userInfo = await FirebaseWebHelper.getUserById(
           FirebaseAuth.instance.currentUser!.uid);
       if (userInfo != null) {
-        userInfo[''];
         userData = UserModal.fromJSON(userInfo);
+        await LocalStorage.storeUserdata(userData!);
       }
       await LocalStorage.setLoggedInUser(true);
       isLoggedIn = true;
-      return null;
+      return userData;
     } catch (e) {
-      return {'email': 'Invalid email or password'};
+      return null;
     }
   }
 

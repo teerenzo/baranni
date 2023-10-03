@@ -45,35 +45,42 @@ class AppointmentDetail extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  MyText.bodyMedium(
-                    "Zone",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyText.bodyMedium(
-                    appointment.subject,
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ],
-              ),
-              MySpacing.height(16),
-              MySpacing.height(16),
-              Row(
-                children: [
-                  MyText.bodyMedium(
-                    "Date",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyText.bodyMedium(
-                    dateFormatter.format(appointment.endTime),
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
+                  Column(
+                    children: [
+                      Row(
+                        children: [
+                          MyText.bodyMedium(
+                            "Zone",
+                            fontWeight: 700,
+                            textAlign: TextAlign.start,
+                          ),
+                          MySpacing.width(16),
+                          MyText.bodyMedium(
+                            appointment.subject,
+                            fontWeight: 600,
+                            muted: true,
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                      MySpacing.height(16),
+                      Row(
+                        children: [
+                          MyText.bodyMedium(
+                            "Date",
+                            fontWeight: 700,
+                            textAlign: TextAlign.start,
+                          ),
+                          MySpacing.width(16),
+                          MyText.bodyMedium(
+                            dateFormatter.format(appointment.endTime),
+                            fontWeight: 600,
+                            muted: true,
+                            textAlign: TextAlign.start,
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -316,7 +323,10 @@ class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MyText.labelLarge(
-                      findUser(widget.invitation.receiverId).names,
+                      findUser(widget.invitation.receiverId)
+                          .names
+                          .split(' ')
+                          .first,
                     ),
                     MyContainer(
                       padding: MySpacing.xy(12, 2),
