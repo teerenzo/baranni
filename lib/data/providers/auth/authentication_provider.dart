@@ -92,6 +92,15 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
     }
   }
 
+  void validateInvitation(String password) {
+    if (password.isEmpty) {
+      state = state.copyWith(
+          errors: {'invitation_code_error': 'Invitation code is required'});
+    } else {
+      state = state.copyWith(errors: {'invitation_code_error': null});
+    }
+  }
+
   Future<void> onLogin({
     required String email,
     required String password,
