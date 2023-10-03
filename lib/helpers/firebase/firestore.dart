@@ -8,6 +8,7 @@ import 'package:barrani/models/appointment.dart';
 import 'package:barrani/models/invitation.dart';
 import 'package:barrani/models/kanban.dart';
 import 'package:barrani/models/notification.dart';
+import 'package:barrani/models/projects.dart';
 import 'package:barrani/models/user.dart';
 import 'package:barrani/models/zone.dart';
 import 'package:firedart/firedart.dart';
@@ -43,6 +44,23 @@ final kanbanProjectsProvider = StreamProvider<List<KanbanProject>>((ref) {
       element_['id'] = element
           .id; // Assuming you have an 'id' field in your KanbanProject model
       projects.add(KanbanProject.fromMap(
+          element_)); // Assuming you have a fromMap constructor
+    }
+    return projects;
+  });
+});
+
+final projectsProvider = StreamProvider<List<Projects>>((ref) {
+  CollectionReference fireStoreQuery = Firestore.instance.collection(
+      fireBaseCollections.projects); // 'project' collection in Firestore
+  return fireStoreQuery.stream.map((querySnapshot) {
+    List<Projects> projects = [];
+
+    for (var element in querySnapshot) {
+      Map<String, dynamic> element_ = element.map;
+      element_['id'] = element
+          .id; // Assuming you have an 'id' field in your KanbanProject model
+      projects.add(Projects.fromMap(
           element_)); // Assuming you have a fromMap constructor
     }
     return projects;

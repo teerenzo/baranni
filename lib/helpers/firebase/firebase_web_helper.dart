@@ -11,6 +11,7 @@ import 'package:barrani/models/appointment.dart';
 import 'package:barrani/models/invitation.dart';
 import 'package:barrani/models/kanban.dart';
 import 'package:barrani/models/notification.dart';
+import 'package:barrani/models/projects.dart';
 import 'package:barrani/models/user.dart';
 import 'package:barrani/models/zone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -408,6 +409,24 @@ abstract class FirebaseWebHelper {
         Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
         element_['id'] = element.id;
         currentProjects_.add(KanbanProject.fromMap(element_));
+      }
+
+      return currentProjects_;
+    });
+  });
+
+  static final projectsProvider = StreamProvider<List<Projects>>((ref) {
+    CollectionReference fireStoreQuery = FirebaseFirestore.instance.collection(
+        fireBaseCollections
+            .projects); // Assuming your kanban projects are in a collection named 'projects'
+
+    return fireStoreQuery.snapshots().map((querySnapshot) {
+      List<Projects> currentProjects_ = [];
+
+      for (var element in querySnapshot.docs) {
+        Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
+        element_['id'] = element.id;
+        currentProjects_.add(Projects.fromMap(element_));
       }
 
       return currentProjects_;

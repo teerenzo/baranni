@@ -34,6 +34,7 @@ double horizontalPadding = kHorizontalPadding;
 double textScaleFactor = 1;
 double textScale = textScaleFactor;
 //Responsive property
+var projectCount;
 
 //Firestore
 FirebaseStorage storage = FirebaseStorage.instance;

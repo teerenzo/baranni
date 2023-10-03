@@ -170,6 +170,7 @@ class FireBaseCollections {
   final String users = 'users';
   final String zones = 'zones';
   final String project = 'project';
+  final String projects = 'projects';
   final String products = 'products';
   final String categories = 'categories';
   final String groups = 'groups';

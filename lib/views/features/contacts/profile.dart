@@ -1,11 +1,11 @@
 import 'package:barrani/controller/features/contact/profile_controller.dart';
 import 'package:barrani/global_variables.dart';
+import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
+import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
-import 'package:barrani/helpers/utils/utils.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
@@ -18,21 +18,23 @@ import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/responsive.dart';
 import 'package:barrani/images.dart';
 import 'package:barrani/views/layouts/layout.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-class ProfilePage extends StatefulWidget {
+class ProfilePage extends ConsumerStatefulWidget {
   static const routeName = "/contacts/profile";
   const ProfilePage({Key? key}) : super(key: key);
 
   @override
-  State<ProfilePage> createState() => _ProfilePageState();
+  ConsumerState<ProfilePage> createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage>
+class _ProfilePageState extends ConsumerState<ProfilePage>
     with SingleTickerProviderStateMixin, UIMixin {
   late ProfileController controller;
 
@@ -44,6 +46,33 @@ class _ProfilePageState extends State<ProfilePage>
 
   @override
   Widget build(BuildContext context) {
+    var currentUsersStream = ref.watch(kIsWeb
+        ? FirebaseWebHelper.allUsersStreamProvider
+        : allUsersStreamProvider);
+    final projects = ref
+        .watch(kIsWeb ? FirebaseWebHelper.projectsProvider : projectsProvider);
+
+    projects.when(
+      data: (projects) {
+        // Define the name based on status, even if no items are available
+        // Filter out projects based on the current status
+        // Filter out projects based on the current user ID
+        var userProjects =
+            projects.where((project) => project.userId == userData?.userId);
+
+        // Get the count of projects for the user
+        projectCount = userProjects.length;
+
+        // Return the project count
+        return projectCount;
+      },
+      loading: () => Center(
+        child: CircularProgressIndicator(),
+      ), // Handle loading state if necessary
+      error: (error, stackTrace) => Center(
+          child: Text(
+              'Error: ${error.toString()}')), // Handle error state if necessary
+    );
     return Layout(
       child: GetBuilder(
         init: controller,
@@ -221,110 +250,11 @@ class _ProfilePageState extends State<ProfilePage>
                                   Icon(LucideIcons.folderGit, size: 16),
                                   MySpacing.width(8),
                                   MyText.bodyMedium(
-                                    "14 Projects",
+                                    "$projectCount Projects",
                                   ),
                                 ],
                               ),
                             ),
-                            const Divider(
-                              height: 40,
-                            ),
-                            Padding(
-                              padding: MySpacing.left(20),
-                              child: MyText.titleMedium("Inbox"),
-                            ),
-                            // MySpacing.height(12),
-                            Padding(
-                              padding: MySpacing.all(20),
-                              child: SizedBox(
-                                height: 315,
-                                child: ListView.separated(
-                                  primary: true,
-                                  shrinkWrap: true,
-                                  itemCount: controller.chat.length,
-                                  itemBuilder: (context, index) {
-                                    return MyButton(
-                                      onPressed: () {},
-                                      elevation: 0,
-                                      borderRadiusAll: 8,
-                                      backgroundColor: theme
-                                          .colorScheme.background
-                                          .withAlpha(5),
-                                      splashColor: theme
-                                          .colorScheme.onBackground
-                                          .withAlpha(10),
-                                      child: SizedBox(
-                                        height: 60,
-                                        child: Row(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            MyContainer.rounded(
-                                              height: 40,
-                                              width: 40,
-                                              paddingAll: 0,
-                                              child: Image.asset(
-                                                Images.avatars[index %
-                                                    Images.avatars.length],
-                                                height: 40,
-                                                width: 40,
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                            MySpacing.width(12),
-                                            Expanded(
-                                              child: Column(
-                                                crossAxisAlignment:
-                                                    CrossAxisAlignment.start,
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment.center,
-                                                children: [
-                                                  MyText.labelLarge(
-                                                    controller
-                                                        .chat[index].firstName,
-                                                  ),
-                                                  SizedBox(
-                                                    width: 300,
-                                                    child: MyText.bodySmall(
-                                                      controller
-                                                          .chat[index].message,
-                                                      muted: true,
-                                                      overflow:
-                                                          TextOverflow.ellipsis,
-                                                      fontWeight: 400,
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                MyText.bodySmall(
-                                                  '${Utils.getTimeStringFromDateTime(
-                                                    controller
-                                                        .chat[index].sendAt,
-                                                    showSecond: false,
-                                                  )}',
-                                                  muted: true,
-                                                  fontWeight: 600,
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) {
-                                    return const SizedBox(
-                                      height: 12,
-                                    );
-                                  },
-                                ),
-                              ),
-                            )
                           ],
                         ),
                       ),
