@@ -12,7 +12,7 @@ class _AuthState {
   bool loading;
   bool isChecked;
   bool openMenu;
-  Map<String, String> errors = {};
+  var errors = {};
 
   _AuthState({
     this.showPassword = false,
@@ -31,7 +31,7 @@ class _AuthState {
     bool? loading,
     bool? isChecked,
     bool? openMenu,
-    Map<String, String>? errors,
+    var errors,
   }) {
     return _AuthState(
       basicValidator: basicValidator ?? this.basicValidator,
@@ -76,27 +76,28 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
     state = state.copyWith(loading: true);
 
     if (email.isEmpty || password.isEmpty) {
+      var errors = {};
       if (email.isEmpty) {
-        state = state.copyWith(
-            errors: state.errors..addAll({'email_error': 'Email is required'}));
+        errors['email_error'] = 'Email is required';
+        state = state.copyWith(errors: errors);
       } else {
-        state = state.copyWith(errors: state.errors..remove('email_error'));
-      }
+        state = state.copyWith(loading: false);
+        // check if email_error is in errors
 
-      if (isEmail(email)) {
-        state = state.copyWith(
-            errors: state.errors
-              ..addAll({'email_error': 'Email is not valid'}));
-      } else {
-        state = state.copyWith(errors: state.errors..remove('email_error'));
+        if (state.errors.containsKey('email_error')) {
+          state = state.copyWith(errors: state.errors..remove('email_error'));
+        }
       }
 
       if (password.isEmpty) {
-        state = state.copyWith(
-            errors: state.errors
-              ..addAll({'password_error': 'Password is required'}));
+        errors['password_error'] = 'Password is required';
+        state = state.copyWith(errors: errors);
       } else {
-        state = state.copyWith(errors: state.errors..remove('password_error'));
+        state = state.copyWith(loading: false);
+        if (state.errors.containsKey('password_error')) {
+          state =
+              state.copyWith(errors: state.errors..remove('password_error'));
+        }
       }
 
       state = state.copyWith(loading: false);
@@ -111,7 +112,8 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
           })
         : await AuthService.loginUser({'email': email, 'password': password});
     if (errors != null) {
-      state = state.copyWith(errors: errors);
+      var error = {'error': 'Email or password is incorrect'};
+      state = state.copyWith(errors: error);
       state.basicValidator.addErrors(errors);
       state.basicValidator.validateForm();
       state.basicValidator.clearErrors();

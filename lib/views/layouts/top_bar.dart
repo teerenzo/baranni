@@ -21,6 +21,7 @@ import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:one_context/one_context.dart';
 import 'package:provider/provider.dart';
 import 'notification_popUp.dart';
 
@@ -40,6 +41,41 @@ class _TopBarState extends State<TopBar>
 
   @override
   Widget build(BuildContext context) {
+    Widget buildNotification(String title, String description) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MyText.labelLarge(
+            title,
+            color: Colors.white,
+          ),
+          MySpacing.height(4),
+          MyText.bodySmall(description, color: Colors.white)
+        ],
+      );
+    }
+
+    // check if notification time is less done 2 minutes and not read and show snackbar
+    var notification = notifications
+        .where((element) =>
+            element.createdAt.difference(DateTime.now()).inMinutes < 2)
+        .toList();
+    if (notification.isNotEmpty) {
+      OneContext().showSnackBar(
+        builder: (_) => SnackBar(
+          behavior: SnackBarBehavior.fixed,
+          backgroundColor: contentTheme.primary,
+          content: buildNotification(
+              notification.first.title, notification.first.body),
+          action: SnackBarAction(
+            label: '',
+            onPressed: () {
+              OneContext().pushNamed('/notifications');
+            },
+          ),
+        ),
+      );
+    }
     return MyCard(
       shadow: MyShadow(position: MyShadowPosition.bottomRight, elevation: 0.5),
       height: 60,

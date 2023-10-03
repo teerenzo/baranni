@@ -649,21 +649,29 @@ abstract class FirebaseWebHelper {
       StreamProvider<List<NotificationModal>>((ref) {
     CollectionReference fireStoreQuery = FirebaseFirestore.instance
         .collection(fireBaseCollections.notifications);
+    try {
+      return fireStoreQuery.snapshots().map((querySnapshot) {
+        List<NotificationModal> notifications_ = [];
 
-    return fireStoreQuery.snapshots().map((querySnapshot) {
-      List<NotificationModal> notifications_ = [];
-
-      for (var element in querySnapshot.docs) {
-        Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
-        element_['id'] = element.id;
-
-        if (element_['userId'] == FirebaseAuth.instance.currentUser?.uid) {
-          notifications_.add(NotificationModal.fromJson(element_));
+        for (var element in querySnapshot.docs) {
+          Map<String, dynamic> element_ =
+              element.data() as Map<String, dynamic>;
+          element_['id'] = element.id;
+          print(element_['userId']);
+          print(userData!.userId);
+          print(FirebaseAuth.instance.currentUser?.uid);
+          if (element_['userId'] == userData!.userId) {
+            notifications_.add(NotificationModal.fromJson(element_));
+          }
         }
-      }
-      notifications = notifications_;
-      return notifications_;
-    });
+        notifications = notifications_;
+        print(notifications_);
+        return notifications_;
+      });
+    } catch (e) {
+      print(e);
+      return Stream.value([]);
+    }
   });
 
   static Future deleteNotification(String id) async {

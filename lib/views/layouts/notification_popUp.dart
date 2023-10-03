@@ -12,6 +12,7 @@ import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:one_context/one_context.dart';
 
 class NotificationPopUp extends ConsumerWidget {
   const NotificationPopUp({
@@ -56,39 +57,37 @@ class NotificationPopUp extends ConsumerWidget {
           ),
           Padding(
             padding: MySpacing.xy(16, 12),
-            child: userNotifications
-                .whenData(
-                  (value) => notifications.isNotEmpty
-                      ? Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: notifications
-                              .map((e) => Column(
-                                    children: [
-                                      buildNotification(e.title, e.body),
-                                      MySpacing.height(12),
-                                    ],
-                                  ))
-                              .toList(),
-                        )
-                      : MyText.bodyMedium('No notification'),
-                )
-                .when(
-                  data: (Widget data) {
-                    return data;
-                  },
-                  error: (error, stack) => Center(
-                    child: MyText.bodyMedium(
-                      'Error loading users $error',
-                      fontWeight: 600,
-                      muted: true,
-                      color: kAlertColor,
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                  loading: () => Center(
-                    child: CircularProgressIndicator(),
-                  ),
+            child: userNotifications.whenData((value) {
+              return notifications.isNotEmpty
+                  ? Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: notifications
+                          .map((e) => Column(
+                                children: [
+                                  buildNotification(e.title, e.body),
+                                  MySpacing.height(12),
+                                ],
+                              ))
+                          .toList(),
+                    )
+                  : MyText.bodyMedium('No notification');
+            }).when(
+              data: (Widget data) {
+                return data;
+              },
+              error: (error, stack) => Center(
+                child: MyText.bodyMedium(
+                  'Error loading users $error',
+                  fontWeight: 600,
+                  muted: true,
+                  color: kAlertColor,
+                  textAlign: TextAlign.start,
                 ),
+              ),
+              loading: () => Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
           ),
           MyDashedDivider(
               height: 1, color: theme.dividerColor, dashSpace: 4, dashWidth: 6),
