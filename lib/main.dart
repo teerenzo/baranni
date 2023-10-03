@@ -216,10 +216,15 @@ Future<void> main() async {
   }
   await LocalStorage.init();
   AppStyle.init();
-  // await ThemeCustomizer.init();
+
+  userData = LocalStorage.getLocalUserData();
+  String initialRoute =
+      userData != null ? DashboardPage.routeName : LoginPage.routeName;
   runApp(
     ProviderScope(
-      child: MyApp(),
+      child: MyApp(
+        initialRoute: initialRoute,
+      ),
     ),
   );
 }
@@ -233,24 +238,15 @@ Future<void> _configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName!));
 }
 
-class MyApp extends ConsumerStatefulWidget {
+class MyApp extends StatelessWidget {
   final List<NavigatorObserver> navigatorObservers;
+  final initialRoute;
 
   const MyApp({
     super.key,
+    required this.initialRoute,
     this.navigatorObservers = const <NavigatorObserver>[],
   });
-
-  @override
-  ConsumerState<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends ConsumerState<MyApp> {
-  @override
-  void initState() {
-    super.initState();
-    userData = LocalStorage.getLocalUserData();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -261,7 +257,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       themeMode: ThemeCustomizer.instance.theme,
       navigatorKey: OneContext().key,
       builder: OneContext().builder,
-      initialRoute: "/auth/login",
+      initialRoute: initialRoute,
       routes: {
         DashboardPage.routeName: (context) => DashboardPage(),
 
@@ -295,7 +291,7 @@ class _MyAppState extends ConsumerState<MyApp> {
       ],
       supportedLocales: Language.getLocales(),
       navigatorObservers: [
-        ...widget.navigatorObservers,
+        ...navigatorObservers,
       ],
     );
   }
