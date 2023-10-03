@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/config.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/views/auth/forgot_password.dart';
@@ -225,6 +226,7 @@ Future<void> main() async {
   );
 }
 
+<<<<<<< HEAD
 Future<void> _configureLocalTimeZone() async {
   if (kIsWeb || Platform.isLinux) {
     return;
@@ -235,6 +237,9 @@ Future<void> _configureLocalTimeZone() async {
 }
 
 class MyApp extends ConsumerWidget {
+=======
+class MyApp extends ConsumerStatefulWidget {
+>>>>>>> 0f214ff (fix calendar and profile issues)
   final List<NavigatorObserver> navigatorObservers;
 
   const MyApp({
@@ -243,7 +248,18 @@ class MyApp extends ConsumerWidget {
   });
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends ConsumerState<MyApp> {
+  @override
+  void initState() {
+    super.initState();
+    userData = LocalStorage.getLocalUserData();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
@@ -285,7 +301,7 @@ class MyApp extends ConsumerWidget {
       ],
       supportedLocales: Language.getLocales(),
       navigatorObservers: [
-        ...navigatorObservers,
+        ...widget.navigatorObservers,
       ],
     );
   }

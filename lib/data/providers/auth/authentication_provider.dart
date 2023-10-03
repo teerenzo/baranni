@@ -114,7 +114,7 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
     if (errors != null) {
       var error = {'error': 'Email or password is incorrect'};
       state = state.copyWith(errors: error);
-      state.basicValidator.addErrors(errors);
+      state.basicValidator.addErrors(error);
       state.basicValidator.validateForm();
       state.basicValidator.clearErrors();
     } else {

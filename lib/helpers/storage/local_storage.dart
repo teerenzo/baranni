@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:barrani/models/user.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barrani/helpers/localizations/language.dart';
 import 'package:barrani/helpers/services/auth_services.dart';
@@ -5,6 +8,7 @@ import 'package:barrani/helpers/theme/theme_customizer.dart';
 
 class LocalStorage {
   static const String _loggedInUserKey = "user";
+  static const String _loggedInUserData = "userData";
   static const String _themeCustomizerKey = "theme_customizer";
   static const String _languageKey = "lang_code";
 
@@ -50,5 +54,22 @@ class LocalStorage {
 
   static Future<bool> removeLoggedInUser() async {
     return preferences.remove(_loggedInUserKey);
+  }
+
+  static Future<void> storeUserdata(UserModal userData) async {
+    await preferences.setString(
+        _loggedInUserData, jsonEncode(userData.toJSON()));
+  }
+
+  static UserModal? getLocalUserData() {
+    String? userData = preferences.getString(_loggedInUserData);
+    if (userData != null) {
+      return UserModal.fromJSON(jsonDecode(userData));
+    }
+    return null;
+  }
+
+  static Future<void> removeUserData() async {
+    await preferences.remove(_loggedInUserData);
   }
 }

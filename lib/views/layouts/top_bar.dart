@@ -183,15 +183,23 @@ class _TopBarState extends State<TopBar>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         MyContainer.rounded(
-                            paddingAll: 0,
-                            child: Image.asset(
-                              Images.avatars[0],
-                              height: 28,
-                              width: 28,
-                              fit: BoxFit.cover,
-                            )),
+                          paddingAll: 0,
+                          child: userData?.photoUrl == ""
+                              ? Image.asset(
+                                  Images.avatars[0],
+                                  height: 28,
+                                  width: 28,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  userData?.photoUrl ?? "",
+                                  height: 28,
+                                  width: 28,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                         MySpacing.width(8),
-                        MyText.labelLarge("Den")
+                        MyText.labelLarge(userData?.names ?? "")
                       ],
                     ),
                   ),

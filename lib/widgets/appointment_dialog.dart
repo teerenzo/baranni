@@ -94,14 +94,6 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     });
 
     try {
-      // var imageUrl = await uploadThumbnail(image!);
-      // if (imageUrl == null) {
-      //   setState(() {
-      //     isSubmitting = false;
-      //   });
-      //   return;
-      // }
-
       Appointment p = Appointment(
         startTime: widget.startDate.applied(startTime),
         endTime: widget.startDate.applied(endTime),
@@ -137,6 +129,10 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
               user.userId,
             );
           });
+
+          setState(() {
+            isSubmitted = false;
+          });
         }
       } else {
         String pId = await addAppointment(data);
@@ -154,12 +150,17 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
             );
           });
         }
+        setState(() {
+          isSubmitted = false;
+        });
       }
       setState(() {
         isSubmitting = false;
       });
       Navigator.pop(context);
-    } catch (error) {}
+    } catch (error) {
+      print(error);
+    }
   }
 
   String? validateTime() {
@@ -385,18 +386,18 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                   ],
                 ),
                 MySpacing.height(16),
-                if (isSubmitted && image == null)
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: MyText.bodyMedium(
-                      'thumbnail is required',
-                      fontWeight: 600,
-                      muted: true,
-                      color: kAlertColor,
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                if (isSubmitted && image == null) MySpacing.height(16),
+                // if (isSubmitted && image == null)
+                //   Container(
+                //     alignment: Alignment.centerLeft,
+                //     child: MyText.bodyMedium(
+                //       'thumbnail is required',
+                //       fontWeight: 600,
+                //       muted: true,
+                //       color: kAlertColor,
+                //       textAlign: TextAlign.start,
+                //     ),
+                //   ),
+                // if (isSubmitted && image == null) MySpacing.height(16),
 
                 Container(
                   alignment: Alignment.centerLeft,
