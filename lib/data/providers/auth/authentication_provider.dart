@@ -10,6 +10,7 @@ class _AuthState {
 
   bool showPassword;
   bool loading;
+  bool isSubmitted;
   bool isChecked;
   bool openMenu;
   var errors = {};
@@ -17,6 +18,7 @@ class _AuthState {
   _AuthState({
     this.showPassword = false,
     this.loading = false,
+    this.isSubmitted = false,
     this.isChecked = false,
     this.openMenu = false,
     this.errors = const {},
@@ -29,6 +31,7 @@ class _AuthState {
     MyFormValidator? basicValidator,
     bool? showPassword,
     bool? loading,
+    bool? isSubmitted,
     bool? isChecked,
     bool? openMenu,
     var errors,
@@ -37,6 +40,7 @@ class _AuthState {
       basicValidator: basicValidator ?? this.basicValidator,
       showPassword: showPassword ?? this.showPassword,
       loading: loading ?? this.loading,
+      isSubmitted: isSubmitted ?? this.isSubmitted,
       isChecked: isChecked ?? this.isChecked,
       openMenu: openMenu ?? this.openMenu,
       errors: errors ?? this.errors,
@@ -69,11 +73,31 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
     return null;
   }
 
+  void validateEmail(String email) {
+    if (email.isEmpty) {
+      state = state.copyWith(errors: {'email_error': 'Email is required'});
+    } else if (!isEmail(email)) {
+      state = state.copyWith(errors: {'email_error': 'Email must be valid'});
+    } else {
+      state = state.copyWith(errors: {'email_error': null});
+    }
+  }
+
+  void validatePassword(String password) {
+    if (password.isEmpty) {
+      state =
+          state.copyWith(errors: {'password_error': 'Password is required'});
+    } else {
+      state = state.copyWith(errors: {'password_error': null});
+    }
+  }
+
   Future<void> onLogin({
     required String email,
     required String password,
   }) async {
     state = state.copyWith(loading: true);
+    state = state.copyWith(isSubmitted: true);
 
     if (email.isEmpty || password.isEmpty) {
       var errors = {};
