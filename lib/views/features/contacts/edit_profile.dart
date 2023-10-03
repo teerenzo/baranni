@@ -129,55 +129,165 @@ class _EditProfileState extends State<EditProfile>
                                 alignment: Alignment.bottomRight,
                                 children: [
                                   if (pickedMainImage != null)
-                                    MyContainer.rounded(
-                                      height: 150,
-                                      width: 150,
-                                      paddingAll: 0,
-                                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                                      child: Stack(
-                                        alignment: Alignment.center,
-                                        children: [
-                                          kIsWeb
-                                              ? Image.network(
-                                                  pickedMainImage!.path,
-                                                  fit: BoxFit.cover,
-                                                )
-                                              : Image.file(
-                                                  File(pickedMainImage!.path),
-                                                  fit: BoxFit.cover,
-                                                ),
-                                          SizedBox(
-                                            height: 20,
-                                            width: 20,
-                                            child: CircularProgressIndicator(
-                                              strokeWidth: 2,
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Padding(
+                                        padding: MySpacing.x(20),
+                                        child: Stack(
+                                          children: [
+                                            // Image container
+                                            MyContainer.rounded(
+                                              border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 54, 53, 53),
+                                                width: 1.5,
+                                              ),
+                                              paddingAll: 4,
+                                              child: MyContainer.rounded(
+                                                paddingAll: 0,
+                                                height: 150,
+                                                clipBehavior:
+                                                    Clip.antiAliasWithSaveLayer,
+                                                child: kIsWeb
+                                                    ? Image.network(
+                                                        pickedMainImage!.path,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Image.file(
+                                                        File(pickedMainImage!
+                                                            .path),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                              ),
                                             ),
-                                          )
-                                        ],
+                                            // Camera icon
+                                            Positioned(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  40,
+                                              right: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  230,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.black54,
+                                                ),
+                                                padding: EdgeInsets.all(6.0),
+                                                child: Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     )
                                   else if (mainImageUrl != '')
-                                    MyContainer.rounded(
-                                      height: 150,
-                                      width: 150,
-                                      paddingAll: 0,
-                                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                                      child: Image.network(
-                                        mainImageUrl,
-                                        fit: BoxFit.cover,
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Padding(
+                                        padding: MySpacing.x(20),
+                                        child: Stack(
+                                          children: [
+                                            // Image container
+                                            MyContainer.rounded(
+                                              border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 54, 53, 53),
+                                                width: 1.5,
+                                              ),
+                                              paddingAll: 4,
+                                              child: MyContainer.rounded(
+                                                  paddingAll: 0,
+                                                  height: 150,
+                                                  clipBehavior: Clip
+                                                      .antiAliasWithSaveLayer,
+                                                  child: Image.network(
+                                                    mainImageUrl,
+                                                    fit: BoxFit.cover,
+                                                    height: 150,
+                                                    width: 150,
+                                                  )),
+                                            ),
+                                            // Camera icon
+                                            Positioned(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  40,
+                                              right: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  230,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.black54,
+                                                ),
+                                                padding: EdgeInsets.all(6.0),
+                                                child: Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                                   if (pickedMainImage == null &&
                                       userData!.photoUrl.isEmpty &&
                                       mainImageUrl == "")
-                                    MyContainer.rounded(
-                                      height: 150,
-                                      width: 150,
-                                      paddingAll: 0,
-                                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                                      child: Image.asset(Images.avatars[0],
-                                          fit: BoxFit.cover),
-                                    )
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Padding(
+                                        padding: MySpacing.x(20),
+                                        child: Stack(
+                                          children: [
+                                            // Image container
+                                            MyContainer.rounded(
+                                              border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 54, 53, 53),
+                                                width: 1.5,
+                                              ),
+                                              paddingAll: 0,
+                                              child: MyContainer.rounded(
+                                                  paddingAll: 0,
+                                                  height: 120,
+                                                  clipBehavior: Clip
+                                                      .antiAliasWithSaveLayer,
+                                                  child: Image.asset(
+                                                      Images.avatars[0],
+                                                      fit: BoxFit.cover)),
+                                            ),
+                                            // Camera icon
+                                            Positioned(
+                                              bottom: 0,
+                                              right: 0,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.black54,
+                                                ),
+                                                padding: EdgeInsets.all(6.0),
+                                                child: Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),

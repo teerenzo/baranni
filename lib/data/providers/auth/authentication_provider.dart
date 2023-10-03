@@ -116,6 +116,13 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
       } else {
         state = state.copyWith(loading: false);
         // check if email_error is in errors
+        if (!isEmail(email)) {
+          errors['email_error'] = 'Email must be valid';
+          state = state.copyWith(errors: errors);
+          return;
+        }
+        state = state.copyWith(loading: false);
+        // check if email_error is in errors
 
         if (state.errors.containsKey('email_error')) {
           state = state.copyWith(errors: state.errors..remove('email_error'));
@@ -145,7 +152,6 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
           })
         : await AuthService.loginUser({'email': email, 'password': password});
     if ((kIsWeb && errors == null) || (!kIsWeb && errors != null)) {
-      print(errors);
       var error = {'error': 'Email or password is incorrect'};
       state = state.copyWith(errors: error);
       state.basicValidator.addErrors(error);

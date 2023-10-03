@@ -17,6 +17,7 @@ import 'package:barrani/views/features/contacts/profile.dart';
 import 'package:barrani/views/features/kanban_page.dart';
 import 'package:barrani/views/features/ecommerce/add_product.dart';
 import 'package:barrani/views/features/ecommerce/products.dart';
+import 'package:barrani/views/features/zone/zone_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firedart/firedart.dart';
 import 'package:flutter/foundation.dart';
@@ -282,6 +283,7 @@ class MyApp extends StatelessWidget {
         // product pages
         ProductPage.routeName: (context) => ProductPage(),
         AddProduct.routeName: (context) => AddProduct(),
+        ZonePage.routeName: (context) => ZonePage(),
       },
       localizationsDelegates: const [
         // AppLocalizationsDelegate(context),
