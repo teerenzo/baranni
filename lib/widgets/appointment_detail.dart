@@ -12,7 +12,6 @@ import 'package:barrani/helpers/widgets/my_flex_item.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
-import 'package:barrani/images.dart';
 import 'package:barrani/models/invitation.dart';
 import 'package:barrani/views/features/mobile_chat.dart';
 import 'package:flutter/foundation.dart';
@@ -35,9 +34,10 @@ class AppointmentDetail extends StatelessWidget {
   Widget build(BuildContext context) {
     List<Invitation> invitations =
         getInvitationsByAppointmentId(appointment.id.toString());
+    String? imgUrl = appointment.recurrenceId?.toString();
     return Container(
       width: MediaQuery.of(context).size.width * (isMobile ? 1 : 0.4),
-      height: isMobile ? MediaQuery.of(context).size.height * 0.7 : 440,
+      height: isMobile ? MediaQuery.of(context).size.height * 0.7 : 700,
       padding: EdgeInsets.all(isMobile ? 16 : 0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -45,43 +45,54 @@ class AppointmentDetail extends StatelessWidget {
             children: [
               Row(
                 children: [
-                  Column(
-                    children: [
-                      Row(
-                        children: [
-                          MyText.bodyMedium(
-                            "Zone",
-                            fontWeight: 700,
-                            textAlign: TextAlign.start,
-                          ),
-                          MySpacing.width(16),
-                          MyText.bodyMedium(
-                            appointment.subject,
-                            fontWeight: 600,
-                            muted: true,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      MySpacing.height(16),
-                      Row(
-                        children: [
-                          MyText.bodyMedium(
-                            "Date",
-                            fontWeight: 700,
-                            textAlign: TextAlign.start,
-                          ),
-                          MySpacing.width(16),
-                          MyText.bodyMedium(
-                            dateFormatter.format(appointment.endTime),
-                            fontWeight: 600,
-                            muted: true,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            MyText.bodyMedium(
+                              "Zone",
+                              fontWeight: 700,
+                              textAlign: TextAlign.start,
+                            ),
+                            MySpacing.width(16),
+                            MyText.bodyMedium(
+                              appointment.notes!,
+                              fontWeight: 600,
+                              muted: true,
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
+                        MySpacing.height(16),
+                        Row(
+                          children: [
+                            MyText.bodyMedium(
+                              "Date",
+                              fontWeight: 700,
+                              textAlign: TextAlign.start,
+                            ),
+                            MySpacing.width(16),
+                            MyText.bodyMedium(
+                              dateFormatter.format(appointment.endTime),
+                              fontWeight: 600,
+                              muted: true,
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
+                  if (imgUrl != null)
+                    Expanded(
+                      child: Image.network(
+                        imgUrl,
+                        width: 300,
+                        height: 300,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                 ],
               ),
               MySpacing.height(16),
@@ -147,7 +158,7 @@ class AppointmentDetail extends StatelessWidget {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: MyText.bodyMedium(
-                    appointment.notes!,
+                    appointment.subject,
                     fontWeight: 600,
                     muted: true,
                     textAlign: TextAlign.start,
@@ -285,6 +296,7 @@ class InviteAvatar extends StatefulWidget {
 class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
   @override
   Widget build(BuildContext context) {
+    final user = findUser(widget.invitation.receiverId);
     return Container(
       constraints: BoxConstraints(
         maxWidth: 180,
@@ -307,12 +319,17 @@ class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
                     height: 40,
                     width: 40,
                     paddingAll: 0,
-                    child: Image.asset(
-                      Images.avatars[1 % Images.avatars.length],
-                      height: 40,
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
+                    color: theme.scaffoldBackgroundColor,
+                    child: user.photoUrl != ""
+                        ? Image.network(
+                            user.photoUrl,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          )
+                        : Center(
+                            child: MyText.labelLarge(user.names[0]),
+                          ),
                   ),
                 ],
               ),
@@ -323,10 +340,7 @@ class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MyText.labelLarge(
-                      findUser(widget.invitation.receiverId)
-                          .names
-                          .split(' ')
-                          .first,
+                      user.names.split(' ').first,
                     ),
                     MyContainer(
                       padding: MySpacing.xy(12, 2),

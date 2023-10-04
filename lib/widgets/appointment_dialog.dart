@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:barrani/app_constant.dart';
 import 'package:barrani/constants.dart';
@@ -34,10 +35,14 @@ import 'package:image_picker/image_picker.dart';
 class AppointmentDialog extends ConsumerStatefulWidget {
   final bool isMobile;
   final DateTime startDate;
+  final PlaceZone? zone;
+  final Function(PlaceZone)? onSave;
   const AppointmentDialog({
     super.key,
     required this.isMobile,
     required this.startDate,
+    this.zone,
+    this.onSave,
   });
 
   @override
@@ -79,13 +84,15 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
   }
 
   Future<void> handleSubmit() async {
+    if (pickedImage != null) {
+      return;
+    }
     setState(() {
       isSubmitted = true;
     });
     if (validateTime() != null ||
         validateZone() != null ||
         invites.isEmpty ||
-        imageUrl == "" ||
         // isAppointmentExist(widget.startDate.applied(startTime)) ||
         // isAppointmentExist(widget.startDate.applied(endTime)) ||
         validateDescription(description) != null) {
@@ -100,8 +107,8 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
         startTime: widget.startDate.applied(startTime),
         endTime: widget.startDate.applied(endTime),
         location: placeZone!.id,
-        subject: placeZone!.name,
-        notes: description,
+        notes: placeZone!.name,
+        subject: description,
         recurrenceId: imageUrl,
       );
       Map<String, dynamic> data = toMap(p);
@@ -160,10 +167,11 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
       setState(() {
         isSubmitting = false;
       });
-      Navigator.pop(context);
-    } catch (error) {
-      print(error);
-    }
+      Timer(Duration(milliseconds: 500), () {
+        widget.onSave!(placeZone!);
+        Navigator.pop(context);
+      });
+    } catch (error) {}
   }
 
   String? validateTime() {
@@ -234,6 +242,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
       hour: widget.startDate.hour + 2,
       minute: widget.startDate.minute,
     );
+    placeZone = widget.zone;
   }
 
   @override
@@ -247,7 +256,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     return SafeArea(
       child: Container(
         width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
-        height: widget.isMobile ? MediaQuery.of(context).size.height : 760,
+        height: widget.isMobile ? MediaQuery.of(context).size.height : 800,
         padding: EdgeInsets.only(
           left: widget.isMobile ? 16 : 0,
           right: widget.isMobile ? 16 : 0,
@@ -366,7 +375,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                       muted: true,
                       textAlign: TextAlign.start,
                     ),
-                    MySpacing.width(16),
+                    MySpacing.width(20),
                     MyButton.outlined(
                       onPressed: () async {
                         if (pickedImage != null) return;
@@ -379,7 +388,27 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                           ? MySpacing.zero
                           : MySpacing.xy(16, 16),
                       child: imageUrl != ""
-                          ? Image.network(imageUrl, width: 50)
+                          ? Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Image.network(imageUrl, width: 60),
+                                Positioned(
+                                    child: InkWell(
+                                  onTap: () {
+                                    deleteImage(imageUrl).then((value) {
+                                      setState(() {
+                                        pickedImage = null;
+                                        imageUrl = "";
+                                      });
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ))
+                              ],
+                            )
                           : pickedImage != null
                               ? Stack(
                                   alignment: Alignment.center,
@@ -406,36 +435,45 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                                   'Select Thumbnail',
                                   fontWeight: 600,
                                 ),
-
-                      // Image(
-                      //     image: FileImage(File(pickedImage?.path)),
-                      //     width: 50,
-                      //   )
-                      //  MyText.labelMedium(
-                      //     'Select Thumbnail',
-                      //     fontWeight: 600,
-                      //   ),
                     )
                   ],
                 ),
-                MySpacing.height(16),
-                if (isSubmitted && imageUrl == "")
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: MyText.bodyMedium(
-                      'thumbnail is required',
-                      fontWeight: 600,
-                      muted: true,
-                      color: kAlertColor,
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                if (isSubmitted && imageUrl == "") MySpacing.height(16),
 
+                MySpacing.height(16),
                 Container(
                   alignment: Alignment.centerLeft,
                   child: MyText.bodyMedium(
                     "Invites",
+                    fontWeight: 600,
+                    muted: true,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+
+                MySpacing.height(16),
+                SizedBox(
+                  height: invites.isEmpty ? 30 : 90,
+                  child: invites.isNotEmpty
+                      ? ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: invites
+                              .where((element) =>
+                                  element.userId != userData?.userId)
+                              .map((e) => InviteAvatar(
+                                    user: e,
+                                    isInvited: false,
+                                    isMobile: widget.isMobile,
+                                    onTap: () {},
+                                  ))
+                              .toList(),
+                        )
+                      : MyText.bodyMedium('No selected Invites'),
+                ),
+
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: MyText.bodyMedium(
+                    "Influencers",
                     fontWeight: 600,
                     muted: true,
                     textAlign: TextAlign.start,

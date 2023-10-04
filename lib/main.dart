@@ -32,7 +32,6 @@ import 'helpers/localizations/language.dart';
 import 'helpers/storage/local_storage.dart';
 import 'helpers/theme/app_style.dart';
 import 'helpers/theme/theme_customizer.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
