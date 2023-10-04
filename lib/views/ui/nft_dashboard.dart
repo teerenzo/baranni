@@ -65,7 +65,6 @@ class _NFTDashboardScreenState extends State<NFTDashboardScreen>
     final hours = strDigits(myDuration.inHours.remainder(24));
     final minutes = strDigits(myDuration.inMinutes.remainder(60));
     final seconds = strDigits(myDuration.inSeconds.remainder(60));
-    debugPrint("$hours : $minutes : $seconds");
     return Layout(
       child: GetBuilder(
         init: controller,
