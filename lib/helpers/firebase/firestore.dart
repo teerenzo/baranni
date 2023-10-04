@@ -234,6 +234,15 @@ Future<void> deleteNotification(String id) async {
       .delete();
 }
 
+Future<void> readNotification(String id) async {
+  await Firestore.instance
+      .collection(fireBaseCollections.notifications)
+      .document(id)
+      .update({
+    'isRead': true,
+  });
+}
+
 Future addProduct(Map<String, dynamic> data) async {
   await Firestore.instance
       .collection(fireBaseCollections.products)

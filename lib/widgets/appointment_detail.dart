@@ -64,23 +64,6 @@ class AppointmentDetail extends StatelessWidget {
                             ),
                           ],
                         ),
-                        MySpacing.height(16),
-                        Row(
-                          children: [
-                            MyText.bodyMedium(
-                              "Date",
-                              fontWeight: 700,
-                              textAlign: TextAlign.start,
-                            ),
-                            MySpacing.width(16),
-                            MyText.bodyMedium(
-                              dateFormatter.format(appointment.endTime),
-                              fontWeight: 600,
-                              muted: true,
-                              textAlign: TextAlign.start,
-                            ),
-                          ],
-                        ),
                       ],
                     ),
                   ),
@@ -164,6 +147,23 @@ class AppointmentDetail extends StatelessWidget {
                     textAlign: TextAlign.start,
                   ),
                 ),
+              MySpacing.height(16),
+              Row(
+                children: [
+                  MyText.bodyMedium(
+                    "Date",
+                    fontWeight: 700,
+                    textAlign: TextAlign.start,
+                  ),
+                  MySpacing.width(16),
+                  MyText.bodyMedium(
+                    dateFormatter.format(appointment.endTime),
+                    fontWeight: 600,
+                    muted: true,
+                    textAlign: TextAlign.start,
+                  ),
+                ],
+              ),
               MySpacing.height(16),
               MyFlex(
                 contentPadding: false,

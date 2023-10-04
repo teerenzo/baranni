@@ -225,6 +225,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                               // if (isAppointmentExist(pickedDate)) {
                               //   return;
                               // }
+                              if (widget.isMyCalendar) {
+                                return;
+                              }
                               if (type.isMobile) {
                                 showModalBottomSheet(
                                   backgroundColor: theme.colorScheme.background,
