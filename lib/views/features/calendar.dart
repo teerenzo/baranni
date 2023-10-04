@@ -42,6 +42,8 @@ class Calender extends ConsumerStatefulWidget {
 class _CalenderState extends ConsumerState<Calender> with UIMixin {
   final CalendarController calendarController = CalendarController();
   PlaceZone? activeZone;
+  bool isLoading = false;
+  List<Appointment> calendarAppointments = [];
 
   List<Appointment> filterAppointments(List<Appointment> appointments) {
     List<Appointment> filteredAppointments = appointments.where((element) {
@@ -70,9 +72,17 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
     var appointmentStream = ref.watch(kIsWeb
         ? FirebaseWebHelper.allAppointmentsStreamProvider
         : allAppointmentsStreamProvider);
-    ref.watch(kIsWeb
+    var zonesStream = ref.watch(kIsWeb
         ? FirebaseWebHelper.allZonesStreamProvider
         : allZonesStreamProvider);
+
+    zonesStream.whenData((value) {
+      if (!widget.isMyCalendar && activeZone == null) {
+        setState(() {
+          activeZone = value.first;
+        });
+      }
+    });
 
     return Layout(
       child: Column(
@@ -186,7 +196,7 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                   height: 700,
                   child: appointmentStream.whenData(
                     (value) {
-                      filterAppointments(value);
+                      var appointments = value;
                       return SfCalendar(
                         key: UniqueKey(),
                         view: widget.isMyCalendar
@@ -198,7 +208,8 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                           CalendarView.month,
                         ],
                         controller: calendarController,
-                        dataSource: DataSource(filterAppointments(value)),
+                        dataSource:
+                            DataSource(filterAppointments(appointments)),
                         allowDragAndDrop: false,
                         monthViewSettings: const MonthViewSettings(
                           showAgenda: true,
@@ -214,6 +225,9 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                               // if (isAppointmentExist(pickedDate)) {
                               //   return;
                               // }
+                              if (widget.isMyCalendar) {
+                                return;
+                              }
                               if (type.isMobile) {
                                 showModalBottomSheet(
                                   backgroundColor: theme.colorScheme.background,
@@ -223,6 +237,12 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                     return AppointmentDialog(
                                       isMobile: type.isMobile,
                                       startDate: pickedDate,
+                                      zone: activeZone,
+                                      onSave: (zone) {
+                                        setState(() {
+                                          // activeZone = zone;
+                                        });
+                                      },
                                     );
                                   },
                                 );
@@ -237,6 +257,12 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                           content: AppointmentDialog(
                                             isMobile: type.isMobile,
                                             startDate: pickedDate,
+                                            zone: activeZone,
+                                            onSave: (zone) {
+                                              setState(() {
+                                                activeZone = zone;
+                                              });
+                                            },
                                           ),
                                         );
                                       },

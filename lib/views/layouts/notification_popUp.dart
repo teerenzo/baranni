@@ -12,7 +12,6 @@ import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:one_context/one_context.dart';
 
 class NotificationPopUp extends ConsumerWidget {
   const NotificationPopUp({

@@ -56,25 +56,26 @@ class _TopBarState extends State<TopBar>
     }
 
     // check if notification time is less done 2 minutes and not read and show snackbar
-    var notification = notifications
-        .where((element) =>
-            element.createdAt.difference(DateTime.now()).inMinutes < 2)
-        .toList();
-    if (notification.isNotEmpty) {
-      OneContext().showSnackBar(
-        builder: (_) => SnackBar(
-          behavior: SnackBarBehavior.fixed,
-          backgroundColor: contentTheme.primary,
-          content: buildNotification(
-              notification.first.title, notification.first.body),
-          action: SnackBarAction(
-            label: '',
-            onPressed: () {
-              OneContext().pushNamed('/notifications');
-            },
-          ),
-        ),
-      );
+
+    if (notifications.isNotEmpty) {
+      notifications.forEach((element) async {
+        if (!element.isRead) {
+          OneContext().showSnackBar(
+            builder: (_) => SnackBar(
+              behavior: SnackBarBehavior.fixed,
+              backgroundColor: contentTheme.primary,
+              content: buildNotification(element.title, element.body),
+              action: SnackBarAction(
+                label: '',
+                onPressed: () {
+                  OneContext().pushNamed('/notifications');
+                },
+              ),
+            ),
+          );
+          await element.readyNotification();
+        }
+      });
     }
     return MyCard(
       shadow: MyShadow(position: MyShadowPosition.bottomRight, elevation: 0.5),
