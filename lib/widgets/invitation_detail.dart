@@ -12,7 +12,6 @@ import 'package:barrani/helpers/widgets/my_flex_item.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
-import 'package:barrani/images.dart';
 import 'package:barrani/models/invitation.dart';
 import 'package:barrani/models/user.dart';
 import 'package:flutter/foundation.dart';
@@ -84,7 +83,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
       height: widget.isMobile
           ? MediaQuery.of(context).size.height *
               (isAccepted ? 0.82 : (isDeclined ? 0.68 : 0.8))
-          : 560,
+          : 620,
       padding: EdgeInsets.all(widget.isMobile ? 16 : 0),
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
@@ -104,25 +103,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                           ),
                           MySpacing.width(16),
                           MyText.bodyMedium(
-                            widget.appointment.subject,
-                            fontWeight: 600,
-                            muted: true,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      MySpacing.height(16),
-                      MySpacing.height(16),
-                      Row(
-                        children: [
-                          MyText.bodyMedium(
-                            "Date",
-                            fontWeight: 700,
-                            textAlign: TextAlign.start,
-                          ),
-                          MySpacing.width(16),
-                          MyText.bodyMedium(
-                            dateFormatter.format(widget.appointment.endTime),
+                            widget.appointment.notes!,
                             fontWeight: 600,
                             muted: true,
                             textAlign: TextAlign.start,
@@ -205,13 +186,30 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                 Container(
                   alignment: Alignment.centerLeft,
                   child: MyText.bodyMedium(
-                    widget.appointment.notes!,
+                    widget.appointment.subject,
                     fontWeight: 600,
                     muted: true,
                     textAlign: TextAlign.start,
                   ),
                 ),
 
+              MySpacing.height(16),
+              Row(
+                children: [
+                  MyText.bodyMedium(
+                    "Date",
+                    fontWeight: 700,
+                    textAlign: TextAlign.start,
+                  ),
+                  MySpacing.width(16),
+                  MyText.bodyMedium(
+                    dateFormatter.format(widget.appointment.endTime),
+                    fontWeight: 600,
+                    muted: true,
+                    textAlign: TextAlign.start,
+                  ),
+                ],
+              ),
               MySpacing.height(16),
               MyFlex(
                 contentPadding: false,
@@ -392,6 +390,7 @@ class InviteAvatar extends StatefulWidget {
 class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
   @override
   Widget build(BuildContext context) {
+    final user = findUser(widget.invitation.receiverId);
     return Container(
       constraints: BoxConstraints(
         maxWidth: 180,
@@ -414,12 +413,18 @@ class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
                     height: 40,
                     width: 40,
                     paddingAll: 0,
-                    child: Image.asset(
-                      Images.avatars[1 % Images.avatars.length],
-                      height: 40,
-                      width: 40,
-                      fit: BoxFit.cover,
-                    ),
+                    color: theme.scaffoldBackgroundColor,
+                    child: user.photoUrl != ""
+                        ? Image.network(
+                            user.photoUrl,
+                            height: 40,
+                            width: 40,
+                            fit: BoxFit.cover,
+                          )
+                        : Center(
+                            child: MyText.labelLarge(
+                                user.names[0].split(' ').first),
+                          ),
                   ),
                 ],
               ),
@@ -430,7 +435,7 @@ class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     MyText.labelLarge(
-                      findUser(widget.invitation.receiverId).names,
+                      user.names.split(' ').first,
                     ),
                     MyContainer(
                       padding: MySpacing.xy(12, 2),
