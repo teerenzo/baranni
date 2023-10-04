@@ -650,6 +650,7 @@ abstract class FirebaseWebHelper {
       for (var element in querySnapshot.docs) {
         Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
         element_['id'] = element.id;
+        element_['createdDate'] = element_['createdDate'].toDate();
         zones_.add(PlaceZone.fromJson(element_));
       }
       zones = zones_;
@@ -722,5 +723,13 @@ abstract class FirebaseWebHelper {
       return null;
     }
     return await reference.getDownloadURL();
+  }
+
+  static Future<void> addZone(String name) async {
+    await FirebaseFirestore.instance.collection(fireBaseCollections.zones).add({
+      'name': name,
+      'userId': userData!.userId,
+      'createdDate': DateTime.now(),
+    });
   }
 }

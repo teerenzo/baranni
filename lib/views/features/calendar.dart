@@ -3,10 +3,13 @@ import 'package:barrani/controller/features/calendar/calendar_controller.dart';
 import 'package:barrani/global_functions.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
+import 'package:barrani/helpers/navigator_helper.dart';
+import 'package:barrani/helpers/theme/app_style.dart';
 import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
+import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_card.dart';
 import 'package:barrani/helpers/widgets/my_responsiv.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
@@ -124,6 +127,31 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                           ),
                         ),
                       ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    MyButton(
+                      onPressed: () =>
+                          NavigatorHelper.pushNamed('/zone/manage'),
+                      elevation: 0,
+                      padding: MySpacing.xy(20, 16),
+                      backgroundColor: contentTheme.primary,
+                      borderRadiusAll: AppStyle.buttonRadius.medium,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.location_city,
+                            color: Color(0xffffffff),
+                          ),
+                          MySpacing.width(8),
+                          MyText.labelMedium(
+                            'Manage Zones',
+                            color: contentTheme.onPrimary,
+                          ),
+                        ],
+                      ),
+                    ),
                     if (!screenMT.isMobile)
                       Expanded(
                         flex: 3,

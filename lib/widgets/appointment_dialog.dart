@@ -332,13 +332,16 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                           loading: () => Center(
                             child: CircularProgressIndicator(),
                           ),
-                          error: (error, stack) => MyText.bodyMedium(
-                            'Error loading zones',
-                            fontWeight: 600,
-                            muted: true,
-                            color: kAlertColor,
-                            textAlign: TextAlign.start,
-                          ),
+                          error: (error, stack) {
+                            print(error);
+                            return MyText.bodyMedium(
+                              'Error loading zones',
+                              fontWeight: 600,
+                              muted: true,
+                              color: kAlertColor,
+                              textAlign: TextAlign.start,
+                            );
+                          },
                           data: (Widget appointmentData) {
                             return appointmentData;
                           },
