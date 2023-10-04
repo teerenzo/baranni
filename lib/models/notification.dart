@@ -1,4 +1,7 @@
+import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
+import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 
 class NotificationModal {
   String id;
@@ -44,5 +47,11 @@ class NotificationModal {
       'isRead': isRead,
       'createdAt': createdAt,
     };
+  }
+
+  Future<void> readyNotification() async {
+    kIsWeb
+        ? await FirebaseWebHelper.readNotification(id)
+        : await readNotification(id);
   }
 }

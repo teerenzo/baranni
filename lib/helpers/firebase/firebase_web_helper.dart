@@ -693,6 +693,15 @@ abstract class FirebaseWebHelper {
         .delete();
   }
 
+  static Future readNotification(String id) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.notifications)
+        .doc(id)
+        .update({
+      'isRead': true,
+    });
+  }
+
   static Future addProduct(Map<String, dynamic> data) async {
     await FirebaseFirestore.instance
         .collection(fireBaseCollections.products)
