@@ -19,8 +19,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -650,6 +650,7 @@ abstract class FirebaseWebHelper {
       for (var element in querySnapshot.docs) {
         Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
         element_['id'] = element.id;
+        element_['createdDate'] = element_['createdDate'].toDate();
         zones_.add(PlaceZone.fromJson(element_));
       }
       zones = zones_;
@@ -669,15 +670,11 @@ abstract class FirebaseWebHelper {
           Map<String, dynamic> element_ =
               element.data() as Map<String, dynamic>;
           element_['id'] = element.id;
-          print(element_['userId']);
-          print(userData!.userId);
-          print(FirebaseAuth.instance.currentUser?.uid);
           if (element_['userId'] == userData!.userId) {
             notifications_.add(NotificationModal.fromJson(element_));
           }
         }
         notifications = notifications_;
-        print(notifications_);
         return notifications_;
       });
     } catch (e) {
@@ -731,5 +728,13 @@ abstract class FirebaseWebHelper {
       return null;
     }
     return await reference.getDownloadURL();
+  }
+
+  static Future<void> addZone(String name) async {
+    await FirebaseFirestore.instance.collection(fireBaseCollections.zones).add({
+      'name': name,
+      'userId': userData!.userId,
+      'createdDate': DateTime.now(),
+    });
   }
 }
