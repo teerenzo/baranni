@@ -44,7 +44,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    var authenticationProvider = ref.read(authProvider);
+    // var authenticationProvider = ref.read(authProvider);
+    final authenticationProvider =
+        ref.watch(authProvider); // Use ref.watch here
 
     return AuthLayout(
         child: Padding(
