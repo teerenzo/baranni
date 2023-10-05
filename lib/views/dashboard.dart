@@ -105,7 +105,8 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                           MyFlexItem(
                             sizes: "lg-4",
                             child: buildCard(
-                                contentTheme.pink,
+                                contentTheme.warning.withAlpha(28),
+                                // contentTheme.pink,
                                 LucideIcons.clock4,
                                 "Reached",
                                 "\$152",

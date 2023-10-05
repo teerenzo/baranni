@@ -41,7 +41,6 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
   @override
   void initState() {
     super.initState();
-    controller = Get.put(ProfileController());
   }
 
   @override

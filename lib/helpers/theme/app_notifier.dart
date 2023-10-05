@@ -11,8 +11,11 @@ import 'package:barrani/helpers/theme/app_style.dart';
 import 'package:barrani/helpers/widgets/my.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'theme_customizer.dart';
+
+final appNotifierProvider =
+    ChangeNotifierProvider<AppNotifier>((ref) => AppNotifier());
 
 class AppNotifier extends ChangeNotifier {
   AppNotifier();

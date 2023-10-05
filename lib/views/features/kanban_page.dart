@@ -202,135 +202,138 @@ class _KanBanPageState extends ConsumerState<KanBanPage>
               'Error: ${error.toString()}')), // Handle error state if necessary
     );
 
-    return Stack(
-      children: [
-        Layout(
-          child: GetBuilder(
-            init: controller,
-            builder: (controller) {
-              return Column(
-                children: [
-                  Padding(
-                    padding: MySpacing.x(flexSpacing),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        MyText.titleMedium(
-                          "KanBan",
-                          fontSize: 18,
-                          fontWeight: 600,
-                        ),
-                        MyBreadcrumb(
-                          children: [
-                            MyBreadcrumbItem(name: 'Apps'),
-                            MyBreadcrumbItem(name: 'KanBan', active: true),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  MySpacing.height(flexSpacing),
-                  Padding(
-                    padding: MySpacing.x(flexSpacing),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        if (kIsWeb)
-                          MyButton(
-                            onPressed: controller.goToCreateKanbanTask,
-                            elevation: 0,
-                            padding: MySpacing.xy(20, 16),
-                            backgroundColor: contentTheme.primary,
-                            borderRadiusAll: AppStyle.buttonRadius.medium,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  LucideIcons.plus,
-                                  color: Color(0xffffffff),
-                                ),
-                                MySpacing.width(8),
-                                MyText.labelMedium(
-                                  'create_task'.tr().capitalizeWords,
-                                  color: contentTheme.onPrimary,
-                                ),
-                              ],
-                            ),
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: Stack(
+        children: [
+          Layout(
+            child: GetBuilder(
+              init: controller,
+              builder: (controller) {
+                return Column(
+                  children: [
+                    Padding(
+                      padding: MySpacing.x(flexSpacing),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          MyText.titleMedium(
+                            "KanBan",
+                            fontSize: 18,
+                            fontWeight: 600,
                           ),
-                      ],
+                          MyBreadcrumb(
+                            children: [
+                              MyBreadcrumbItem(name: 'Apps'),
+                              MyBreadcrumbItem(name: 'KanBan', active: true),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  MySpacing.height(flexSpacing),
-                  Padding(
-                    padding: MySpacing.x(flexSpacing / 2),
-                    child: PrimaryScrollController(
-                      controller: ScrollController(),
-                      child: AppFlowyBoard(
-                        config: AppFlowyBoardConfig(
-                          stretchGroupHeight: false,
-                          groupBackgroundColor:
-                              contentTheme.primary.withAlpha(20),
-                        ),
-                        controller: controller.boardData!,
-                        cardBuilder: (context, group, groupItem) {
-                          // int index = statuses.indexOf(group.id);
-                          return AppFlowyGroupCard(
-                            key: ValueKey(group.id),
-                            decoration: BoxDecoration(
-                                color: theme.colorScheme.background),
-                            child: buildCard(groupItem),
-                          );
-                        },
-                        boardScrollController: controller.boardController,
-                        footerBuilder: (context, columnData) {
-                          return MySpacing.height(16);
-                        },
-                        headerBuilder: (context, columnData) {
-                          return SizedBox(
-                            height: 40,
-                            child: ListView.builder(
-                              controller: _controller,
-                              shrinkWrap: true,
-                              itemBuilder: (context, index) {
-                                return AppFlowyGroupHeader(
-                                  title: MyText.bodyMedium(
-                                    columnData.headerData.groupName,
-                                    fontSize: 16,
-                                    fontWeight: 600,
-                                    muted: true,
+                    MySpacing.height(flexSpacing),
+                    Padding(
+                      padding: MySpacing.x(flexSpacing),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          if (kIsWeb)
+                            MyButton(
+                              onPressed: controller.goToCreateKanbanTask,
+                              elevation: 0,
+                              padding: MySpacing.xy(20, 16),
+                              backgroundColor: contentTheme.primary,
+                              borderRadiusAll: AppStyle.buttonRadius.medium,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(
+                                    LucideIcons.plus,
+                                    color: Color(0xffffffff),
                                   ),
-                                  margin: MySpacing.x(16),
-                                  height: 40,
-                                );
-                              },
+                                  MySpacing.width(8),
+                                  MyText.labelMedium(
+                                    'create_task'.tr().capitalizeWords,
+                                    color: contentTheme.onPrimary,
+                                  ),
+                                ],
+                              ),
                             ),
-                          );
-                        },
-                        groupConstraints: const BoxConstraints.tightFor(
-                          width: 400,
+                        ],
+                      ),
+                    ),
+                    MySpacing.height(flexSpacing),
+                    Padding(
+                      padding: MySpacing.x(flexSpacing / 2),
+                      child: PrimaryScrollController(
+                        controller: ScrollController(),
+                        child: AppFlowyBoard(
+                          config: AppFlowyBoardConfig(
+                            stretchGroupHeight: false,
+                            groupBackgroundColor:
+                                contentTheme.primary.withAlpha(20),
+                          ),
+                          controller: controller.boardData!,
+                          cardBuilder: (context, group, groupItem) {
+                            // int index = statuses.indexOf(group.id);
+                            return AppFlowyGroupCard(
+                              key: ValueKey(group.id),
+                              decoration: BoxDecoration(
+                                  color: theme.colorScheme.background),
+                              child: buildCard(groupItem),
+                            );
+                          },
+                          boardScrollController: controller.boardController,
+                          footerBuilder: (context, columnData) {
+                            return MySpacing.height(16);
+                          },
+                          headerBuilder: (context, columnData) {
+                            return SizedBox(
+                              height: 40,
+                              child: ListView.builder(
+                                controller: _controller,
+                                shrinkWrap: true,
+                                itemBuilder: (context, index) {
+                                  return AppFlowyGroupHeader(
+                                    title: MyText.bodyMedium(
+                                      columnData.headerData.groupName,
+                                      fontSize: 16,
+                                      fontWeight: 600,
+                                      muted: true,
+                                    ),
+                                    margin: MySpacing.x(16),
+                                    height: 40,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          groupConstraints: const BoxConstraints.tightFor(
+                            width: 400,
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              );
-            },
-          ),
-        ),
-        if (!kIsWeb) // Only show this FAB if it's not on web
-          Positioned(
-            bottom: 16,
-            right: 16,
-            child: FloatingActionButton(
-              onPressed: controller.goToCreateKanbanTask,
-              backgroundColor: contentTheme.primary,
-              child: Icon(
-                LucideIcons.plus,
-                color: Color(0xffffffff),
-              ),
+                  ],
+                );
+              },
             ),
           ),
-      ],
+          if (!kIsWeb) // Only show this FAB if it's not on web
+            Positioned(
+              bottom: 16,
+              right: 16,
+              child: FloatingActionButton(
+                onPressed: controller.goToCreateKanbanTask,
+                backgroundColor: contentTheme.primary,
+                child: Icon(
+                  LucideIcons.plus,
+                  color: Color(0xffffffff),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
