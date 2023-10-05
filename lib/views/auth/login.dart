@@ -109,6 +109,11 @@ class _LoginPageState extends ConsumerState<LoginPage>
                     TextFormField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
+                      onChanged: (value) {
+                        if (authenticationProvider.isSubmitted) {
+                          ref.read(authProvider.notifier).validateEmail(value);
+                        }
+                      },
                       decoration: InputDecoration(
                         labelText: "Email Address",
                         labelStyle: MyTextStyle.bodySmall(xMuted: true),
@@ -122,7 +127,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                       ),
                     ),
-                    if (authenticationProvider.errors.isNotEmpty &&
+                    if (authenticationProvider.isSubmitted &&
+                        authenticationProvider.errors.isNotEmpty &&
                         authenticationProvider.errors['email_error'] != null)
                       MyText.bodyMedium(
                         authenticationProvider.errors['email_error']!,
@@ -139,6 +145,13 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       controller: _passwordController,
                       keyboardType: TextInputType.visiblePassword,
                       obscureText: !authenticationProvider.showPassword,
+                      onChanged: (value) {
+                        if (authenticationProvider.isSubmitted) {
+                          ref
+                              .read(authProvider.notifier)
+                              .validatePassword(value);
+                        }
+                      },
                       decoration: InputDecoration(
                         labelText: "Password",
                         labelStyle: MyTextStyle.bodySmall(xMuted: true),
@@ -163,7 +176,8 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         floatingLabelBehavior: FloatingLabelBehavior.never,
                       ),
                     ),
-                    if (authenticationProvider.errors.isNotEmpty &&
+                    if (authenticationProvider.isSubmitted &&
+                        authenticationProvider.errors.isNotEmpty &&
                         authenticationProvider.errors['password_error'] != null)
                       MyText.bodyMedium(
                         authenticationProvider.errors['password_error']!,

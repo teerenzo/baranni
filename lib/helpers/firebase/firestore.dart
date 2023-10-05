@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:barrani/constants.dart';
 import 'package:barrani/global_variables.dart';
+import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/models/appointment.dart';
 import 'package:barrani/models/invitation.dart';
 import 'package:barrani/models/kanban.dart';
@@ -178,6 +179,15 @@ Future<void> onSavePressed(
     'names': firstName,
     if (imageUrl != null)
       'profile_url': imageUrl, // Only update imageUrl if it's not null
+  }).then((value) async {
+    userData = UserModal.fromJSON({
+      'email': userData!.email,
+      'names': firstName,
+      'userId': userData!.userId,
+      'photo_url': imageUrl,
+      'role': userData!.role
+    });
+    await LocalStorage.storeUserdata(userData!);
   });
 }
 
@@ -240,6 +250,15 @@ Future<void> deleteNotification(String id) async {
       .collection(fireBaseCollections.notifications)
       .document(id)
       .delete();
+}
+
+Future<void> readNotification(String id) async {
+  await Firestore.instance
+      .collection(fireBaseCollections.notifications)
+      .document(id)
+      .update({
+    'isRead': true,
+  });
 }
 
 Future addProduct(Map<String, dynamic> data) async {

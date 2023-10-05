@@ -10,13 +10,15 @@ class _AuthState {
 
   bool showPassword;
   bool loading;
+  bool isSubmitted;
   bool isChecked;
   bool openMenu;
-  Map<String, String> errors = {};
+  var errors = {};
 
   _AuthState({
     this.showPassword = false,
     this.loading = false,
+    this.isSubmitted = false,
     this.isChecked = false,
     this.openMenu = false,
     this.errors = const {},
@@ -29,14 +31,16 @@ class _AuthState {
     MyFormValidator? basicValidator,
     bool? showPassword,
     bool? loading,
+    bool? isSubmitted,
     bool? isChecked,
     bool? openMenu,
-    Map<String, String>? errors,
+    var errors,
   }) {
     return _AuthState(
       basicValidator: basicValidator ?? this.basicValidator,
       showPassword: showPassword ?? this.showPassword,
       loading: loading ?? this.loading,
+      isSubmitted: isSubmitted ?? this.isSubmitted,
       isChecked: isChecked ?? this.isChecked,
       openMenu: openMenu ?? this.openMenu,
       errors: errors ?? this.errors,
@@ -69,34 +73,71 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
     return null;
   }
 
+  void validateEmail(String email) {
+    if (email.isEmpty) {
+      state = state.copyWith(errors: {'email_error': 'Email is required'});
+    } else if (!isEmail(email)) {
+      state = state.copyWith(errors: {'email_error': 'Email must be valid'});
+    } else {
+      state = state.copyWith(errors: {'email_error': null});
+    }
+  }
+
+  void validatePassword(String password) {
+    if (password.isEmpty) {
+      state =
+          state.copyWith(errors: {'password_error': 'Password is required'});
+    } else {
+      state = state.copyWith(errors: {'password_error': null});
+    }
+  }
+
+  void validateInvitation(String password) {
+    if (password.isEmpty) {
+      state = state.copyWith(
+          errors: {'invitation_code_error': 'Invitation code is required'});
+    } else {
+      state = state.copyWith(errors: {'invitation_code_error': null});
+    }
+  }
+
   Future<void> onLogin({
     required String email,
     required String password,
   }) async {
     state = state.copyWith(loading: true);
+    state = state.copyWith(isSubmitted: true);
 
     if (email.isEmpty || password.isEmpty) {
+      var errors = {};
       if (email.isEmpty) {
-        state = state.copyWith(
-            errors: state.errors..addAll({'email_error': 'Email is required'}));
+        errors['email_error'] = 'Email is required';
+        state = state.copyWith(errors: errors);
       } else {
-        state = state.copyWith(errors: state.errors..remove('email_error'));
-      }
+        state = state.copyWith(loading: false);
+        // check if email_error is in errors
+        if (!isEmail(email)) {
+          errors['email_error'] = 'Email must be valid';
+          state = state.copyWith(errors: errors);
+          return;
+        }
+        state = state.copyWith(loading: false);
+        // check if email_error is in errors
 
-      if (isEmail(email)) {
-        state = state.copyWith(
-            errors: state.errors
-              ..addAll({'email_error': 'Email is not valid'}));
-      } else {
-        state = state.copyWith(errors: state.errors..remove('email_error'));
+        if (state.errors.containsKey('email_error')) {
+          state = state.copyWith(errors: state.errors..remove('email_error'));
+        }
       }
 
       if (password.isEmpty) {
-        state = state.copyWith(
-            errors: state.errors
-              ..addAll({'password_error': 'Password is required'}));
+        errors['password_error'] = 'Password is required';
+        state = state.copyWith(errors: errors);
       } else {
-        state = state.copyWith(errors: state.errors..remove('password_error'));
+        state = state.copyWith(loading: false);
+        if (state.errors.containsKey('password_error')) {
+          state =
+              state.copyWith(errors: state.errors..remove('password_error'));
+        }
       }
 
       state = state.copyWith(loading: false);
@@ -110,9 +151,10 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
             'password': password,
           })
         : await AuthService.loginUser({'email': email, 'password': password});
-    if (errors != null) {
-      state = state.copyWith(errors: errors);
-      state.basicValidator.addErrors(errors);
+    if ((kIsWeb && errors == null) || (!kIsWeb && errors != null)) {
+      var error = {'error': 'Email or password is incorrect'};
+      state = state.copyWith(errors: error);
+      state.basicValidator.addErrors(error);
       state.basicValidator.validateForm();
       state.basicValidator.clearErrors();
     } else {

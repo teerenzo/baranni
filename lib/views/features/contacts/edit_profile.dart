@@ -1,7 +1,6 @@
 // Conditional import
 import 'dart:io';
 
-import 'package:barrani/controller/features/chat_controller.dart';
 import 'package:barrani/controller/features/contact/edit_profile_controller.dart';
 import 'package:barrani/global_functions.dart';
 import 'package:barrani/global_variables.dart';
@@ -46,12 +45,38 @@ class _EditProfileState extends State<EditProfile>
   final lastNameController = TextEditingController();
   ImagePickerPlatform picker = ImagePickerPlatform.instance;
   bool loading = false;
+  XFile? pickedMainImage;
+  String mainImageUrl = '';
+
+  Future handleUploadMainImage() async {
+    ImagePicker picker = ImagePicker();
+    await picker.pickImage(source: ImageSource.gallery).then((xFile) async {
+      if (xFile != null) {
+        setState(() {
+          mainImageUrl = '';
+          pickedMainImage = xFile;
+        });
+        List<int> data = await xFile.readAsBytes();
+        String path = 'products';
+        String? imgUrl = kIsWeb
+            ? await FirebaseWebHelper.uploadFile(data, path)
+            : await uploadImage(data, path);
+        if (imgUrl != null) {
+          setState(() {
+            mainImageUrl = imgUrl;
+            pickedMainImage = null;
+          });
+        }
+      }
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     controller = Get.put(EditProfileController());
     if (userData != null) {
+      mainImageUrl = userData?.photoUrl ?? "";
       firstNameController.text = userData?.names ?? "";
       lastNameController.text = userData?.names ?? "";
     }
@@ -97,46 +122,172 @@ class _EditProfileState extends State<EditProfile>
                           children: [
                             InkWell(
                               onTap: () async {
-                                // imageFile = await pickImage();
-                                imageFile = await picker.pickImage();
-                                setState(() {});
+                                if (pickedMainImage != null) return;
+                                await handleUploadMainImage();
                               },
                               child: Stack(
                                 alignment: Alignment.bottomRight,
                                 children: [
-                                  if (imageFile != null)
-                                    MyContainer.rounded(
-                                      height: 150,
-                                      width: 150,
-                                      paddingAll: 0,
-                                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                                      child: Image.file(
-                                        File(imageFile!.path),
-                                        fit: BoxFit.cover,
+                                  if (pickedMainImage != null)
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Padding(
+                                        padding: MySpacing.x(20),
+                                        child: Stack(
+                                          children: [
+                                            // Image container
+                                            MyContainer.rounded(
+                                              border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 54, 53, 53),
+                                                width: 1.5,
+                                              ),
+                                              paddingAll: 4,
+                                              child: MyContainer.rounded(
+                                                paddingAll: 0,
+                                                height: 150,
+                                                clipBehavior:
+                                                    Clip.antiAliasWithSaveLayer,
+                                                child: kIsWeb
+                                                    ? Image.network(
+                                                        pickedMainImage!.path,
+                                                        fit: BoxFit.cover,
+                                                      )
+                                                    : Image.file(
+                                                        File(pickedMainImage!
+                                                            .path),
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                              ),
+                                            ),
+                                            // Camera icon
+                                            Positioned(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  40,
+                                              right: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  230,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.black54,
+                                                ),
+                                                padding: EdgeInsets.all(6.0),
+                                                child: Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    ),
-                                  if (userData?.photoUrl != null &&
-                                      userData!.photoUrl.isNotEmpty)
-                                    MyContainer.rounded(
-                                      height: 150,
-                                      width: 150,
-                                      paddingAll: 0,
-                                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                                      child: Image.network(
-                                        userData!.photoUrl,
-                                        fit: BoxFit.cover,
-                                      ),
-                                    ),
-                                  if (imageFile == null &&
-                                      userData!.photoUrl.isEmpty)
-                                    MyContainer.rounded(
-                                      height: 150,
-                                      width: 150,
-                                      paddingAll: 0,
-                                      clipBehavior: Clip.antiAliasWithSaveLayer,
-                                      child: Image.asset(Images.avatars[0],
-                                          fit: BoxFit.cover),
                                     )
+                                  else if (mainImageUrl != '')
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Padding(
+                                        padding: MySpacing.x(20),
+                                        child: Stack(
+                                          children: [
+                                            // Image container
+                                            MyContainer.rounded(
+                                              border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 54, 53, 53),
+                                                width: 1.5,
+                                              ),
+                                              paddingAll: 4,
+                                              child: MyContainer.rounded(
+                                                  paddingAll: 0,
+                                                  height: 150,
+                                                  clipBehavior: Clip
+                                                      .antiAliasWithSaveLayer,
+                                                  child: Image.network(
+                                                    mainImageUrl,
+                                                    fit: BoxFit.cover,
+                                                    height: 150,
+                                                    width: 150,
+                                                  )),
+                                            ),
+                                            // Camera icon
+                                            Positioned(
+                                              bottom: MediaQuery.of(context)
+                                                      .size
+                                                      .height /
+                                                  40,
+                                              right: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  230,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.black54,
+                                                ),
+                                                padding: EdgeInsets.all(6.0),
+                                                child: Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  if (pickedMainImage == null &&
+                                      userData!.photoUrl.isEmpty &&
+                                      mainImageUrl == "")
+                                    Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Padding(
+                                        padding: MySpacing.x(20),
+                                        child: Stack(
+                                          children: [
+                                            // Image container
+                                            MyContainer.rounded(
+                                              border: Border.all(
+                                                color: Color.fromARGB(
+                                                    255, 54, 53, 53),
+                                                width: 1.5,
+                                              ),
+                                              paddingAll: 0,
+                                              child: MyContainer.rounded(
+                                                  paddingAll: 0,
+                                                  height: 120,
+                                                  clipBehavior: Clip
+                                                      .antiAliasWithSaveLayer,
+                                                  child: Image.asset(
+                                                      Images.avatars[0],
+                                                      fit: BoxFit.cover)),
+                                            ),
+                                            // Camera icon
+                                            Positioned(
+                                              bottom: 0,
+                                              right: 0,
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
+                                                  color: Colors.black54,
+                                                ),
+                                                padding: EdgeInsets.all(6.0),
+                                                child: Icon(
+                                                  Icons.camera_alt,
+                                                  color: Colors.white,
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
                                 ],
                               ),
                             ),
@@ -153,30 +304,24 @@ class _EditProfileState extends State<EditProfile>
                                 MySpacing.height(20),
                                 MyButton(
                                   onPressed: () async {
+                                    if (pickedMainImage != null) return;
                                     setState(() {
                                       loading = true;
                                     });
                                     // Get values from controllers
                                     String firstName = firstNameController.text;
                                     String lastName = lastNameController.text;
-
-                                    String? imageUrl = imageFile == null
+                                    String? imageUrl = mainImageUrl == ""
                                         ? userData?.photoUrl
-                                        : kIsWeb
-                                            ? await FirebaseWebHelper
-                                                .uploadWebImageToFirebase(
-                                                XFile(imageFile!.path),
-                                              )
-                                            : await ChatController()
-                                                .uploadImageToFirebase(
-                                                    File(imageFile!.path));
+                                        : mainImageUrl;
 
                                     kIsWeb
                                         ? await FirebaseWebHelper.onSavePressed(
                                             userData?.userId,
                                             firstName,
                                             lastName,
-                                            imageUrl)
+                                            imageUrl,
+                                          )
                                         : await onSavePressed(userData?.userId,
                                             firstName, lastName, imageUrl);
                                     setState(() {

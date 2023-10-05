@@ -29,6 +29,7 @@ import 'package:barrani/widgets/custom_pop_menu.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
@@ -51,11 +52,28 @@ class _LayoutState extends ConsumerState<Layout> {
   final contentTheme = AdminTheme.theme.contentTheme;
   String status = '';
 
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     status = '';
+  }
+
+  Future<void> _showNotification() async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('powr', 'powr.com',
+            channelDescription: 'powr.com',
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+    const NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+    );
+    await flutterLocalNotificationsPlugin.show(
+        133, null, 'you have new notification(s)', notificationDetails,
+        payload: 'item x');
   }
 
   @override
@@ -63,6 +81,16 @@ class _LayoutState extends ConsumerState<Layout> {
     var userNotifications = ref.watch(kIsWeb
         ? FirebaseWebHelper.userNotificationsStreamProvider
         : userNotificationsStreamProvider);
+
+    // check if notification time is less done 2 minutes and not read and show snackbar
+    var notification = notifications
+        .where((element) =>
+            DateTime.now().difference(element.createdAt).inMinutes <= 2)
+        .toList();
+    if (notification.isNotEmpty) {
+      _showNotification();
+    }
+
     return MyResponsive(builder: (BuildContext context, _, screenMT) {
       return GetBuilder(
           init: controller,

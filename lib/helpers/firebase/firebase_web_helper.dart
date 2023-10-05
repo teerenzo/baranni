@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:barrani/constants.dart';
 import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/config.dart';
+import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/models/ChatAppointment.dart';
 import 'package:barrani/models/ChatInvitation.dart';
 import 'package:barrani/models/GroupChat.dart';
@@ -19,8 +20,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:syncfusion_flutter_calendar/calendar.dart';
@@ -287,6 +288,16 @@ abstract class FirebaseWebHelper {
       'names': firstName,
       if (imageUrl != null)
         'profile_url': imageUrl, // Only update imageUrl if it's not null
+    }).then((value) async {
+      var userData_ = UserModal.fromJSON({
+        'email': userData!.email,
+        'names': firstName,
+        'userId': userData!.userId,
+        'profile_url': imageUrl,
+        'role': userData!.role
+      });
+      userData = userData_;
+      await LocalStorage.storeUserdata(userData_);
     });
   }
 
@@ -347,6 +358,7 @@ abstract class FirebaseWebHelper {
   // Logout function
   static Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
+    await LocalStorage.removeUserData();
     userData = null;
   }
 
@@ -657,6 +669,7 @@ abstract class FirebaseWebHelper {
       for (var element in querySnapshot.docs) {
         Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
         element_['id'] = element.id;
+        element_['createdDate'] = element_['createdDate'].toDate();
         zones_.add(PlaceZone.fromJson(element_));
       }
       zones = zones_;
@@ -668,21 +681,25 @@ abstract class FirebaseWebHelper {
       StreamProvider<List<NotificationModal>>((ref) {
     CollectionReference fireStoreQuery = FirebaseFirestore.instance
         .collection(fireBaseCollections.notifications);
+    try {
+      return fireStoreQuery.snapshots().map((querySnapshot) {
+        List<NotificationModal> notifications_ = [];
 
-    return fireStoreQuery.snapshots().map((querySnapshot) {
-      List<NotificationModal> notifications_ = [];
-
-      for (var element in querySnapshot.docs) {
-        Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
-        element_['id'] = element.id;
-
-        if (element_['userId'] == FirebaseAuth.instance.currentUser?.uid) {
-          notifications_.add(NotificationModal.fromJson(element_));
+        for (var element in querySnapshot.docs) {
+          Map<String, dynamic> element_ =
+              element.data() as Map<String, dynamic>;
+          element_['id'] = element.id;
+          if (element_['userId'] == userData!.userId) {
+            notifications_.add(NotificationModal.fromJson(element_));
+          }
         }
-      }
-      notifications = notifications_;
-      return notifications_;
-    });
+        notifications = notifications_;
+        return notifications_;
+      });
+    } catch (e) {
+      print(e);
+      return Stream.value([]);
+    }
   });
 
   static Future deleteNotification(String id) async {
@@ -690,6 +707,15 @@ abstract class FirebaseWebHelper {
         .collection(fireBaseCollections.notifications)
         .doc(id)
         .delete();
+  }
+
+  static Future readNotification(String id) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.notifications)
+        .doc(id)
+        .update({
+      'isRead': true,
+    });
   }
 
   static Future addProduct(Map<String, dynamic> data) async {
@@ -721,5 +747,13 @@ abstract class FirebaseWebHelper {
       return null;
     }
     return await reference.getDownloadURL();
+  }
+
+  static Future<void> addZone(String name) async {
+    await FirebaseFirestore.instance.collection(fireBaseCollections.zones).add({
+      'name': name,
+      'userId': userData!.userId,
+      'createdDate': DateTime.now(),
+    });
   }
 }

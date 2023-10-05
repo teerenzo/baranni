@@ -102,6 +102,13 @@ class _RegisterState extends ConsumerState<Register>
                       TextFormField(
                         controller: _invitationCodeController,
                         keyboardType: TextInputType.emailAddress,
+                        onChanged: (value) {
+                          if (authenticationProvider.isSubmitted) {
+                            ref
+                                .read(authProvider.notifier)
+                                .validateInvitation(value);
+                          }
+                        },
                         decoration: InputDecoration(
                           labelText: "Invitation Code",
                           labelStyle: MyTextStyle.bodySmall(xMuted: true),
@@ -132,6 +139,13 @@ class _RegisterState extends ConsumerState<Register>
                       TextFormField(
                         controller: _emailController,
                         keyboardType: TextInputType.emailAddress,
+                        onChanged: (value) {
+                          if (authenticationProvider.isSubmitted) {
+                            ref
+                                .read(authProvider.notifier)
+                                .validateEmail(value);
+                          }
+                        },
                         decoration: InputDecoration(
                           labelText: "Email Address",
                           labelStyle: MyTextStyle.bodySmall(xMuted: true),
@@ -160,6 +174,13 @@ class _RegisterState extends ConsumerState<Register>
                         controller: _passwordController,
                         keyboardType: TextInputType.visiblePassword,
                         obscureText: !ref.watch(authProvider).showPassword,
+                        onChanged: (value) {
+                          if (authenticationProvider.isSubmitted) {
+                            ref
+                                .read(authProvider.notifier)
+                                .validatePassword(value);
+                          }
+                        },
                         decoration: InputDecoration(
                             labelText: "Password",
                             labelStyle: MyTextStyle.bodySmall(xMuted: true),

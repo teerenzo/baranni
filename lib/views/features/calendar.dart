@@ -3,10 +3,13 @@ import 'package:barrani/controller/features/calendar/calendar_controller.dart';
 import 'package:barrani/global_functions.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
+import 'package:barrani/helpers/navigator_helper.dart';
+import 'package:barrani/helpers/theme/app_style.dart';
 import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
+import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_card.dart';
 import 'package:barrani/helpers/widgets/my_responsiv.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
@@ -39,11 +42,14 @@ class Calender extends ConsumerStatefulWidget {
 class _CalenderState extends ConsumerState<Calender> with UIMixin {
   final CalendarController calendarController = CalendarController();
   PlaceZone? activeZone;
+  bool isLoading = false;
+  List<Appointment> calendarAppointments = [];
 
   List<Appointment> filterAppointments(List<Appointment> appointments) {
     List<Appointment> filteredAppointments = appointments.where((element) {
-      bool isInZone =
-          activeZone == null ? true : element.location == activeZone?.id;
+      bool isInZone = activeZone == null
+          ? widget.isMyCalendar
+          : element.location == activeZone?.id;
       bool isInviter = isUserAppointmentSender(element);
       bool isInvited =
           isUserInvitedToAppointment(element) && !widget.isMyCalendar;
@@ -66,6 +72,17 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
     var appointmentStream = ref.watch(kIsWeb
         ? FirebaseWebHelper.allAppointmentsStreamProvider
         : allAppointmentsStreamProvider);
+    var zonesStream = ref.watch(kIsWeb
+        ? FirebaseWebHelper.allZonesStreamProvider
+        : allZonesStreamProvider);
+
+    zonesStream.whenData((value) {
+      if (!widget.isMyCalendar && activeZone == null) {
+        setState(() {
+          activeZone = value.first;
+        });
+      }
+    });
 
     return Layout(
       child: Column(
@@ -120,6 +137,31 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                           ),
                         ),
                       ),
+                    SizedBox(
+                      width: 20,
+                    ),
+                    MyButton(
+                      onPressed: () =>
+                          NavigatorHelper.pushNamed('/zone/manage'),
+                      elevation: 0,
+                      padding: MySpacing.xy(20, 16),
+                      backgroundColor: contentTheme.primary,
+                      borderRadiusAll: AppStyle.buttonRadius.medium,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.location_city,
+                            color: Color(0xffffffff),
+                          ),
+                          MySpacing.width(8),
+                          MyText.labelMedium(
+                            'Manage Zones',
+                            color: contentTheme.onPrimary,
+                          ),
+                        ],
+                      ),
+                    ),
                     if (!screenMT.isMobile)
                       Expanded(
                         flex: 3,
@@ -154,6 +196,7 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                   height: 700,
                   child: appointmentStream.whenData(
                     (value) {
+                      var appointments = value;
                       return SfCalendar(
                         key: UniqueKey(),
                         view: widget.isMyCalendar
@@ -165,7 +208,8 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                           CalendarView.month,
                         ],
                         controller: calendarController,
-                        dataSource: DataSource(filterAppointments(value)),
+                        dataSource:
+                            DataSource(filterAppointments(appointments)),
                         allowDragAndDrop: false,
                         monthViewSettings: const MonthViewSettings(
                           showAgenda: true,
@@ -178,7 +222,10 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                             } else {
                               final DateTime pickedDate =
                                   calendarTapDetails.date!;
-                              if (isAppointmentExist(pickedDate)) {
+                              // if (isAppointmentExist(pickedDate)) {
+                              //   return;
+                              // }
+                              if (widget.isMyCalendar) {
                                 return;
                               }
                               if (type.isMobile) {
@@ -190,6 +237,12 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                     return AppointmentDialog(
                                       isMobile: type.isMobile,
                                       startDate: pickedDate,
+                                      zone: activeZone,
+                                      onSave: (zone) {
+                                        setState(() {
+                                          // activeZone = zone;
+                                        });
+                                      },
                                     );
                                   },
                                 );
@@ -204,6 +257,12 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                           content: AppointmentDialog(
                                             isMobile: type.isMobile,
                                             startDate: pickedDate,
+                                            zone: activeZone,
+                                            onSave: (zone) {
+                                              setState(() {
+                                                activeZone = zone;
+                                              });
+                                            },
                                           ),
                                         );
                                       },

@@ -21,6 +21,7 @@ import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:lucide_icons/lucide_icons.dart';
+import 'package:one_context/one_context.dart';
 import 'package:provider/provider.dart';
 import 'notification_popUp.dart';
 
@@ -40,6 +41,42 @@ class _TopBarState extends State<TopBar>
 
   @override
   Widget build(BuildContext context) {
+    Widget buildNotification(String title, String description) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          MyText.labelLarge(
+            title,
+            color: Colors.white,
+          ),
+          MySpacing.height(4),
+          MyText.bodySmall(description, color: Colors.white)
+        ],
+      );
+    }
+
+    // check if notification time is less done 2 minutes and not read and show snackbar
+
+    if (notifications.isNotEmpty) {
+      notifications.forEach((element) async {
+        if (!element.isRead) {
+          OneContext().showSnackBar(
+            builder: (_) => SnackBar(
+              behavior: SnackBarBehavior.fixed,
+              backgroundColor: contentTheme.primary,
+              content: buildNotification(element.title, element.body),
+              action: SnackBarAction(
+                label: '',
+                onPressed: () {
+                  OneContext().pushNamed('/notifications');
+                },
+              ),
+            ),
+          );
+          await element.readyNotification();
+        }
+      });
+    }
     return MyCard(
       shadow: MyShadow(position: MyShadowPosition.bottomRight, elevation: 0.5),
       height: 60,
@@ -147,15 +184,23 @@ class _TopBarState extends State<TopBar>
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         MyContainer.rounded(
-                            paddingAll: 0,
-                            child: Image.asset(
-                              Images.avatars[0],
-                              height: 28,
-                              width: 28,
-                              fit: BoxFit.cover,
-                            )),
+                          paddingAll: 0,
+                          child: userData?.photoUrl == ""
+                              ? Image.asset(
+                                  Images.avatars[0],
+                                  height: 28,
+                                  width: 28,
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.network(
+                                  userData?.photoUrl ?? "",
+                                  height: 28,
+                                  width: 28,
+                                  fit: BoxFit.cover,
+                                ),
+                        ),
                         MySpacing.width(8),
-                        MyText.labelLarge("Den")
+                        MyText.labelLarge(userData?.names ?? "")
                       ],
                     ),
                   ),

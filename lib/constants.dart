@@ -93,8 +93,7 @@ const double kSize17 = 10;
 // const kIconBottomBarTM = 12;
 // const kIconBottomBarBM = 12;
 
-const String profileImageUrl =
-    'https://e7.pngegg.com/pngimages/84/165/png-clipart-united-states-avatar-organization-information-user-avatar-service-computer-wallpaper-thumbnail.png';
+const String profileImageUrl = '';
 
 // //Margins
 const double kMg90 = 50.0;

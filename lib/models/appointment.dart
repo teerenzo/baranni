@@ -16,8 +16,9 @@ Appointment fromMap(Map<String, dynamic> p) {
     endTime: kIsWeb ? eT.toDate() : p['endTime'],
     location: p['location'],
     color: Colors.green,
-    subject: p['subject'],
-    notes: p['notes'],
+    subject: p['notes'] ?? "",
+    notes: p['subject'],
+    recurrenceId: p['recurrenceId'],
   );
 }
 
@@ -26,7 +27,8 @@ Map<String, dynamic> toMap(Appointment p) {
     'startTime': p.startTime,
     'endTime': p.endTime,
     'location': p.location,
-    'subject': p.subject,
-    'notes': p.notes,
+    'subject': p.notes,
+    'notes': p.subject,
+    'recurrenceId': p.recurrenceId,
   };
 }

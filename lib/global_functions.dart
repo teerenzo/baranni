@@ -255,6 +255,11 @@ List<Product> sortByDate(List<Product> products) {
   return products;
 }
 
+List<PlaceZone> sortByDateZones(List<PlaceZone> zones) {
+  zones.sort((a, b) => b.createdDate!.compareTo(a.createdDate!));
+  return zones;
+}
+
 Future<String> downloadAndSaveFile(String url, String fileName) async {
   final Directory directory = await getApplicationDocumentsDirectory();
   final String filePath = '${directory.path}/$fileName';

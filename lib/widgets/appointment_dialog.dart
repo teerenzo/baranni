@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:barrani/app_constant.dart';
 import 'package:barrani/constants.dart';
@@ -34,10 +35,14 @@ import 'package:image_picker/image_picker.dart';
 class AppointmentDialog extends ConsumerStatefulWidget {
   final bool isMobile;
   final DateTime startDate;
+  final PlaceZone? zone;
+  final Function(PlaceZone)? onSave;
   const AppointmentDialog({
     super.key,
     required this.isMobile,
     required this.startDate,
+    this.zone,
+    this.onSave,
   });
 
   @override
@@ -54,7 +59,8 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
   PlaceZone? placeZone;
   XFile? thumbNail;
   String description = '';
-  File? image;
+  XFile? pickedImage;
+  String imageUrl = "";
   Uint8List? webImage;
 
   void modifyInvites(UserModal user) {
@@ -78,14 +84,17 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
   }
 
   Future<void> handleSubmit() async {
+    if (pickedImage != null) {
+      return;
+    }
     setState(() {
       isSubmitted = true;
     });
     if (validateTime() != null ||
         validateZone() != null ||
         invites.isEmpty ||
-        isAppointmentExist(widget.startDate.applied(startTime)) ||
-        isAppointmentExist(widget.startDate.applied(endTime)) ||
+        // isAppointmentExist(widget.startDate.applied(startTime)) ||
+        // isAppointmentExist(widget.startDate.applied(endTime)) ||
         validateDescription(description) != null) {
       return;
     }
@@ -94,20 +103,13 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     });
 
     try {
-      // var imageUrl = await uploadThumbnail(image!);
-      // if (imageUrl == null) {
-      //   setState(() {
-      //     isSubmitting = false;
-      //   });
-      //   return;
-      // }
-
       Appointment p = Appointment(
         startTime: widget.startDate.applied(startTime),
         endTime: widget.startDate.applied(endTime),
         location: placeZone!.id,
-        subject: placeZone!.name,
-        notes: description,
+        notes: placeZone!.name,
+        subject: description,
+        recurrenceId: imageUrl,
       );
       Map<String, dynamic> data = toMap(p);
       invites.add(userData!);
@@ -137,6 +139,10 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
               user.userId,
             );
           });
+
+          setState(() {
+            isSubmitted = false;
+          });
         }
       } else {
         String pId = await addAppointment(data);
@@ -154,11 +160,17 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
             );
           });
         }
+        setState(() {
+          isSubmitted = false;
+        });
       }
       setState(() {
         isSubmitting = false;
       });
-      Navigator.pop(context);
+      Timer(Duration(milliseconds: 500), () {
+        widget.onSave!(placeZone!);
+        Navigator.pop(context);
+      });
     } catch (error) {}
   }
 
@@ -196,25 +208,27 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     });
   }
 
-  Future<void> myImagePicker({
-    required int imageSize,
-  }) async {
-    final XFile? pickedFile = await myPickedFile(
-      imageSize: imageSize,
-    );
-    if (pickedFile != null) {
-      if (kIsWeb) {
-        webImage = await pickedFile.readAsBytes();
-      } else {
-        image = await myImportedImg(
-          pickedFile: pickedFile,
-          imageSize: imageSize,
-        );
+  Future handleUploadImage() async {
+    ImagePicker picker = ImagePicker();
+    await picker.pickImage(source: ImageSource.gallery).then((xFile) async {
+      if (xFile != null) {
+        setState(() {
+          imageUrl = '';
+          pickedImage = xFile;
+        });
+        List<int> data = await xFile.readAsBytes();
+        String path = 'products';
+        String? imgUrl = kIsWeb
+            ? await FirebaseWebHelper.uploadFile(data, path)
+            : await uploadImage(data, path);
+        if (imgUrl != null) {
+          setState(() {
+            pickedImage = null;
+            imageUrl = imgUrl;
+          });
+        }
       }
-      setState(() {});
-    } else {
-      // importation error
-    }
+    });
   }
 
   @override
@@ -228,6 +242,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
       hour: widget.startDate.hour + 2,
       minute: widget.startDate.minute,
     );
+    placeZone = widget.zone;
   }
 
   @override
@@ -241,7 +256,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     return SafeArea(
       child: Container(
         width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
-        height: widget.isMobile ? MediaQuery.of(context).size.height : 760,
+        height: widget.isMobile ? MediaQuery.of(context).size.height : 800,
         padding: EdgeInsets.only(
           left: widget.isMobile ? 16 : 0,
           right: widget.isMobile ? 16 : 0,
@@ -326,13 +341,16 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                           loading: () => Center(
                             child: CircularProgressIndicator(),
                           ),
-                          error: (error, stack) => MyText.bodyMedium(
-                            'Error loading zones',
-                            fontWeight: 600,
-                            muted: true,
-                            color: kAlertColor,
-                            textAlign: TextAlign.start,
-                          ),
+                          error: (error, stack) {
+                            print(error);
+                            return MyText.bodyMedium(
+                              'Error loading zones',
+                              fontWeight: 600,
+                              muted: true,
+                              color: kAlertColor,
+                              textAlign: TextAlign.start,
+                            );
+                          },
                           data: (Widget appointmentData) {
                             return appointmentData;
                           },
@@ -360,48 +378,105 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                       muted: true,
                       textAlign: TextAlign.start,
                     ),
-                    MySpacing.width(16),
+                    MySpacing.width(20),
                     MyButton.outlined(
-                      onPressed: () {
-                        myImagePicker(
-                          imageSize: 1000,
-                        );
+                      onPressed: () async {
+                        if (pickedImage != null) return;
+                        await handleUploadImage();
                       },
-                      borderColor: image != null
+                      borderColor: imageUrl != "" || pickedImage != null
                           ? Colors.transparent
                           : contentTheme.secondary,
-                      padding:
-                          image != null ? MySpacing.zero : MySpacing.xy(16, 16),
-                      child: image != null
-                          ? Image(
-                              image: FileImage(image!),
-                              width: 50,
+                      padding: imageUrl != "" || pickedImage != null
+                          ? MySpacing.zero
+                          : MySpacing.xy(16, 16),
+                      child: imageUrl != ""
+                          ? Stack(
+                              alignment: Alignment.topRight,
+                              children: [
+                                Image.network(imageUrl, width: 60),
+                                Positioned(
+                                    child: InkWell(
+                                  onTap: () {
+                                    deleteImage(imageUrl).then((value) {
+                                      setState(() {
+                                        pickedImage = null;
+                                        imageUrl = "";
+                                      });
+                                    });
+                                  },
+                                  child: Icon(
+                                    Icons.close_rounded,
+                                    color: Colors.white,
+                                  ),
+                                ))
+                              ],
                             )
-                          : MyText.labelMedium(
-                              'Select Thumbnail',
-                              fontWeight: 600,
-                            ),
+                          : pickedImage != null
+                              ? Stack(
+                                  alignment: Alignment.center,
+                                  children: [
+                                    kIsWeb
+                                        ? Image.network(
+                                            pickedImage?.path ?? "",
+                                            width: 50,
+                                          )
+                                        : Image.file(
+                                            File(pickedImage?.path ?? ""),
+                                            width: 50,
+                                          ),
+                                    SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ),
+                                    ),
+                                  ],
+                                )
+                              : MyText.labelMedium(
+                                  'Select Thumbnail',
+                                  fontWeight: 600,
+                                ),
                     )
                   ],
                 ),
-                MySpacing.height(16),
-                if (isSubmitted && image == null)
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: MyText.bodyMedium(
-                      'thumbnail is required',
-                      fontWeight: 600,
-                      muted: true,
-                      color: kAlertColor,
-                      textAlign: TextAlign.start,
-                    ),
-                  ),
-                if (isSubmitted && image == null) MySpacing.height(16),
 
+                MySpacing.height(16),
                 Container(
                   alignment: Alignment.centerLeft,
                   child: MyText.bodyMedium(
                     "Invites",
+                    fontWeight: 600,
+                    muted: true,
+                    textAlign: TextAlign.start,
+                  ),
+                ),
+
+                MySpacing.height(16),
+                SizedBox(
+                  height: invites.isEmpty ? 30 : 90,
+                  child: invites.isNotEmpty
+                      ? ListView(
+                          scrollDirection: Axis.horizontal,
+                          children: invites
+                              .where((element) =>
+                                  element.userId != userData?.userId)
+                              .map((e) => InviteAvatar(
+                                    user: e,
+                                    isInvited: false,
+                                    isMobile: widget.isMobile,
+                                    onTap: () {},
+                                  ))
+                              .toList(),
+                        )
+                      : MyText.bodyMedium('No selected Invites'),
+                ),
+
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: MyText.bodyMedium(
+                    "Influencers",
                     fontWeight: 600,
                     muted: true,
                     textAlign: TextAlign.start,
@@ -575,16 +650,16 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                               ],
                             ),
                           ),
-                          if (isAppointmentExist(
-                                  widget.startDate.applied(startTime)) &&
-                              isSubmitted)
-                            MyText.bodyMedium(
-                              'This Time is occupied',
-                              fontWeight: 600,
-                              muted: true,
-                              color: kAlertColor,
-                              textAlign: TextAlign.start,
-                            ),
+                          // if (isAppointmentExist(
+                          //         widget.startDate.applied(startTime)) &&
+                          //     isSubmitted)
+                          //   MyText.bodyMedium(
+                          //     'This Time is occupied',
+                          //     fontWeight: 600,
+                          //     muted: true,
+                          //     color: kAlertColor,
+                          //     textAlign: TextAlign.start,
+                          //   ),
                         ],
                       ),
                     ),
@@ -645,16 +720,16 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                               ],
                             ),
                           ),
-                          if (isAppointmentExist(
-                                  widget.startDate.applied(endTime)) &&
-                              isSubmitted)
-                            MyText.bodyMedium(
-                              'This Time is occupied',
-                              fontWeight: 600,
-                              muted: true,
-                              color: kAlertColor,
-                              textAlign: TextAlign.start,
-                            ),
+                          // if (isAppointmentExist(
+                          //         widget.startDate.applied(endTime)) &&
+                          //     isSubmitted)
+                          //   MyText.bodyMedium(
+                          //     'This Time is occupied',
+                          //     fontWeight: 600,
+                          //     muted: true,
+                          //     color: kAlertColor,
+                          //     textAlign: TextAlign.start,
+                          //   ),
                         ],
                       ),
                     ),
