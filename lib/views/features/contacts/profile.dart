@@ -3,6 +3,7 @@ import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
+import 'package:barrani/helpers/theme/app_notifier.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
@@ -37,10 +38,12 @@ class ProfilePage extends ConsumerStatefulWidget {
 class _ProfilePageState extends ConsumerState<ProfilePage>
     with SingleTickerProviderStateMixin, UIMixin {
   late ProfileController controller;
+  late AppNotifier themeNotifier;
 
   @override
   void initState() {
     super.initState();
+    themeNotifier = ref.read(appNotifierProvider);
   }
 
   @override
