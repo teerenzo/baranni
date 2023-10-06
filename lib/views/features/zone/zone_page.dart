@@ -130,15 +130,6 @@ class _ZonePageState extends ConsumerState<ZonePage>
                                             Padding(
                                               padding: MySpacing.all(16),
                                               child: Column(children: [
-                                                SizedBox(
-                                                  width: double.infinity,
-                                                  child: MyText.bodyMedium(
-                                                    "Zone Name",
-                                                    fontWeight: 600,
-                                                    muted: true,
-                                                    textAlign: TextAlign.start,
-                                                  ),
-                                                ),
                                                 TextFormField(
                                                   maxLines: 1,
                                                   controller: _nameController,
@@ -323,22 +314,19 @@ class MyData extends DataTableSource with UIMixin {
             child: Row(
               children: [
                 MyContainer.bordered(
-                  onTap: () => {},
+                  onTap: () async => {
+                    await FirebaseWebHelper.changeZoneStatus(
+                        data[index].id,
+                        data[index].show != null && data[index].show != false
+                            ? false
+                            : true),
+                  },
                   padding: MySpacing.xy(6, 6),
                   borderColor: contentTheme.primary.withAlpha(40),
                   child: Icon(
-                    LucideIcons.edit2,
-                    size: 12,
-                    color: contentTheme.primary,
-                  ),
-                ),
-                MySpacing.width(12),
-                MyContainer.bordered(
-                  onTap: () => {},
-                  padding: MySpacing.xy(6, 6),
-                  borderColor: contentTheme.primary.withAlpha(40),
-                  child: Icon(
-                    LucideIcons.trash2,
+                    (data[index].show != null && data[index].show != false)
+                        ? LucideIcons.eye
+                        : LucideIcons.eyeOff,
                     size: 12,
                     color: contentTheme.primary,
                   ),
