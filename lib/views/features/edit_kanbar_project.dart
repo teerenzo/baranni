@@ -1,41 +1,29 @@
 import 'dart:io';
-
-import 'package:barrani/app_constant.dart';
-import 'package:barrani/constants.dart';
-import 'package:barrani/controller/features/kanban_add_task_controller.dart';
 import 'package:barrani/global_functions.dart';
 import 'package:barrani/global_variables.dart';
-import 'package:barrani/global_variables.dart';
-import 'package:barrani/global_variables.dart';
-import 'package:barrani/helpers/extensions/date_time_extention.dart';
 import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
+import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_card.dart';
-import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
 import 'package:barrani/helpers/widgets/my_flex_item.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
 import 'package:barrani/helpers/widgets/responsive.dart';
-import 'package:barrani/models/kanbanProject.dart';
-import 'package:barrani/models/user.dart';
 import 'package:barrani/views/layouts/layout.dart';
-import 'package:barrani/widgets/appointment_dialog.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
@@ -106,7 +94,8 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
     setState(() {
       loading = true;
     });
-    await FirebaseWebHelper.updateProject(projectId, title, description, image);
+    await FirebaseWebHelper.updateProject(projectId, title, description,
+        (image == null || image.isEmpty) ? imageUrl : image);
     setState(() {
       loading = false;
     });
@@ -114,7 +103,7 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
     // Navigator.popAndPushNamed(context, '/kanban');
     showMessage(
       context: context,
-      message: 'Project created sussessfully!',
+      message: 'Project updated sussessfully!',
       backgroundColor: contentTheme.success,
     );
     Navigator.pop(context);
@@ -127,25 +116,18 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
 
   @override
   Widget build(BuildContext context) {
-// get parameters
-    final Map<String, KanbanProject> args = ModalRoute.of(context)!
-        .settings
-        .arguments as Map<String, KanbanProject>;
-
     setState(() {
       imageUrl =
-          args['project']!.thumbnail != null ? args['project']!.thumbnail! : "";
-      projectId = args['project']!.id!;
-      title = title.isEmpty ? args['project']!.projectName : title;
-      description =
-          description.isEmpty ? args['project']!.description : description;
+          imageUrl.isEmpty ? LocalStorage.getProjectImageUrl()! : imageUrl;
+      projectId = LocalStorage.getProjectId()!;
+      title = title.isEmpty ? LocalStorage.getProjectName(projectId)! : title;
+      description = description.isEmpty
+          ? LocalStorage.getProjectDescription()!
+          : description;
     });
 
-    print(imageUrl);
+    ref.watch(themesProvider);
 
-    var currentUsersStream = ref.watch(kIsWeb
-        ? FirebaseWebHelper.allUsersStreamProvider
-        : allUsersStreamProvider);
     return Layout(
       child: Column(
         children: [
@@ -155,7 +137,7 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 MyText.titleMedium(
-                  args['project']!.projectName,
+                  "Edit Project",
                   fontSize: 18,
                   fontWeight: 600,
                 ),
@@ -204,7 +186,6 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
                             children: [
                               Row(
                                 children: [
-                                  MySpacing.width(20),
                                   if (imageUrl != "" &&
                                       pickedImage == null &&
                                       image == "")
@@ -323,10 +304,7 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
                                     ),
                                     MySpacing.height(8),
                                     TextFormField(
-                                      initialValue:
-                                          args['project']!.projectName != null
-                                              ? args['project']!.projectName
-                                              : "",
+                                      initialValue: title,
                                       onChanged: (value) {
                                         setState(() {
                                           title = value;
@@ -338,8 +316,6 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
                                         hintStyle:
                                             MyTextStyle.bodySmall(xMuted: true),
                                         border: outlineInputBorder,
-                                        enabledBorder: outlineInputBorder,
-                                        focusedBorder: focusedInputBorder,
                                         contentPadding: MySpacing.all(16),
                                         isCollapsed: true,
                                         floatingLabelBehavior:
@@ -355,7 +331,7 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
                               ),
                               MySpacing.height(8),
                               TextFormField(
-                                initialValue: args['project']!.description,
+                                initialValue: description,
                                 onChanged: (value) {
                                   setState(() {
                                     description = value;
@@ -368,8 +344,6 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
                                   hintStyle:
                                       MyTextStyle.bodySmall(xMuted: true),
                                   border: outlineInputBorder,
-                                  enabledBorder: outlineInputBorder,
-                                  focusedBorder: focusedInputBorder,
                                   contentPadding: MySpacing.all(16),
                                   isCollapsed: true,
                                   floatingLabelBehavior:
@@ -380,15 +354,28 @@ class _EditKanbanProjectState extends ConsumerState<EditKanbanProject>
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  MyButton.text(
+                                  MyButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    elevation: 0,
                                     padding: MySpacing.xy(20, 16),
-                                    splashColor:
-                                        contentTheme.secondary.withOpacity(0.1),
-                                    child: MyText.bodySmall(
-                                      Trans('cancel').tr,
+                                    backgroundColor: contentTheme.secondary,
+                                    borderRadiusAll:
+                                        AppStyle.buttonRadius.medium,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          LucideIcons.x,
+                                          size: 16,
+                                          color: contentTheme.light,
+                                        ),
+                                        MySpacing.width(8),
+                                        MyText.bodySmall(
+                                          'Cancel',
+                                          color: contentTheme.onSecondary,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   MySpacing.width(12),

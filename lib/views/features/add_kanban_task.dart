@@ -358,7 +358,7 @@ class _AddTaskState extends ConsumerState<AddTask>
                               padding:
                                   const EdgeInsets.only(top: 8.0, bottom: 8.0),
                               child: MyText.labelMedium(
-                                Trans("Task Type").tr.capitalizeWords,
+                                Trans("Priority").tr.capitalizeWords,
                               ),
                             ),
                             InkWell(
@@ -433,7 +433,10 @@ class _AddTaskState extends ConsumerState<AddTask>
                                     width: double.infinity,
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: theme.colorScheme.primary,
+                                        width: 1,
+                                        strokeAlign: 0,
+                                        color: theme.colorScheme.onBackground
+                                            .withOpacity(0.3),
                                       ),
                                       borderRadius: BorderRadius.circular(4),
                                     ),
@@ -509,7 +512,12 @@ class _AddTaskState extends ConsumerState<AddTask>
                                             }
                                           }
                                         },
-                                        borderColor: theme.colorScheme.primary,
+                                        border: Border.all(
+                                          width: 1,
+                                          strokeAlign: 0,
+                                          color: theme.colorScheme.onBackground
+                                              .withOpacity(0.3),
+                                        ),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -586,7 +594,12 @@ class _AddTaskState extends ConsumerState<AddTask>
                                             }
                                           }
                                         },
-                                        borderColor: theme.colorScheme.primary,
+                                        border: Border.all(
+                                          width: 1,
+                                          strokeAlign: 0,
+                                          color: theme.colorScheme.onBackground
+                                              .withOpacity(0.3),
+                                        ),
                                         child: Row(
                                           mainAxisAlignment:
                                               MainAxisAlignment.start,
@@ -682,7 +695,9 @@ class _AddTaskState extends ConsumerState<AddTask>
                               mainAxisAlignment: MainAxisAlignment.end,
                               children: [
                                 MyButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    Navigator.pop(context);
+                                  },
                                   elevation: 0,
                                   padding: MySpacing.xy(20, 16),
                                   backgroundColor: contentTheme.secondary,

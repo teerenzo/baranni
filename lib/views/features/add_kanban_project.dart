@@ -13,6 +13,7 @@ import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
 import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
@@ -59,41 +60,28 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
   XFile? pickedImage;
   String imageUrl = "";
   Uint8List? webImage;
+  String titleError = '';
+  String descriptionError = '';
 
   bool isInvited(UserModal user) {
     return invites.where((element) => element.userId == user.userId).isNotEmpty;
   }
 
-  Future<void> handleSubmit() async {
-    if (pickedImage != null) {
-      return;
-    }
-    setState(() {
-      isSubmitted = true;
-    });
-    if (validateDescription(description) != null) {
-      return;
-    }
-
-    setState(() {
-      isSubmitting = true;
-    });
-
-    await FirebaseWebHelper.addProject(
-        title, description, imageUrl == "" ? null : imageUrl);
-
-    setState(() {
-      isSubmitting = false;
-    });
-    Navigator.of(context).pop();
-  }
-
-  String? validateDescription(String value) {
+  String? validateTitle(String value) {
     if (value.isEmpty) {
-      return 'Description is required';
-    } else if (value.length > 300) {
-      return 'Description must not be more than 300 characters';
+      setState(() {
+        titleError = 'Project name is required';
+      });
+      return titleError;
     }
+
+    if (value.isNotEmpty) {
+      setState(() {
+        titleError = '';
+      });
+      return null;
+    }
+
     return null;
   }
 
@@ -128,12 +116,19 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
   bool loading = false;
 
   Future<void> submitToFirestore() async {
+    if (validateTitle(title) != null) {
+      return;
+    }
+
+    if (pickedImage != null) {
+      return;
+    }
     setState(() {
       loading = true;
     });
 
     await FirebaseWebHelper.addProject(
-        _projectName.text, _description.text, imageUrl == "" ? null : imageUrl);
+        _projectName.text, _description.text, imageUrl == "" ? '' : imageUrl);
 
     setState(() {
       loading = false;
@@ -155,10 +150,7 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
 
   @override
   Widget build(BuildContext context) {
-    // var currentUsersStream = ref.watch(allUsersStreamProvider);
-    var currentUsersStream = ref.watch(kIsWeb
-        ? FirebaseWebHelper.allUsersStreamProvider
-        : allUsersStreamProvider);
+    ref.watch(themesProvider);
     return Layout(
       child: Column(
         children: [
@@ -220,74 +212,6 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // widget.isEditing
-                                  //     ? MyButton.outlined(
-                                  //         onPressed: () async {
-                                  //           if (pickedImage != null) return;
-                                  //           await handleUploadImage();
-                                  //         },
-                                  //         borderColor: imageUrl != "" || pickedImage != null
-                                  //             ? Colors.transparent
-                                  //             : contentTheme.secondary,
-                                  //         padding: imageUrl != "" || pickedImage != null
-                                  //             ? MySpacing.zero
-                                  //             : EdgeInsets.all(0),
-                                  //         child: imageUrl != ""
-                                  //             ? Stack(
-                                  //                 alignment: Alignment.topRight,
-                                  //                 children: [
-                                  //                   Image.network(imageUrl, width: 60),
-                                  //                   Positioned(
-                                  //                       child: InkWell(
-                                  //                     onTap: () {
-                                  //                       deleteImage(imageUrl).then((value) {
-                                  //                         setState(() {
-                                  //                           pickedImage = null;
-                                  //                           imageUrl = "";
-                                  //                         });
-                                  //                       });
-                                  //                     },
-                                  //                     child: Icon(
-                                  //                       Icons.close_rounded,
-                                  //                       color: Colors.white,
-                                  //                     ),
-                                  //                   ))
-                                  //                 ],
-                                  //               )
-                                  //             : pickedImage != null
-                                  //                 ? Stack(
-                                  //                     alignment: Alignment.center,
-                                  //                     children: [
-                                  //                       kIsWeb
-                                  //                           ? Image.network(
-                                  //                               pickedImage?.path ?? "",
-                                  //                               width: 50,
-                                  //                             )
-                                  //                           : Image.file(
-                                  //                               File(pickedImage?.path ?? ""),
-                                  //                               width: 50,
-                                  //                             ),
-                                  //                       SizedBox(
-                                  //                         height: 20,
-                                  //                         width: 20,
-                                  //                         child: CircularProgressIndicator(
-                                  //                           strokeWidth: 2,
-                                  //                         ),
-                                  //                       ),
-                                  //                     ],
-                                  //                   )
-                                  //                 : IconButton(
-                                  //                     onPressed: () async {
-                                  //                       if (pickedImage != null) return;
-                                  //                       await handleUploadImage();
-                                  //                     },
-                                  //                     icon: Icon(
-                                  //                       Icons.add_a_photo_rounded,
-                                  //                       color: contentTheme.secondary,
-                                  //                     ),
-                                  //                   ),
-                                  //       )
-                                  //     :
                                   MyButton.outlined(
                                     onPressed: () async {
                                       if (pickedImage != null) return;
@@ -370,14 +294,18 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                     MySpacing.height(8),
                                     TextFormField(
                                       controller: _projectName,
+                                      onChanged: (value) {
+                                        setState(() {
+                                          title = value;
+                                        });
+                                        validateTitle(value);
+                                      },
                                       keyboardType: TextInputType.name,
                                       decoration: InputDecoration(
                                         hintText: "eg: kanban",
                                         hintStyle:
                                             MyTextStyle.bodySmall(xMuted: true),
                                         border: outlineInputBorder,
-                                        enabledBorder: outlineInputBorder,
-                                        focusedBorder: focusedInputBorder,
                                         contentPadding: MySpacing.all(16),
                                         isCollapsed: true,
                                         floatingLabelBehavior:
@@ -387,6 +315,14 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                   ],
                                 ),
                               ),
+                              if (titleError.isNotEmpty)
+                                MyText.bodyMedium(
+                                  titleError,
+                                  fontWeight: 600,
+                                  muted: true,
+                                  color: kAlertColor,
+                                  textAlign: TextAlign.start,
+                                ),
                               MySpacing.height(25),
                               MyText.labelMedium(
                                 Trans("Description").tr,
@@ -396,6 +332,11 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                 // validator: controller.basicValidator
                                 //     .getValidation('description'),
                                 controller: _description,
+                                onChanged: (value) {
+                                  setState(() {
+                                    description = value;
+                                  });
+                                },
                                 keyboardType: TextInputType.multiline,
                                 maxLines: 3,
                                 decoration: InputDecoration(
@@ -403,8 +344,6 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                   hintStyle:
                                       MyTextStyle.bodySmall(xMuted: true),
                                   border: outlineInputBorder,
-                                  enabledBorder: outlineInputBorder,
-                                  focusedBorder: focusedInputBorder,
                                   contentPadding: MySpacing.all(16),
                                   isCollapsed: true,
                                   floatingLabelBehavior:
@@ -415,15 +354,28 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  MyButton.text(
+                                  MyButton(
                                     onPressed: () {
                                       Navigator.pop(context);
                                     },
+                                    elevation: 0,
                                     padding: MySpacing.xy(20, 16),
-                                    splashColor:
-                                        contentTheme.secondary.withOpacity(0.1),
-                                    child: MyText.bodySmall(
-                                      Trans('cancel').tr,
+                                    backgroundColor: contentTheme.secondary,
+                                    borderRadiusAll:
+                                        AppStyle.buttonRadius.medium,
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          LucideIcons.x,
+                                          size: 16,
+                                          color: contentTheme.light,
+                                        ),
+                                        MySpacing.width(8),
+                                        MyText.bodySmall(
+                                          'Cancel',
+                                          color: contentTheme.onSecondary,
+                                        ),
+                                      ],
                                     ),
                                   ),
                                   MySpacing.width(12),
