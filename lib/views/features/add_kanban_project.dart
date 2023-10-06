@@ -131,8 +131,10 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
     setState(() {
       loading = true;
     });
+
     await FirebaseWebHelper.addProject(
         _projectName.text, _description.text, imageUrl == "" ? null : imageUrl);
+
     setState(() {
       loading = false;
     });
@@ -304,7 +306,7 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                             alignment: Alignment.topRight,
                                             children: [
                                               Image.network(imageUrl,
-                                                  width: 60),
+                                                  width: 150),
                                               Positioned(
                                                   child: InkWell(
                                                 onTap: () {
@@ -331,13 +333,13 @@ class _AddKanbanProjectState extends ConsumerState<AddKanbanProject>
                                                       ? Image.network(
                                                           pickedImage?.path ??
                                                               "",
-                                                          width: 50,
+                                                          width: 150,
                                                         )
                                                       : Image.file(
                                                           File(pickedImage
                                                                   ?.path ??
                                                               ""),
-                                                          width: 50,
+                                                          width: 150,
                                                         ),
                                                   SizedBox(
                                                     height: 20,

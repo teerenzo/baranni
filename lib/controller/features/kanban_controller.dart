@@ -38,17 +38,12 @@ class KanBanController extends ChangeNotifier {
       debugPrint('Move $groupId:$fromIndex to $groupId:$toIndex');
     },
     onMoveGroupItemToGroup: (fromGroupId, fromIndex, toGroupId, toIndex) async {
-      print('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
-      debugPrint('Move $fromGroupId:$fromIndex to $toGroupId:$toIndex');
-
       // // Identify the moved task
       AppFlowyGroupData<dynamic> fromGroup = allGroups.firstWhere(
         (group) => group.id == toGroupId,
       );
 
       TextItem movedTask = fromGroup.items[toIndex] as TextItem;
-
-      print(movedTask.title);
 
       if (movedTask.kanbanProjectID != null &&
           movedTask.kanbanProjectID!.isNotEmpty) {
