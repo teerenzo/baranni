@@ -43,8 +43,7 @@ class _ProfilePageState extends ConsumerState<ProfilePage>
     ref.watch(kIsWeb
         ? FirebaseWebHelper.allUsersStreamProvider
         : allUsersStreamProvider);
-    final projects = ref
-        .watch(kIsWeb ? FirebaseWebHelper.projectsProvider : projectsProvider);
+    final projects = ref.watch(FirebaseWebHelper.projectsProvider);
 
     projects.when(
       data: (projects) {
