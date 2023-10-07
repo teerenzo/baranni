@@ -5,15 +5,14 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:barrani/helpers/theme/admin_theme.dart';
 import 'package:barrani/helpers/widgets/my.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
 import 'package:barrani/helpers/widgets/my_constant.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
-
-import 'theme_customizer.dart';
 
 class MaterialRadius {
   double xs, small, medium, large;
@@ -29,17 +28,15 @@ class ColorGroup {
 }
 
 class AppTheme {
-  static ThemeData theme = AppTheme.getThemeFromThemeMode();
+  static ThemeData theme = getTheme();
   static TextDirection textDirection = TextDirection.ltr;
 
-  static Color primaryColor = Color(0xff3874ff);
+  static Color primaryColor = Color(0xff006cea);
 
-  // static Color primaryColor = Color(0xff006784);
-
-  static ThemeData getThemeFromThemeMode() {
-    return ThemeCustomizer.instance.theme == ThemeMode.light
-        ? lightTheme
-        : darkTheme;
+  static ThemeData getTheme() {
+    final container = ProviderContainer();
+    final p = container.read(themesProvider);
+    return p == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
   }
 
   /// -------------------------- Light Theme  -------------------------------------------- ///
@@ -67,7 +64,7 @@ class AppTheme {
 
     /// Colorscheme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Color(0xff3874ff),
+      seedColor: Color(0xff3f97ff),
       // seedColor: Color(0xff2e87a6),
       brightness: Brightness.light,
     ),
@@ -144,13 +141,13 @@ class AppTheme {
     /// Brightness
 
     /// Scaffold and Background color
-    scaffoldBackgroundColor: Color(0xff262729),
+    scaffoldBackgroundColor: Color(0xff121212),
     canvasColor: Colors.transparent,
 
     primaryColor: Color(0xff4ddada),
 
     /// AppBar Theme
-    appBarTheme: AppBarTheme(backgroundColor: Color(0xff262729)),
+    appBarTheme: AppBarTheme(backgroundColor: Color(0xff121212)),
 
     /// Card Theme
     cardTheme: CardTheme(color: Color(0xff1b1b1c)),
@@ -158,9 +155,9 @@ class AppTheme {
 
     /// Colorscheme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Color(0xff3874ff),
+      seedColor: Color(0xff3f97ff),
       // seedColor: Color(0xff067070),
-      background: Color(0xff262729),
+      background: Color(0xff121212),
       onBackground: Color(0xFFD7D7D7),
       brightness: Brightness.dark,
     ),
@@ -237,7 +234,6 @@ class AppTheme {
 class AppStyle {
   static void init() {
     initMyStyle();
-    AdminTheme.setTheme();
   }
 
   static void changeMyTheme() {
@@ -306,7 +302,7 @@ class AppColors {
 
   static Color notificationErrorBGColor = Color(0xfffcd9df);
   static Color notificationErrorTextColor = Color(0xffFF3B0A);
-  static Color notificationErrorActionColor = Color(0xff3874ff);
+  static Color notificationErrorActionColor = Color(0xff3f97ff);
 
   // static Color notificationErrorActionColor = Color(0xff006784);
 

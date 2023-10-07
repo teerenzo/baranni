@@ -1,17 +1,17 @@
 import 'package:barrani/controller/layouts/auth_layout_controller.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/theme/admin_theme.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
 import 'package:barrani/helpers/widgets/my_flex_item.dart';
 import 'package:barrani/helpers/widgets/my_responsiv.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_blurhash/flutter_blurhash.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 
 class AuthLayout extends StatelessWidget {
   final Widget? child;
+  final contentTheme = AdminTheme.theme.contentTheme;
 
   final AuthLayoutController controller = AuthLayoutController();
 
@@ -47,39 +47,33 @@ class AuthLayout extends StatelessWidget {
 
   Widget largeScreen(BuildContext context) {
     return Scaffold(
-        key: controller.scaffoldKey,
-        backgroundColor: Colors.blue,
-        body: Stack(
-          children: [
-            const Center(
-              child: Opacity(
-                  opacity: 0.8,
-                  child: BlurHash(hash: "LDLz?TMI00%N00I=M{%M00Rj~qRP")),
-            ),
-            Container(
-              margin: MySpacing.top(100),
-              width: MediaQuery.of(context).size.width,
-              child: MyFlex(
-                wrapAlignment: WrapAlignment.center,
-                wrapCrossAlignment: WrapCrossAlignment.start,
-                runAlignment: WrapAlignment.center,
-                spacing: 0,
-                runSpacing: 0,
-                children: [
-                  MyFlexItem(
-                    sizes: "xxl-8 lg-8 md-9 sm-10",
-                    // sizes: "xxl-3 lg-4 md-6 sm-8",
-                    child: MyContainer(
-                      paddingAll: 0,
-                      color: AdminTheme.theme.contentTheme.background
-                          .withAlpha(230),
-                      child: child ?? Container(),
-                    ),
+      key: controller.scaffoldKey,
+      backgroundColor: theme.colorScheme.background,
+      body: Stack(
+        children: [
+          Container(
+            margin: MySpacing.top(100),
+            width: MediaQuery.of(context).size.width,
+            child: MyFlex(
+              wrapAlignment: WrapAlignment.center,
+              wrapCrossAlignment: WrapCrossAlignment.start,
+              runAlignment: WrapAlignment.center,
+              spacing: 0,
+              runSpacing: 0,
+              children: [
+                MyFlexItem(
+                  sizes: "xxl-8 lg-8 md-9 sm-10",
+                  // sizes: "xxl-3 lg-4 md-6 sm-8",
+                  child: MyContainer(
+                    paddingAll: 0,
+                    child: child ?? Container(),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ));
+          ),
+        ],
+      ),
+    );
   }
 }

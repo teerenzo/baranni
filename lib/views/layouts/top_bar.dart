@@ -4,10 +4,10 @@ import 'package:barrani/helpers/localizations/language.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
 import 'package:barrani/helpers/services/web_auth_services.dart';
 import 'package:barrani/helpers/storage/local_storage.dart';
-import 'package:barrani/helpers/theme/app_notifier.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/theme/theme_customizer.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
@@ -20,12 +20,12 @@ import 'package:barrani/widgets/custom_pop_menu.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:one_context/one_context.dart';
-import 'package:provider/provider.dart';
 import 'notification_popUp.dart';
 
-class TopBar extends StatefulWidget {
+class TopBar extends ConsumerStatefulWidget {
   const TopBar({
     super.key, // this.onMenuIconTap,
   });
@@ -34,13 +34,14 @@ class TopBar extends StatefulWidget {
   _TopBarState createState() => _TopBarState();
 }
 
-class _TopBarState extends State<TopBar>
+class _TopBarState extends ConsumerState<TopBar>
     with SingleTickerProviderStateMixin, UIMixin {
   Function? languageHideFn;
   String status = '';
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     Widget buildNotification(String title, String description) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,8 +55,6 @@ class _TopBarState extends State<TopBar>
         ],
       );
     }
-
-    // check if notification time is less done 2 minutes and not read and show snackbar
 
     if (notifications.isNotEmpty) {
       notifications.forEach((element) async {
@@ -91,7 +90,7 @@ class _TopBarState extends State<TopBar>
                 splashColor: theme.colorScheme.onBackground,
                 highlightColor: theme.colorScheme.onBackground,
                 onTap: () {
-                  ThemeCustomizer.toggleLeftBarCondensed();
+                  ref.read(themeProvider.notifier).toggleLeftBarCondensed();
                 },
                 child: Icon(
                   LucideIcons.menu,
@@ -106,13 +105,11 @@ class _TopBarState extends State<TopBar>
               children: [
                 InkWell(
                   onTap: () {
-                    ThemeCustomizer.setTheme(
-                        ThemeCustomizer.instance.theme == ThemeMode.dark
-                            ? ThemeMode.light
-                            : ThemeMode.dark);
+                    bool value = ref.read(themesProvider) == ThemeMode.light;
+                    ref.read(themesProvider.notifier).changeTheme(value);
                   },
                   child: Icon(
-                    ThemeCustomizer.instance.theme == ThemeMode.dark
+                    ref.watch(themesProvider) == ThemeMode.dark
                         ? FeatherIcons.sun
                         : FeatherIcons.moon,
                     size: 18,
@@ -185,7 +182,8 @@ class _TopBarState extends State<TopBar>
                       children: [
                         MyContainer.rounded(
                           paddingAll: 0,
-                          child: userData?.photoUrl == ""
+                          child: userData?.photoUrl == "" ||
+                                  userData?.photoUrl == null
                               ? Image.asset(
                                   Images.avatars[0],
                                   height: 28,
@@ -200,7 +198,10 @@ class _TopBarState extends State<TopBar>
                                 ),
                         ),
                         MySpacing.width(8),
-                        MyText.labelLarge(userData?.names ?? "")
+                        MyText.labelLarge(
+                          userData?.names ?? "",
+                          color: contentTheme.onBackground,
+                        )
                       ],
                     ),
                   ),
@@ -220,6 +221,7 @@ class _TopBarState extends State<TopBar>
     return MyContainer.bordered(
       padding: MySpacing.xy(8, 8),
       width: 125,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: Language.languages
@@ -230,24 +232,26 @@ class _TopBarState extends State<TopBar>
                   onPressed: () async {
                     languageHideFn?.call();
                     // Language.changeLanguage(language);
-                    await Provider.of<AppNotifier>(context, listen: false)
-                        .changeLanguage(language, notify: true);
                     ThemeCustomizer.notify();
                     setState(() {});
                   },
                   child: Row(
                     children: [
                       ClipRRect(
-                          clipBehavior: Clip.antiAliasWithSaveLayer,
-                          borderRadius: BorderRadius.circular(2),
-                          child: Image.asset(
-                            "assets/lang/${language.locale.languageCode}.jpg",
-                            width: 18,
-                            height: 14,
-                            fit: BoxFit.cover,
-                          )),
+                        clipBehavior: Clip.antiAliasWithSaveLayer,
+                        borderRadius: BorderRadius.circular(2),
+                        child: Image.asset(
+                          "assets/lang/${language.locale.languageCode}.jpg",
+                          width: 18,
+                          height: 14,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
                       MySpacing.width(8),
-                      MyText.labelMedium(language.languageName)
+                      MyText.labelMedium(
+                        language.languageName,
+                        color: contentTheme.onBackground,
+                      )
                     ],
                   ),
                 ))
@@ -260,6 +264,7 @@ class _TopBarState extends State<TopBar>
     return MyContainer.bordered(
       paddingAll: 0,
       width: 150,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -293,6 +298,7 @@ class _TopBarState extends State<TopBar>
                       MyText.labelMedium(
                         "My Profile",
                         fontWeight: 600,
+                        color: contentTheme.onBackground,
                       )
                     ],
                   ),
@@ -322,6 +328,7 @@ class _TopBarState extends State<TopBar>
                       MyText.labelMedium(
                         "Edit Profile",
                         fontWeight: 600,
+                        color: contentTheme.onBackground,
                       )
                     ],
                   ),
@@ -329,9 +336,10 @@ class _TopBarState extends State<TopBar>
               ],
             ),
           ),
-          const Divider(
+          Divider(
             height: 1,
             thickness: 1,
+            color: contentTheme.secondary,
           ),
           Padding(
             padding: MySpacing.xy(8, 8),

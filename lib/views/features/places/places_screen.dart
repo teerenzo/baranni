@@ -1,7 +1,9 @@
 import 'package:barrani/controller/places/places_controller.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/extensions.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
@@ -21,17 +23,19 @@ import 'package:barrani/models/shopping_product_data.dart';
 import 'package:barrani/views/layouts/layout.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class AvailablePlacesScreen extends StatefulWidget {
+class AvailablePlacesScreen extends ConsumerStatefulWidget {
   const AvailablePlacesScreen({super.key});
 
   @override
-  State<AvailablePlacesScreen> createState() => _AvailablePlacesScreenState();
+  ConsumerState<AvailablePlacesScreen> createState() =>
+      _AvailablePlacesScreenState();
 }
 
-class _AvailablePlacesScreenState extends State<AvailablePlacesScreen>
+class _AvailablePlacesScreenState extends ConsumerState<AvailablePlacesScreen>
     with SingleTickerProviderStateMixin, UIMixin {
   late PlacesController controller;
 
@@ -43,6 +47,7 @@ class _AvailablePlacesScreenState extends State<AvailablePlacesScreen>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     return Layout(
       child: GetBuilder<PlacesController>(
         init: controller,

@@ -10,7 +10,7 @@ import 'package:barrani/helpers/services/web_auth_services.dart';
 import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/helpers/theme/admin_theme.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/theme/theme_customizer.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
@@ -237,7 +237,7 @@ class _LayoutState extends ConsumerState<Layout> {
       endDrawer: RightBar(),
       body: Row(
         children: [
-          LeftBar(isCondensed: ThemeCustomizer.instance.leftBarCondensed),
+          LeftBar(),
           Expanded(
               child: Stack(
             children: [
@@ -334,6 +334,7 @@ class _LayoutState extends ConsumerState<Layout> {
     return MyContainer.bordered(
       paddingAll: 0,
       width: 150,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

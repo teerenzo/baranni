@@ -1,6 +1,8 @@
 import 'package:barrani/controller/auth/forgot_password_controller.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
@@ -13,20 +15,21 @@ import 'package:barrani/helpers/widgets/responsive.dart';
 import 'package:barrani/images.dart';
 import 'package:barrani/views/layouts/auth_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class ForgotPassword extends StatefulWidget {
+class ForgotPassword extends ConsumerStatefulWidget {
   static const routeName = '/auth/forgot_password';
 
   const ForgotPassword({Key? key}) : super(key: key);
 
   @override
-  State<ForgotPassword> createState() => _ForgotPasswordState();
+  ConsumerState<ForgotPassword> createState() => _ForgotPasswordState();
 }
 
-class _ForgotPasswordState extends State<ForgotPassword>
+class _ForgotPasswordState extends ConsumerState<ForgotPassword>
     with SingleTickerProviderStateMixin, UIMixin {
   late ForgotPasswordController controller;
 
@@ -38,6 +41,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     return AuthLayout(
       child: GetBuilder<ForgotPasswordController>(
         init: controller,

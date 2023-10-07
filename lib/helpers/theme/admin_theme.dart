@@ -61,10 +61,10 @@ class LeftBarTheme {
   static final LeftBarTheme lightLeftBarTheme = LeftBarTheme();
 
   static final LeftBarTheme darkLeftBarTheme = LeftBarTheme(
-      background: const Color(0xff282c32),
+      background: const Color(0xFF131313),
       onBackground: const Color(0xffdcdcdc),
       labelColor: const Color(0xff879baf),
-      activeItemBackground: const Color(0xff363c44),
+      activeItemBackground: const Color(0xff1c1c21),
       activeItemColor: const Color(0xffffffff));
 
   static LeftBarTheme getThemeFromType(LeftBarThemeType leftBarThemeType) {
@@ -91,7 +91,7 @@ class TopBarTheme {
   static final TopBarTheme lightTopBarTheme = TopBarTheme();
 
   static final TopBarTheme darkTopBarTheme = TopBarTheme(
-      background: const Color(0xff2c3036),
+      background: const Color(0xFF131313),
       onBackground: const Color(0xffdcdcdc));
 }
 
@@ -257,18 +257,17 @@ class AdminTheme {
       rightBarTheme: RightBarTheme.lightRightBarTheme,
       contentTheme: ContentTheme.lightContentTheme);
 
-  static void setTheme() {
+  static void setTheme(value) {
     theme = AdminTheme(
-        leftBarTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
+        leftBarTheme: value
             ? LeftBarTheme.darkLeftBarTheme
             : LeftBarTheme.lightLeftBarTheme,
-        topBarTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
-            ? TopBarTheme.darkTopBarTheme
-            : TopBarTheme.lightTopBarTheme,
-        rightBarTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
+        topBarTheme:
+            value ? TopBarTheme.darkTopBarTheme : TopBarTheme.lightTopBarTheme,
+        rightBarTheme: value
             ? RightBarTheme.darkRightBarTheme
             : RightBarTheme.lightRightBarTheme,
-        contentTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
+        contentTheme: value
             ? ContentTheme.darkContentTheme
             : ContentTheme.lightContentTheme);
   }

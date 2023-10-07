@@ -2,9 +2,9 @@
 
 import 'dart:ui';
 
+import 'package:barrani/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
 
 enum MyTextType {
   displayLarge,

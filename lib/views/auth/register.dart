@@ -1,7 +1,9 @@
 import 'package:barrani/data/providers/auth/authentication_provider.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
@@ -41,7 +43,8 @@ class _RegisterState extends ConsumerState<Register>
 
   @override
   Widget build(BuildContext context) {
-    var authenticationProvider = ref.read(authProvider);
+    final authenticationProvider = ref.watch(authProvider);
+    ref.watch(themesProvider);
 
     return AuthLayout(
       child: Padding(
@@ -122,7 +125,7 @@ class _RegisterState extends ConsumerState<Register>
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                         ),
                       ),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider
                                   .errors['invitation_code_error'] !=
                               null)
@@ -159,7 +162,7 @@ class _RegisterState extends ConsumerState<Register>
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                         ),
                       ),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider.errors['email_error'] != null)
                         MyText.bodyMedium(
                           authenticationProvider.errors['email_error']!,
@@ -204,7 +207,7 @@ class _RegisterState extends ConsumerState<Register>
                             isCollapsed: true,
                             floatingLabelBehavior: FloatingLabelBehavior.never),
                       ),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider.errors['password_error'] !=
                               null)
                         MyText.bodyMedium(
@@ -212,7 +215,7 @@ class _RegisterState extends ConsumerState<Register>
                           color: Colors.red,
                         ),
                       MySpacing.height(16),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider.errors['error'] != null)
                         Center(
                           child: MyText.bodyMedium(
@@ -257,23 +260,28 @@ class _RegisterState extends ConsumerState<Register>
                           ),
                         ),
                       ),
-                      Center(
-                        child: MyButton.text(
-                          onPressed: () {
-                            ref.read(authProvider.notifier).state =
-                                ref.read(authProvider.notifier).state.copyWith(
-                              errors: {},
-                            );
-                            NavigatorHelper.pushNamed('/auth/login');
-                          },
-                          elevation: 0,
-                          padding: MySpacing.x(16),
-                          splashColor: contentTheme.secondary.withOpacity(0.1),
-                          child: MyText.labelMedium(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          MyText.labelMedium(
                             'already_have_account_?'.tr(),
                             color: contentTheme.secondary,
                           ),
-                        ),
+                          MySpacing.width(5),
+                          MyButton.text(
+                            onPressed: () {
+                              ref.read(authProvider.notifier).gotoLogin();
+                              NavigatorHelper.pushNamed('/auth/login');
+                            },
+                            elevation: 0,
+                            splashColor:
+                                contentTheme.secondary.withOpacity(0.1),
+                            child: MyText.labelMedium(
+                              'Login'.tr(),
+                              color: contentTheme.primary,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

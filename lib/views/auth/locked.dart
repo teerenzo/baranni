@@ -1,6 +1,8 @@
 import 'package:barrani/controller/auth/locked_controller.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
@@ -14,20 +16,21 @@ import 'package:barrani/helpers/widgets/responsive.dart';
 import 'package:barrani/images.dart';
 import 'package:barrani/views/layouts/auth_layout.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/instance_manager.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class LockedPage extends StatefulWidget {
+class LockedPage extends ConsumerStatefulWidget {
   static const routeName = '/auth/protected';
 
   const LockedPage({Key? key}) : super(key: key);
 
   @override
-  State<LockedPage> createState() => _LockedPageState();
+  ConsumerState<LockedPage> createState() => _LockedPageState();
 }
 
-class _LockedPageState extends State<LockedPage>
+class _LockedPageState extends ConsumerState<LockedPage>
     with SingleTickerProviderStateMixin, UIMixin {
   late LockedController controller;
 
@@ -39,6 +42,7 @@ class _LockedPageState extends State<LockedPage>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     return AuthLayout(
       child: GetBuilder<LockedController>(
         init: controller,

@@ -78,7 +78,7 @@ class CustomTheme {
   CustomTheme({
     this.border = const Color(0xffeeeeee),
     this.borderDark = const Color(0xffe6e6e6),
-    this.card = const Color(0xfff0f0f0),
+    this.card = const Color(0xFFFFFFFF),
     this.cardDark = const Color(0xfffefefe),
     this.disabledColor = const Color(0xffdcc7ff),
     this.onDisabled = const Color(0xffffffff),
@@ -160,7 +160,7 @@ class CustomTheme {
 
   static final CustomTheme lightCustomTheme = CustomTheme(
       card: Color(0xfff6f6f6),
-      cardDark: Color(0xfff0f0f0),
+      cardDark: Color(0xFFFFFFFF),
       disabledColor: Color(0xff636363),
       onDisabled: Color(0xffffffff),
       colorInfo: Color(0xffff784b),
@@ -176,7 +176,7 @@ class CustomTheme {
       shimmerHighlightColor: Color(0xFFE0E0E0));
 
   static final CustomTheme darkCustomTheme = CustomTheme(
-      card: Color(0xff222327),
+      card: Color(0xFF1c1c1c),
       cardDark: Color(0xff101010),
       border: Color(0xff303030),
       borderDark: Color(0xff363636),

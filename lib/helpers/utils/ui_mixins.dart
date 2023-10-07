@@ -1,6 +1,7 @@
+import 'package:barrani/global_variables.dart';
 import 'package:flutter/material.dart';
 import 'package:barrani/helpers/theme/admin_theme.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/widgets/my_dashed_divider.dart';
 import 'package:barrani/helpers/widgets/my_navigation_mixin.dart';
 
@@ -22,9 +23,10 @@ mixin UIMixin {
   OutlineInputBorder get outlineInputBorder => OutlineInputBorder(
         borderRadius: BorderRadius.all(Radius.circular(4)),
         borderSide: BorderSide(
-            width: 1,
-            strokeAlign: 0,
-            color: theme.colorScheme.onBackground.withAlpha(80)),
+          width: 1,
+          strokeAlign: 0,
+          color: theme.colorScheme.primary,
+        ),
       );
 
   OutlineInputBorder focusedInputBorder = OutlineInputBorder(

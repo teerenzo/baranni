@@ -3,7 +3,7 @@ import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/theme/admin_theme.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_dashed_divider.dart';
@@ -27,9 +27,15 @@ class NotificationPopUp extends ConsumerWidget {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          MyText.labelLarge(title),
+          MyText.labelLarge(
+            title,
+            color: contentTheme.onBackground,
+          ),
           MySpacing.height(4),
-          MyText.bodySmall(description)
+          MyText.bodySmall(
+            description,
+            color: contentTheme.onBackground,
+          )
         ],
       );
     }
@@ -41,12 +47,17 @@ class NotificationPopUp extends ConsumerWidget {
     return MyContainer.bordered(
       paddingAll: 0,
       width: 250,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: MySpacing.xy(16, 12),
-            child: MyText.titleMedium("Notification", fontWeight: 600),
+            child: MyText.titleMedium(
+              "Notification",
+              fontWeight: 600,
+              color: contentTheme.onBackground,
+            ),
           ),
           MyDashedDivider(
             height: 1,

@@ -5,12 +5,12 @@ abstract class MyController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    ThemeCustomizer.addListener((old, newVal) {
-      if (old.theme != newVal.theme ||
-          (old.currentLanguage.languageName !=
-              newVal.currentLanguage.languageName)) {
-        update();
-      }
-    });
+    // ThemeCustomizer.addListener((old, newVal) {
+    //   if (old.theme != newVal.theme ||
+    //       (old.currentLanguage.languageName !=
+    //           newVal.currentLanguage.languageName)) {
+    //     update();
+    //   }
+    // });
   }
 }

@@ -1,16 +1,19 @@
 import 'package:barrani/constants.dart';
 import 'package:barrani/controller/features/calendar/calendar_controller.dart';
 import 'package:barrani/global_functions.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_card.dart';
+import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_responsiv.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
@@ -83,7 +86,7 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
         });
       }
     });
-
+    ref.watch(themesProvider);
     return Layout(
       child: Column(
         children: [
@@ -97,6 +100,7 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                     MyText.titleMedium(
                       "Calender",
                       fontWeight: 600,
+                      color: contentTheme.onBackground,
                     ),
                     if (!widget.isMyCalendar)
                       Expanded(
@@ -137,31 +141,33 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                           ),
                         ),
                       ),
-                    SizedBox(
-                      width: 20,
-                    ),
-                    MyButton(
-                      onPressed: () =>
-                          NavigatorHelper.pushNamed('/zone/manage'),
-                      elevation: 0,
-                      padding: MySpacing.xy(20, 16),
-                      backgroundColor: contentTheme.primary,
-                      borderRadiusAll: AppStyle.buttonRadius.medium,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.location_city,
-                            color: Color(0xffffffff),
-                          ),
-                          MySpacing.width(8),
-                          MyText.labelMedium(
-                            'Manage Zones',
-                            color: contentTheme.onPrimary,
-                          ),
-                        ],
+                    if (!widget.isMyCalendar)
+                      SizedBox(
+                        width: 20,
                       ),
-                    ),
+                    if (!widget.isMyCalendar)
+                      MyButton(
+                        onPressed: () =>
+                            NavigatorHelper.pushNamed('/zone/manage'),
+                        elevation: 0,
+                        padding: MySpacing.xy(20, 16),
+                        backgroundColor: contentTheme.primary,
+                        borderRadiusAll: AppStyle.buttonRadius.medium,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.location_city,
+                              color: Color(0xffffffff),
+                            ),
+                            MySpacing.width(8),
+                            MyText.labelMedium(
+                              'Manage Zones',
+                              color: contentTheme.onPrimary,
+                            ),
+                          ],
+                        ),
+                      ),
                     if (!screenMT.isMobile)
                       Expanded(
                         flex: 3,
@@ -253,7 +259,33 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                     return Builder(
                                       builder: (BuildContext context) {
                                         return AlertDialog(
-                                          title: Text('Make Appointment'),
+                                          backgroundColor:
+                                              theme.cardTheme.color,
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Make Appointment',
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Icon(
+                                                    LucideIcons.x,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          contentPadding:
+                                              const EdgeInsets.all(0),
+                                          titlePadding:
+                                              const EdgeInsets.all(30),
                                           content: AppointmentDialog(
                                             isMobile: type.isMobile,
                                             startDate: pickedDate,
@@ -303,27 +335,37 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                   return Builder(
                                     builder: (BuildContext context) {
                                       return AlertDialog(
-                                        title: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceBetween,
-                                          children: [
-                                            Text(
-                                              '${isInviter ? 'Appointment' : 'Invitation'} Detail',
-                                            ),
-                                            InkWell(
-                                              onTap: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Padding(
-                                                padding:
-                                                    const EdgeInsets.all(10),
-                                                child: Icon(
-                                                  LucideIcons.x,
+                                        titlePadding: const EdgeInsets.all(0),
+                                        title: MyContainer(
+                                          padding: const EdgeInsetsDirectional
+                                              .symmetric(
+                                            vertical: 20,
+                                            horizontal: 30,
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                '${isInviter ? 'Appointment' : 'Invitation'} Detail',
+                                              ),
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Icon(
+                                                    LucideIcons.x,
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
                                         ),
+                                        contentPadding: const EdgeInsets.all(0),
+                                        backgroundColor: theme.cardTheme.color,
                                         content: isInviter
                                             ? AppointmentDetail(
                                                 isMobile: type.isMobile,

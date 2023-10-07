@@ -2,6 +2,7 @@ import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
 import 'package:barrani/helpers/services/url_service.dart';
 import 'package:barrani/helpers/theme/theme_customizer.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_card.dart';
@@ -10,6 +11,7 @@ import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/widgets/custom_pop_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,20 +36,17 @@ class LeftbarObserver {
   }
 }
 
-class LeftBar extends StatefulWidget {
-  final bool isCondensed;
-
-  const LeftBar({Key? key, this.isCondensed = false}) : super(key: key);
+class LeftBar extends ConsumerStatefulWidget {
+  const LeftBar({Key? key}) : super(key: key);
 
   @override
   _LeftBarState createState() => _LeftBarState();
 }
 
-class _LeftBarState extends State<LeftBar>
+class _LeftBarState extends ConsumerState<LeftBar>
     with SingleTickerProviderStateMixin, UIMixin {
   final ThemeCustomizer customizer = ThemeCustomizer.instance;
 
-  bool isCondensed = false;
   String path = UrlService.getCurrentUrl();
 
   @override
@@ -57,7 +56,9 @@ class _LeftBarState extends State<LeftBar>
 
   @override
   Widget build(BuildContext context) {
-    isCondensed = widget.isCondensed;
+    ref.watch(themesProvider);
+    final themeProvider_ = ref.watch(themeProvider);
+    bool isCondensed = themeProvider_.leftBarCondensed;
     return MyCard(
       paddingAll: 0,
       shadow: MyShadow(position: MyShadowPosition.centerRight, elevation: 0.2),
@@ -78,14 +79,14 @@ class _LeftBarState extends State<LeftBar>
                     onTap: () {
                       NavigatorHelper.pushNamed('/dashboard');
                     },
-                    child: widget.isCondensed
+                    child: isCondensed
                         ? SvgPicture.asset(
                             'assets/images/logo/logo_small.svg',
-                            height: widget.isCondensed ? 24 : 32,
+                            height: isCondensed ? 24 : 32,
                           )
                         : SvgPicture.asset(
                             'assets/images/logo/logo.svg',
-                            height: widget.isCondensed ? 24 : 32,
+                            height: isCondensed ? 24 : 32,
                           ),
                   ),
                 ],
@@ -106,12 +107,6 @@ class _LeftBarState extends State<LeftBar>
                   labelWidget("apps".tr()),
 
                   //-----------------CALENDAR-----------------//
-                  // NavigationItem(
-                  //   iconData: LucideIcons.calendarDays,
-                  //   title: "calendar".tr(),
-                  //   route: '/calendar',
-                  //   isCondensed: isCondensed,
-                  // ),
                   NavigationItem(
                     iconData: LucideIcons.calendarDays,
                     title: "appointments".tr(),
@@ -165,6 +160,8 @@ class _LeftBarState extends State<LeftBar>
   }
 
   Widget labelWidget(String label) {
+    // bool isCondensed = ref.watch();
+    bool isCondensed = false;
     return isCondensed
         ? MySpacing.empty()
         : Container(
@@ -454,7 +451,7 @@ class _MenuItemState extends State<MenuItem> with UIMixin {
   }
 }
 
-class NavigationItem extends StatefulWidget {
+class NavigationItem extends ConsumerStatefulWidget {
   final IconData? iconData;
   final String title;
   final bool isCondensed;
@@ -472,12 +469,13 @@ class NavigationItem extends StatefulWidget {
   _NavigationItemState createState() => _NavigationItemState();
 }
 
-class _NavigationItemState extends State<NavigationItem> with UIMixin {
+class _NavigationItemState extends ConsumerState<NavigationItem> with UIMixin {
   bool isHover = false;
 
   @override
   Widget build(BuildContext context) {
     bool isActive = UrlService.getCurrentUrl() == widget.route;
+
     return GestureDetector(
       onTap: () {
         if (widget.route != null) {

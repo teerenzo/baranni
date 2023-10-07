@@ -1,8 +1,10 @@
 import 'package:barrani/data/providers/ui/dashboard_provider.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
@@ -57,6 +59,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
     ref.watch(kIsWeb
         ? FirebaseWebHelper.userNotificationsStreamProvider
         : userNotificationsStreamProvider);
+    ref.watch(themesProvider);
     return Layout(
         child: Column(
       children: [
@@ -69,10 +72,10 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                 "dashboard".tr(),
                 fontSize: 18,
                 fontWeight: 600,
+                color: contentTheme.onBackground,
               ),
               MyBreadcrumb(
                 children: [
-                  MyBreadcrumbItem(name: 'ecommerce'.tr()),
                   MyBreadcrumbItem(name: 'dashboard'.tr(), active: true),
                 ],
               ),
@@ -104,7 +107,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                           MyFlexItem(
                             sizes: "lg-4",
                             child: buildCard(
-                                contentTheme.pink,
+                                contentTheme.warning.withAlpha(28),
                                 LucideIcons.clock4,
                                 "Reached",
                                 "\$152",
@@ -184,7 +187,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                         height: 305,
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         padding: MySpacing.only(left: 24, right: 12, top: 12),
-                        color: contentTheme.dark,
+                        color: theme.colorScheme.background,
                         child: Stack(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           children: [
@@ -200,7 +203,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                       children: [
                                         MyText.titleMedium(
                                           "New Visitors",
-                                          color: contentTheme.light,
+                                          color: theme.colorScheme.onBackground,
                                           fontWeight: 600,
                                         ),
                                         MySpacing.width(8),
@@ -220,7 +223,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                         icon: Icon(
                                           LucideIcons.moveRight,
                                           size: 16,
-                                          color: contentTheme.light,
+                                          color: theme.colorScheme.secondary,
                                         ))
                                   ],
                                 ),
@@ -240,12 +243,13 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                             MyText.bodyMedium(
                                               "\$5,943",
                                               fontSize: 20,
-                                              color: contentTheme.light,
+                                              color: theme.colorScheme.tertiary,
                                             ),
                                             MySpacing.height(8),
                                             MyText.bodyMedium(
                                               "New Followers",
-                                              color: contentTheme.light,
+                                              color:
+                                                  theme.colorScheme.onTertiary,
                                               fontWeight: 600,
                                               muted: true,
                                             ),
@@ -267,12 +271,14 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                             MyText.bodyMedium(
                                               "150,000",
                                               fontSize: 20,
-                                              color: contentTheme.light,
+                                              color: theme
+                                                  .colorScheme.onBackground,
                                             ),
                                             MySpacing.height(8),
                                             MyText.bodyMedium(
                                               "Followers Goal",
-                                              color: contentTheme.light,
+                                              color: theme
+                                                  .colorScheme.onBackground,
                                               fontWeight: 600,
                                               muted: true,
                                             ),

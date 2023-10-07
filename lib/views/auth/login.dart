@@ -1,10 +1,9 @@
 import 'package:barrani/data/providers/auth/authentication_provider.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
-import 'package:barrani/helpers/firebase/auth.dart';
-import 'package:barrani/helpers/navigator_helper.dart';
-import 'package:barrani/helpers/services/auth_services.dart';
-import 'package:barrani/helpers/services/web_auth_services.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:barrani/helpers/theme/admin_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
@@ -15,7 +14,6 @@ import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
 import 'package:barrani/helpers/widgets/responsive.dart';
 import 'package:barrani/images.dart';
-import 'package:barrani/views/dashboard.dart';
 import 'package:barrani/views/layouts/auth_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -44,7 +42,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   @override
   Widget build(BuildContext context) {
-    var authenticationProvider = ref.read(authProvider);
+    final contentTheme = AdminTheme.theme.contentTheme;
+    final authenticationProvider = ref.watch(authProvider);
+    ref.watch(themesProvider);
 
     return AuthLayout(
         child: Padding(
@@ -111,12 +111,16 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (value) {
                         if (authenticationProvider.isSubmitted) {
-                          ref.read(authProvider.notifier).validateEmail(value);
+                          ref
+                              .read(authProvider.notifier)
+                              .validateEmail(_emailController.text);
                         }
                       },
                       decoration: InputDecoration(
                         labelText: "Email Address",
-                        labelStyle: MyTextStyle.bodySmall(xMuted: true),
+                        labelStyle: MyTextStyle.bodySmall(
+                          xMuted: true,
+                        ),
                         border: outlineInputBorder,
                         prefixIcon: const Icon(
                           LucideIcons.mail,
@@ -128,7 +132,6 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       ),
                     ),
                     if (authenticationProvider.isSubmitted &&
-                        authenticationProvider.errors.isNotEmpty &&
                         authenticationProvider.errors['email_error'] != null)
                       MyText.bodyMedium(
                         authenticationProvider.errors['email_error']!,
@@ -147,14 +150,20 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       obscureText: !authenticationProvider.showPassword,
                       onChanged: (value) {
                         if (authenticationProvider.isSubmitted) {
+                          print(authenticationProvider.errors);
                           ref
                               .read(authProvider.notifier)
-                              .validatePassword(value);
+                              .validateEmail(_emailController.text);
+                          ref
+                              .read(authProvider.notifier)
+                              .validatePassword(_passwordController.text);
                         }
                       },
                       decoration: InputDecoration(
                         labelText: "Password",
-                        labelStyle: MyTextStyle.bodySmall(xMuted: true),
+                        labelStyle: MyTextStyle.bodySmall(
+                          xMuted: true,
+                        ),
                         border: outlineInputBorder,
                         prefixIcon: const Icon(
                           LucideIcons.lock,
@@ -177,10 +186,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       ),
                     ),
                     if (authenticationProvider.isSubmitted &&
-                        authenticationProvider.errors.isNotEmpty &&
                         authenticationProvider.errors['password_error'] != null)
                       MyText.bodyMedium(
-                        authenticationProvider.errors['password_error']!,
+                        authenticationProvider.errors['password_error'],
                         color: Colors.red,
                       ),
                     MySpacing.height(16),
@@ -220,7 +228,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           splashColor: contentTheme.secondary.withOpacity(0.1),
                           child: MyText.labelSmall(
                             'forgot_password?'.tr().capitalizeWords,
-                            color: contentTheme.secondary,
+                            color: contentTheme.primary,
                           ),
                         ),
                       ],
@@ -269,17 +277,25 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         ),
                       ),
                     ),
-                    Center(
-                      child: MyButton.text(
-                        onPressed: ref.read(authProvider.notifier).gotoRegister,
-                        elevation: 0,
-                        padding: MySpacing.x(16),
-                        splashColor: contentTheme.secondary.withOpacity(0.1),
-                        child: MyText.labelMedium(
-                          'Don\'t have account? register'.tr(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MyText.labelMedium(
+                          'Don\'t have account?'.tr(),
                           color: contentTheme.secondary,
                         ),
-                      ),
+                        MySpacing.width(5),
+                        MyButton.text(
+                          onPressed:
+                              ref.read(authProvider.notifier).gotoRegister,
+                          elevation: 0,
+                          splashColor: contentTheme.secondary.withOpacity(0.1),
+                          child: MyText.labelMedium(
+                            'register'.tr(),
+                            color: contentTheme.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

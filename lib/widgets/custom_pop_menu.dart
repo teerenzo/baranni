@@ -1,5 +1,6 @@
 import 'package:barrani/data/providers/auth/authentication_provider.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:barrani/global_variables.dart';
+
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

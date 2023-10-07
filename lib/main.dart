@@ -4,19 +4,23 @@ import 'dart:io';
 import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/config.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/views/auth/forgot_password.dart';
 import 'package:barrani/views/auth/login.dart';
 import 'package:barrani/views/auth/register.dart';
 import 'package:barrani/views/auth/reset_password.dart';
 import 'package:barrani/views/dashboard.dart';
+import 'package:barrani/views/features/add_kanban_project.dart';
 import 'package:barrani/views/features/add_kanban_task.dart';
 import 'package:barrani/views/features/calendar.dart';
 import 'package:barrani/views/features/chat_page.dart';
 import 'package:barrani/views/features/contacts/edit_profile.dart';
 import 'package:barrani/views/features/contacts/profile.dart';
+import 'package:barrani/views/features/edit_kanbar_project.dart';
 import 'package:barrani/views/features/kanban_page.dart';
 import 'package:barrani/views/features/ecommerce/add_product.dart';
 import 'package:barrani/views/features/ecommerce/products.dart';
+import 'package:barrani/views/features/kanban_tasks.dart';
 import 'package:barrani/views/features/zone/zone_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firedart/firedart.dart';
@@ -32,7 +36,6 @@ import 'package:one_context/one_context.dart';
 import 'helpers/localizations/language.dart';
 import 'helpers/storage/local_storage.dart';
 import 'helpers/theme/app_style.dart';
-import 'helpers/theme/theme_customizer.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -238,7 +241,7 @@ Future<void> _configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName!));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   final List<NavigatorObserver> navigatorObservers;
   final initialRoute;
 
@@ -249,12 +252,13 @@ class MyApp extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themesProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeCustomizer.instance.theme,
+      themeMode: themeMode,
       navigatorKey: OneContext().key,
       builder: OneContext().builder,
       initialRoute: initialRoute,
@@ -278,7 +282,10 @@ class MyApp extends StatelessWidget {
 
         //KANBAN
         KanBanPage.routeName: (context) => KanBanPage(),
+        KanBanTaskPage.routeName: (context) => KanBanTaskPage(),
         AddTask.routeName: (context) => AddTask(),
+        AddKanbanProject.routeName: (context) => AddKanbanProject(),
+        EditKanbanProject.routeName: (context) => EditKanbanProject(),
         // product pages
         ProductPage.routeName: (context) => ProductPage(),
         AddProduct.routeName: (context) => AddProduct(),

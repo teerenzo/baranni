@@ -1,5 +1,6 @@
 import 'package:barrani/controller/features/chat_controller.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:barrani/global_variables.dart';
+
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';

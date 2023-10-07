@@ -1,5 +1,6 @@
-import 'package:flutter/material.dart';
 import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:flutter/material.dart';
+
 import 'package:barrani/helpers/theme/theme_type.dart';
 
 class NavigationTheme {

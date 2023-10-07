@@ -1,9 +1,9 @@
 import 'package:barrani/app_constant.dart';
 import 'package:barrani/global_functions.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/services/appointment_web_services.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
@@ -71,276 +71,288 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
 
   @override
   Widget build(BuildContext context) {
-    Invitation invitation = getAppointedUserInvitation(widget.appointment);
+    Invitation invitation;
+    try {
+      invitation = getAppointedUserInvitation(widget.appointment);
+    } catch (error) {
+      print(widget.appointment.id);
+      return MyContainer(
+        height: 300,
+        padding: EdgeInsets.symmetric(horizontal: 20),
+        child: Center(child: MyText.bodyMedium('No invitation found')),
+      );
+    }
     bool isAccepted = invitation.status == 'accepted';
     bool isDeclined = invitation.status == 'declined';
     UserModal hoster = findUser(invitation.senderId);
     List<Invitation> invitations =
         getInvitationsByAppointmentId(widget.appointment.id.toString());
     String? imgUrl = widget.appointment.recurrenceId?.toString();
-    return Container(
-      width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
-      height: widget.isMobile
-          ? MediaQuery.of(context).size.height *
-              (isAccepted ? 0.82 : (isDeclined ? 0.68 : 0.8))
-          : 620,
-      padding: EdgeInsets.all(widget.isMobile ? 16 : 0),
-      child: LayoutBuilder(
-        builder: (BuildContext context, BoxConstraints constraints) {
-          return Column(
-            children: [
-              Row(
-                children: [
-                  Expanded(
-                      child: Column(
-                    children: [
-                      Row(
-                        children: [
-                          MyText.bodyMedium(
-                            "Zone",
-                            fontWeight: 700,
-                            textAlign: TextAlign.start,
-                          ),
-                          MySpacing.width(16),
-                          MyText.bodyMedium(
-                            widget.appointment.notes!,
-                            fontWeight: 600,
-                            muted: true,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      MySpacing.height(16),
-                      MySpacing.height(16),
-                      Row(
-                        children: [
-                          MyText.bodyMedium(
-                            "Host",
-                            fontWeight: 700,
-                            textAlign: TextAlign.start,
-                          ),
-                          MySpacing.width(16),
-                          MyText.bodyMedium(
-                            hoster.names,
-                            fontWeight: 600,
-                            muted: true,
-                            textAlign: TextAlign.start,
-                          ),
-                        ],
-                      ),
-                      MySpacing.height(16),
-                      MySpacing.height(16),
-                      Row(
-                        children: [
-                          MyText.bodyMedium(
-                            "Status",
-                            fontWeight: 700,
-                            textAlign: TextAlign.start,
-                          ),
-                          MySpacing.width(16),
-                          MyContainer(
-                            padding: MySpacing.xy(12, 2),
-                            color:
-                                getStatusColor(invitation.status, contentTheme),
-                            child: MyText.bodyMedium(
-                              capitalize(invitation.status),
-                              fontSize: 12,
-                              color: getStatusBgColor(
+    return SingleChildScrollView(
+      child: MyContainer(
+        width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
+        height: widget.isMobile
+            ? MediaQuery.of(context).size.height *
+                (isAccepted ? 0.82 : (isDeclined ? 0.68 : 0.8))
+            : 620,
+        padding: EdgeInsets.all(widget.isMobile ? 16 : 30),
+        child: LayoutBuilder(
+          builder: (BuildContext context, BoxConstraints constraints) {
+            return Column(
+              children: [
+                Row(
+                  children: [
+                    Expanded(
+                        child: Column(
+                      children: [
+                        Row(
+                          children: [
+                            MyText.bodyMedium(
+                              "Zone",
+                              fontWeight: 700,
+                              textAlign: TextAlign.start,
+                            ),
+                            MySpacing.width(16),
+                            MyText.bodyMedium(
+                              widget.appointment.notes!,
+                              fontWeight: 600,
+                              muted: true,
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
+                        MySpacing.height(16),
+                        MySpacing.height(16),
+                        Row(
+                          children: [
+                            MyText.bodyMedium(
+                              "Host",
+                              fontWeight: 700,
+                              textAlign: TextAlign.start,
+                            ),
+                            MySpacing.width(16),
+                            MyText.bodyMedium(
+                              hoster.names,
+                              fontWeight: 600,
+                              muted: true,
+                              textAlign: TextAlign.start,
+                            ),
+                          ],
+                        ),
+                        MySpacing.height(16),
+                        MySpacing.height(16),
+                        Row(
+                          children: [
+                            MyText.bodyMedium(
+                              "Status",
+                              fontWeight: 700,
+                              textAlign: TextAlign.start,
+                            ),
+                            MySpacing.width(16),
+                            MyContainer(
+                              padding: MySpacing.xy(12, 2),
+                              color: getStatusColor(
                                   invitation.status, contentTheme),
+                              child: MyText.bodyMedium(
+                                capitalize(invitation.status),
+                                fontSize: 12,
+                                color: getStatusBgColor(
+                                    invitation.status, contentTheme),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    )),
+                    if (imgUrl != null) Expanded(child: Image.network(imgUrl))
+                  ],
+                ),
+                MySpacing.height(16),
+                if (isAccepted)
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: MyText.bodyMedium(
+                      "Invites",
+                      fontWeight: 700,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                if (isAccepted) MySpacing.height(8),
+                if (isAccepted)
+                  SizedBox(
+                    height: 70,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: invitations.map((e) {
+                        return InviteAvatar(
+                          invitation: e,
+                          isMobile: true,
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                MySpacing.height(16),
+                if (widget.appointment.notes != null) MySpacing.height(8),
+                if (widget.appointment.notes != null)
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: MyText.bodyMedium(
+                      widget.appointment.subject,
+                      fontWeight: 600,
+                      muted: true,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+
+                MySpacing.height(16),
+                Row(
+                  children: [
+                    MyText.bodyMedium(
+                      "Date",
+                      fontWeight: 700,
+                      textAlign: TextAlign.start,
+                    ),
+                    MySpacing.width(16),
+                    MyText.bodyMedium(
+                      dateFormatter.format(widget.appointment.endTime),
+                      fontWeight: 600,
+                      muted: true,
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
+                ),
+                MySpacing.height(16),
+                MyFlex(
+                  contentPadding: false,
+                  children: [
+                    MyFlexItem(
+                      sizes: "lg-6",
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MyText.bodyMedium(
+                            "Start Time",
+                            fontWeight: 700,
+                          ),
+                          MySpacing.height(8),
+                          MyContainer.bordered(
+                            paddingAll: 12,
+                            onTap: () {},
+                            borderColor: theme.colorScheme.secondary,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  LucideIcons.calendar,
+                                  color: theme.colorScheme.secondary,
+                                  size: 16,
+                                ),
+                                MySpacing.width(10),
+                                MyText.bodyMedium(
+                                  timeHourFormatter.format(
+                                    widget.appointment.startTime,
+                                  ),
+                                  fontWeight: 600,
+                                  color: theme.colorScheme.secondary,
+                                ),
+                              ],
                             ),
                           ),
                         ],
                       ),
-                    ],
-                  )),
-                  if (imgUrl != null) Expanded(child: Image.network(imgUrl))
-                ],
-              ),
-              MySpacing.height(16),
-              if (isAccepted)
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: MyText.bodyMedium(
-                    "Invites",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-              if (isAccepted) MySpacing.height(8),
-              if (isAccepted)
-                SizedBox(
-                  height: 70,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: invitations.map((e) {
-                      return InviteAvatar(
-                        invitation: e,
-                        isMobile: true,
-                      );
-                    }).toList(),
-                  ),
-                ),
-              MySpacing.height(16),
-              if (widget.appointment.notes != null) MySpacing.height(8),
-              if (widget.appointment.notes != null)
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: MyText.bodyMedium(
-                    widget.appointment.subject,
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-
-              MySpacing.height(16),
-              Row(
-                children: [
-                  MyText.bodyMedium(
-                    "Date",
-                    fontWeight: 700,
-                    textAlign: TextAlign.start,
-                  ),
-                  MySpacing.width(16),
-                  MyText.bodyMedium(
-                    dateFormatter.format(widget.appointment.endTime),
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ],
-              ),
-              MySpacing.height(16),
-              MyFlex(
-                contentPadding: false,
-                children: [
-                  MyFlexItem(
-                    sizes: "lg-6",
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MyText.bodyMedium(
-                          "Start Time",
-                          fontWeight: 700,
-                        ),
-                        MySpacing.height(8),
-                        MyContainer.bordered(
-                          paddingAll: 12,
-                          onTap: () {},
-                          borderColor: theme.colorScheme.secondary,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Icon(
-                                LucideIcons.calendar,
-                                color: theme.colorScheme.secondary,
-                                size: 16,
-                              ),
-                              MySpacing.width(10),
-                              MyText.bodyMedium(
-                                timeHourFormatter.format(
-                                  widget.appointment.startTime,
+                    ),
+                    MyFlexItem(
+                      sizes: "lg-6",
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          MyText.bodyMedium(
+                            "End Time",
+                            fontWeight: 700,
+                          ),
+                          MySpacing.height(8),
+                          MyContainer.bordered(
+                            paddingAll: 12,
+                            onTap: () {},
+                            borderColor: theme.colorScheme.secondary,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                Icon(
+                                  LucideIcons.calendar,
+                                  color: theme.colorScheme.secondary,
+                                  size: 16,
                                 ),
-                                fontWeight: 600,
-                                color: theme.colorScheme.secondary,
-                              ),
-                            ],
+                                MySpacing.width(10),
+                                MyText.bodyMedium(
+                                  timeHourFormatter.format(
+                                    widget.appointment.endTime,
+                                  ),
+                                  fontWeight: 600,
+                                  color: theme.colorScheme.secondary,
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 16),
+                // action buttons
+                if (invitation.status == 'pending')
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: MyButton.block(
+                            backgroundColor: theme.colorScheme.error,
+                            borderRadiusAll: AppStyle.buttonRadius.medium,
+                            elevation: 0,
+                            onPressed: () {
+                              if (isAccepting || isDeclining) {
+                                return;
+                              }
+                              handleDecline();
+                            },
+                            child: MyText.bodyLarge(
+                              isDeclining ? 'Declining' : 'Decline',
+                              fontWeight: 600,
+                              color: theme.colorScheme.onError,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: MyButton.block(
+                            backgroundColor: theme.colorScheme.primary
+                                .withOpacity(
+                                    isAccepting || isDeclining ? 0.8 : 1),
+                            borderRadiusAll: AppStyle.buttonRadius.medium,
+                            elevation: 0,
+                            onPressed: () {
+                              handleAccept();
+                            },
+                            child: MyText.bodyLarge(
+                              isAccepting ? 'Accepting' : 'Accept',
+                              fontWeight: 600,
+                              color: theme.colorScheme.onError,
+                            ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  MyFlexItem(
-                    sizes: "lg-6",
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        MyText.bodyMedium(
-                          "End Time",
-                          fontWeight: 700,
-                        ),
-                        MySpacing.height(8),
-                        MyContainer.bordered(
-                          paddingAll: 12,
-                          onTap: () {},
-                          borderColor: theme.colorScheme.secondary,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Icon(
-                                LucideIcons.calendar,
-                                color: theme.colorScheme.secondary,
-                                size: 16,
-                              ),
-                              MySpacing.width(10),
-                              MyText.bodyMedium(
-                                timeHourFormatter.format(
-                                  widget.appointment.endTime,
-                                ),
-                                fontWeight: 600,
-                                color: theme.colorScheme.secondary,
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-              SizedBox(height: 16),
-              // action buttons
-              if (invitation.status == 'pending')
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: MyButton.block(
-                          backgroundColor: theme.colorScheme.error,
-                          borderRadiusAll: AppStyle.buttonRadius.medium,
-                          elevation: 0,
-                          onPressed: () {
-                            if (isAccepting || isDeclining) {
-                              return;
-                            }
-                            handleDecline();
-                          },
-                          child: MyText.bodyLarge(
-                            isDeclining ? 'Declining' : 'Decline',
-                            fontWeight: 600,
-                            color: theme.colorScheme.onError,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: MyButton.block(
-                          backgroundColor: theme.colorScheme.primary
-                              .withOpacity(
-                                  isAccepting || isDeclining ? 0.8 : 1),
-                          borderRadiusAll: AppStyle.buttonRadius.medium,
-                          elevation: 0,
-                          onPressed: () {
-                            handleAccept();
-                          },
-                          child: MyText.bodyLarge(
-                            isAccepting ? 'Accepting' : 'Accept',
-                            fontWeight: 600,
-                            color: theme.colorScheme.onError,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-            ],
-          );
-        },
+              ],
+            );
+          },
+        ),
       ),
     );
   }
@@ -392,6 +404,7 @@ class _InviteAvatarState extends State<InviteAvatar> with UIMixin {
   Widget build(BuildContext context) {
     final user = findUser(widget.invitation.receiverId);
     return Container(
+      margin: const EdgeInsets.only(right: 10),
       constraints: BoxConstraints(
         maxWidth: 180,
       ),

@@ -178,30 +178,19 @@ class MaterialTheme {
       ? homemadeLightTheme
       : homemadeDarkTheme;
 
-  static resetThemeData() {
-    materialThemeData = AppTheme.themeType == ThemeType.light
-        ? MaterialThemeData().light()
-        : MaterialThemeData().dark();
+  static resetThemeData(value) {
+    materialThemeData =
+        value ? MaterialThemeData().light() : MaterialThemeData().dark();
 
-    learningTheme = AppTheme.themeType == ThemeType.light
-        ? learningLightTheme
-        : learningDarkTheme;
+    learningTheme = value ? learningLightTheme : learningDarkTheme;
 
-    cookifyTheme = AppTheme.themeType == ThemeType.light
-        ? cookifyLightTheme
-        : cookifyDarkTheme;
+    cookifyTheme = value ? cookifyLightTheme : cookifyDarkTheme;
 
-    estateTheme = AppTheme.themeType == ThemeType.light
-        ? estateLightTheme
-        : estateDarkTheme;
+    estateTheme = value ? estateLightTheme : estateDarkTheme;
 
-    homemadeTheme = AppTheme.themeType == ThemeType.light
-        ? homemadeLightTheme
-        : homemadeDarkTheme;
+    homemadeTheme = value ? homemadeLightTheme : homemadeDarkTheme;
 
-    datingTheme = AppTheme.themeType == ThemeType.light
-        ? datingLightTheme
-        : datingDarkTheme;
+    datingTheme = value ? datingLightTheme : datingDarkTheme;
   }
 }
 
@@ -266,7 +255,7 @@ class MaterialThemeData {
       this.outline = const Color(0xff79747f),
       this.shimmerBaseColor = const Color(0xFFF5F5F5),
       this.shimmerHighlightColor = const Color(0xFFE0E0E0),
-      this.card = const Color(0xfff0f0f0),
+      this.card = const Color(0xFFFFFFFF),
       this.onCard = const Color(0xff495057),
       this.disabled = const Color(0xff495057),
       this.onDisabled = const Color(0xff495057),
@@ -383,7 +372,7 @@ class MaterialThemeData {
         outline: Color(0xff948f9a),
         shimmerBaseColor: Color(0xFF1a1a1a),
         shimmerHighlightColor: Color(0xFF454545),
-        card: Color(0xff222327),
+        card: Color(0xFF1c1c1c),
         onCard: Color(0xfff3f3f3),
         disabled: Color(0xff636363),
         onDisabled: Color(0xffffffff),

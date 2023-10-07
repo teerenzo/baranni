@@ -1,17 +1,19 @@
 import 'package:barrani/constants.dart';
 import 'package:barrani/global_variables.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
+import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/models/zone.dart';
 import 'package:feather_icons/feather_icons.dart';
 import 'package:flutter/material.dart';
 import 'package:barrani/widgets/form.dart';
 
-import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
-class SelectZone extends StatefulWidget {
+class SelectZone extends ConsumerStatefulWidget {
   final bool isMobile;
   final PlaceZone? activeZone;
   final Function(PlaceZone) setZone;
@@ -26,11 +28,13 @@ class SelectZone extends StatefulWidget {
   _SelectZoneState createState() => _SelectZoneState();
 }
 
-class _SelectZoneState extends State<SelectZone> {
+class _SelectZoneState extends ConsumerState<SelectZone> with UIMixin {
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
+    ref.watch(themesProvider);
+    return Container(
       width: 400,
+      color: theme.colorScheme.background,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -40,7 +44,10 @@ class _SelectZoneState extends State<SelectZone> {
             child: Row(
               children: [
                 Expanded(
-                  child: MyText.labelLarge('Select Zone'),
+                  child: MyText.labelLarge(
+                    'Select Zone',
+                    color: contentTheme.onBackground,
+                  ),
                 ),
                 InkWell(
                   onTap: () => Navigator.pop(context),
@@ -94,10 +101,10 @@ class _SelectZoneState extends State<SelectZone> {
                     },
                     elevation: 0,
                     padding: MySpacing.xy(60, 16),
-                    backgroundColor: theme.colorScheme.secondaryContainer,
+                    backgroundColor: contentTheme.primary,
                     child: MyText.labelMedium(
                       "close",
-                      color: theme.colorScheme.onSecondaryContainer,
+                      color: contentTheme.onPrimary,
                     ),
                   ),
                 ],

@@ -10,8 +10,10 @@ import 'package:barrani/models/GroupChat.dart';
 import 'package:barrani/models/IndividualChat.dart';
 import 'package:barrani/models/appointment.dart';
 import 'package:barrani/models/invitation.dart';
-import 'package:barrani/models/kanban.dart';
+import 'package:barrani/models/kanbanProject.dart';
+import 'package:barrani/models/kanbanTask.dart';
 import 'package:barrani/models/notification.dart';
+import 'package:barrani/models/projects.dart';
 import 'package:barrani/models/user.dart';
 import 'package:barrani/models/zone.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -124,7 +126,7 @@ abstract class FirebaseWebHelper {
     return FirebaseAuth.instance.currentUser != null;
   }
 
-  static Future<void> onCreateKanbanProject({
+  static Future<void> onCreateKanbanTask({
     required String? userId,
     required String projectName,
     required String description,
@@ -133,11 +135,13 @@ abstract class FirebaseWebHelper {
     required List<String> inviteeIds,
     required String kanbanLevel,
     required String jobTypeName,
+    required String projectId,
   }) async {
     // Construct the document data
     Map<String, dynamic> data = {
       'userId': userId,
-      'projectName': projectName,
+      'taskName': projectName,
+      'projectId': projectId,
       'description': description,
       'status': 'To Do',
       'startTime': startTimeDate,
@@ -148,7 +152,7 @@ abstract class FirebaseWebHelper {
     };
     // Submit to Firestore
     await FirebaseFirestore.instance
-        .collection(fireBaseCollections.project)
+        .collection(fireBaseCollections.tasks)
         .add(data);
   }
 
@@ -159,7 +163,7 @@ abstract class FirebaseWebHelper {
     // Construct the document data
     // Submit to Firestore
     await FirebaseFirestore.instance
-        .collection(fireBaseCollections.project)
+        .collection(fireBaseCollections.tasks)
         .doc(projectId!)
         .update({'status': status});
   }
@@ -407,19 +411,65 @@ abstract class FirebaseWebHelper {
     });
   });
 
+  static final kanbanTasksProvider = StreamProvider<List<KanbanTask>>((ref) {
+    CollectionReference fireStoreQuery = FirebaseFirestore.instance.collection(
+        fireBaseCollections
+            .tasks); // Assuming your kanban projects are in a collection named 'projects'
+    try {
+      return fireStoreQuery.snapshots().map((querySnapshot) {
+        List<KanbanTask> currentProjects_ = [];
+
+        for (var element in querySnapshot.docs) {
+          Map<String, dynamic> element_ =
+              element.data() as Map<String, dynamic>;
+          element_['id'] = element.id;
+
+          currentProjects_.add(KanbanTask.fromMap(element_));
+        }
+
+        return currentProjects_;
+      });
+    } catch (e) {
+      print("error");
+      print(e);
+      return Stream.value([]);
+    }
+  });
+
   static final kanbanProjectsProvider =
       StreamProvider<List<KanbanProject>>((ref) {
     CollectionReference fireStoreQuery = FirebaseFirestore.instance.collection(
         fireBaseCollections
-            .project); // Assuming your kanban projects are in a collection named 'projects'
+            .projects); // Assuming your kanban projects are in a collection named 'projects'
 
-    return fireStoreQuery.snapshots().map((querySnapshot) {
+    return fireStoreQuery
+        .orderBy("startTime", descending: true)
+        .snapshots()
+        .map((querySnapshot) {
       List<KanbanProject> currentProjects_ = [];
 
       for (var element in querySnapshot.docs) {
         Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
         element_['id'] = element.id;
         currentProjects_.add(KanbanProject.fromMap(element_));
+      }
+
+      return currentProjects_;
+    });
+  });
+
+  static final projectsProvider = StreamProvider<List<Projects>>((ref) {
+    CollectionReference fireStoreQuery = FirebaseFirestore.instance.collection(
+        fireBaseCollections
+            .projects); // Assuming your kanban projects are in a collection named 'projects'
+
+    return fireStoreQuery.snapshots().map((querySnapshot) {
+      List<Projects> currentProjects_ = [];
+
+      for (var element in querySnapshot.docs) {
+        Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
+        element_['id'] = element.id;
+        currentProjects_.add(Projects.fromMap(element_));
       }
 
       return currentProjects_;
@@ -735,6 +785,50 @@ abstract class FirebaseWebHelper {
       'name': name,
       'userId': userData!.userId,
       'createdDate': DateTime.now(),
+    });
+  }
+
+  static Future<void> updateZone(String id, String name) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.zones)
+        .doc(id)
+        .update({
+      'name': name,
+    });
+  }
+
+  static Future<void> changeZoneStatus(String id, bool status) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.zones)
+        .doc(id)
+        .update({
+      'show': status,
+    });
+  }
+
+  static Future<void> addProject(
+      String title, String description, String? thumbnail) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.projects)
+        .add({
+      'projectName': title,
+      'description': description,
+      'userId': userData!.userId,
+      'startTime': DateTime.now(),
+      'status': 'To Do',
+      'thumbnail': thumbnail,
+    });
+  }
+
+  static Future<void> updateProject(
+      String id, String title, String description, String? thumbnail) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.projects)
+        .doc(id)
+        .update({
+      'projectName': title,
+      'description': description,
+      'thumbnail': thumbnail,
     });
   }
 }

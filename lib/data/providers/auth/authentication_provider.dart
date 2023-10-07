@@ -74,31 +74,35 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
   }
 
   void validateEmail(String email) {
+    var errors_ = state.errors;
     if (email.isEmpty) {
-      state = state.copyWith(errors: {'email_error': 'Email is required'});
+      errors_['email_error'] = 'Email is required';
     } else if (!isEmail(email)) {
-      state = state.copyWith(errors: {'email_error': 'Email must be valid'});
+      errors_['email_error'] = 'Email must be valid';
     } else {
-      state = state.copyWith(errors: {'email_error': null});
+      errors_['email_error'] = null;
     }
+    state = state.copyWith(errors: errors_);
   }
 
   void validatePassword(String password) {
+    var errors_ = state.errors;
     if (password.isEmpty) {
-      state =
-          state.copyWith(errors: {'password_error': 'Password is required'});
+      errors_['password_error'] = 'Password is required';
     } else {
-      state = state.copyWith(errors: {'password_error': null});
+      errors_['password_error'] = null;
     }
+    state = state.copyWith(errors: errors_);
   }
 
-  void validateInvitation(String password) {
-    if (password.isEmpty) {
-      state = state.copyWith(
-          errors: {'invitation_code_error': 'Invitation code is required'});
+  void validateInvitation(String invitation) {
+    var errors_ = state.errors;
+    if (invitation.isEmpty) {
+      errors_['invitation_code_error'] = 'Invitation code is required';
     } else {
-      state = state.copyWith(errors: {'invitation_code_error': null});
+      errors_['invitation_code_error'] = null;
     }
+    state = state.copyWith(errors: errors_);
   }
 
   Future<void> onLogin({
@@ -159,6 +163,7 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
       state.basicValidator.clearErrors();
     } else {
       state = state.copyWith(errors: {});
+      state = state.copyWith(isSubmitted: false);
       NavigatorHelper.pushNamed('/dashboard');
     }
     state = state.copyWith(loading: false);
@@ -231,6 +236,11 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
   void gotoRegister() {
     state = state.copyWith(errors: {});
     NavigatorHelper.pushNamed('/auth/register');
+  }
+
+  void gotoLogin() {
+    state = state.copyWith(errors: {});
+    NavigatorHelper.pushNamed('/auth/login');
   }
 
   void closeMenu() {

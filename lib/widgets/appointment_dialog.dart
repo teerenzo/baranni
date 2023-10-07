@@ -10,7 +10,6 @@ import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/services/appointment_services.dart';
 import 'package:barrani/helpers/services/appointment_web_services.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
@@ -253,545 +252,541 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     var placeZones = ref.watch(kIsWeb
         ? FirebaseWebHelper.allZonesStreamProvider
         : allZonesStreamProvider);
+    final double formSpacing = 16;
     return SafeArea(
-      child: Container(
-        width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
-        height: widget.isMobile ? MediaQuery.of(context).size.height : 800,
-        padding: EdgeInsets.only(
-          left: widget.isMobile ? 16 : 0,
-          right: widget.isMobile ? 16 : 0,
-          top: widget.isMobile ? 24 : 0,
-        ),
-        child: LayoutBuilder(
-          builder: (BuildContext context, BoxConstraints constraints) {
-            return Column(
-              children: [
-                MySpacing.height(16),
-                Row(
-                  children: [
-                    MyText.bodyMedium(
-                      "Date",
-                      fontWeight: 600,
-                      muted: true,
-                      textAlign: TextAlign.start,
-                    ),
-                    MySpacing.width(66),
-                    MyText.bodyMedium(
-                      dateFormatter.format(widget.startDate),
-                      fontWeight: 600,
-                      muted: true,
-                      textAlign: TextAlign.start,
-                    ),
-                  ],
-                ),
-                MySpacing.height(16),
-                Row(
-                  children: [
-                    MyText.bodyMedium(
-                      "Select Zone",
-                      fontWeight: 600,
-                      muted: true,
-                      textAlign: TextAlign.start,
-                    ),
-                    MySpacing.width(16),
-                    placeZones
-                        .whenData((value_) => PopupMenuButton(
-                              onSelected: (value) {
-                                setState(() {
-                                  placeZone = value;
-                                });
-                              },
-                              itemBuilder: (BuildContext context) {
-                                return value_.map((zone) {
-                                  return PopupMenuItem(
-                                    value: zone,
-                                    height: 32,
-                                    child: MyText.bodySmall(
-                                      zone.name,
-                                      color: theme.colorScheme.onBackground,
-                                      fontWeight: 600,
-                                    ),
-                                  );
-                                }).toList();
-                              },
-                              color: theme.cardTheme.color,
-                              child: MyContainer.bordered(
-                                padding: MySpacing.xy(8, 8),
-                                child: Row(
-                                  children: <Widget>[
-                                    MyText.labelMedium(
-                                      placeZone != null
-                                          ? placeZone!.name
-                                          : 'Tap Select',
-                                      color: theme.colorScheme.onBackground,
-                                    ),
-                                    Container(
-                                      margin: const EdgeInsets.only(left: 4),
-                                      child: Icon(
-                                        LucideIcons.chevronDown,
-                                        size: 22,
+      child: SingleChildScrollView(
+        child: MyContainer(
+          width:
+              MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
+          height: widget.isMobile ? MediaQuery.of(context).size.height : 810,
+          padding: EdgeInsets.only(
+            left: widget.isMobile ? 16 : 20,
+            right: widget.isMobile ? 16 : 20,
+            top: widget.isMobile ? 24 : 30,
+          ),
+          child: LayoutBuilder(
+            builder: (BuildContext context, BoxConstraints constraints) {
+              return Column(
+                children: [
+                  Row(
+                    children: [
+                      MyText.bodyMedium(
+                        "Date",
+                        fontWeight: 600,
+                        muted: true,
+                        textAlign: TextAlign.start,
+                      ),
+                      MySpacing.width(66),
+                      MyText.bodyMedium(
+                        dateFormatter.format(widget.startDate),
+                        fontWeight: 600,
+                        muted: true,
+                        textAlign: TextAlign.start,
+                      ),
+                    ],
+                  ),
+                  MySpacing.height(formSpacing),
+                  Row(
+                    children: [
+                      MyText.bodyMedium(
+                        "Select Zone",
+                        fontWeight: 600,
+                        muted: true,
+                        textAlign: TextAlign.start,
+                      ),
+                      MySpacing.width(16),
+                      placeZones
+                          .whenData((value_) => PopupMenuButton(
+                                onSelected: (value) {
+                                  setState(() {
+                                    placeZone = value;
+                                  });
+                                },
+                                itemBuilder: (BuildContext context) {
+                                  return value_.map((zone) {
+                                    return PopupMenuItem(
+                                      value: zone,
+                                      height: 32,
+                                      child: MyText.bodySmall(
+                                        zone.name,
+                                        color: theme.colorScheme.onBackground,
+                                        fontWeight: 600,
+                                      ),
+                                    );
+                                  }).toList();
+                                },
+                                color: theme.cardTheme.color,
+                                child: MyContainer.bordered(
+                                  padding: MySpacing.xy(8, 8),
+                                  child: Row(
+                                    children: <Widget>[
+                                      MyText.labelMedium(
+                                        placeZone != null
+                                            ? placeZone!.name
+                                            : 'Tap Select',
                                         color: theme.colorScheme.onBackground,
                                       ),
-                                    )
-                                  ],
+                                      Container(
+                                        margin: const EdgeInsets.only(left: 4),
+                                        child: Icon(
+                                          LucideIcons.chevronDown,
+                                          size: 22,
+                                          color: theme.colorScheme.onBackground,
+                                        ),
+                                      )
+                                    ],
+                                  ),
                                 ),
-                              ),
-                            ))
-                        .when(
-                          loading: () => Center(
-                            child: CircularProgressIndicator(),
+                              ))
+                          .when(
+                            loading: () => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            error: (error, stack) {
+                              print(error);
+                              return MyText.bodyMedium(
+                                'Error loading zones',
+                                fontWeight: 600,
+                                muted: true,
+                                color: kAlertColor,
+                                textAlign: TextAlign.start,
+                              );
+                            },
+                            data: (Widget appointmentData) {
+                              return appointmentData;
+                            },
                           ),
-                          error: (error, stack) {
-                            print(error);
-                            return MyText.bodyMedium(
-                              'Error loading zones',
+                    ],
+                  ),
+                  MySpacing.height(formSpacing),
+                  if (isSubmitted && validateZone() != null)
+                    Container(
+                      alignment: Alignment.centerLeft,
+                      child: MyText.bodyMedium(
+                        validateZone() ?? '',
+                        fontWeight: 600,
+                        muted: true,
+                        color: kAlertColor,
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
+                  if (isSubmitted && validateZone() != null)
+                    MySpacing.height(formSpacing),
+                  Row(
+                    children: [
+                      MyText.bodyMedium(
+                        "Thumbnail",
+                        fontWeight: 600,
+                        muted: true,
+                        textAlign: TextAlign.start,
+                      ),
+                      MySpacing.width(20),
+                      MyButton.outlined(
+                        onPressed: () async {
+                          if (pickedImage != null) return;
+                          await handleUploadImage();
+                        },
+                        borderColor: imageUrl != "" || pickedImage != null
+                            ? Colors.transparent
+                            : contentTheme.secondary,
+                        padding: imageUrl != "" || pickedImage != null
+                            ? MySpacing.zero
+                            : MySpacing.xy(16, 16),
+                        child: imageUrl != ""
+                            ? Stack(
+                                alignment: Alignment.topRight,
+                                children: [
+                                  Image.network(imageUrl, width: 60),
+                                  Positioned(
+                                      child: InkWell(
+                                    onTap: () {
+                                      deleteImage(imageUrl).then((value) {
+                                        setState(() {
+                                          pickedImage = null;
+                                          imageUrl = "";
+                                        });
+                                      });
+                                    },
+                                    child: Icon(
+                                      Icons.close_rounded,
+                                      color: Colors.white,
+                                    ),
+                                  ))
+                                ],
+                              )
+                            : pickedImage != null
+                                ? Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      kIsWeb
+                                          ? Image.network(
+                                              pickedImage?.path ?? "",
+                                              width: 50,
+                                            )
+                                          : Image.file(
+                                              File(pickedImage?.path ?? ""),
+                                              width: 50,
+                                            ),
+                                      SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                : MyText.labelMedium(
+                                    'Select Thumbnail',
+                                    fontWeight: 600,
+                                  ),
+                      )
+                    ],
+                  ),
+
+                  MySpacing.height(formSpacing),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: MyText.bodyMedium(
+                      "Invites",
+                      fontWeight: 600,
+                      muted: true,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+
+                  MySpacing.height(formSpacing),
+                  SizedBox(
+                    height: 90,
+                    child: invites.isNotEmpty
+                        ? ListView(
+                            scrollDirection: Axis.horizontal,
+                            children: invites
+                                .where((element) =>
+                                    element.userId != userData?.userId)
+                                .map((e) => InviteAvatar(
+                                      user: e,
+                                      isInvited: false,
+                                      isMobile: widget.isMobile,
+                                      onTap: () {},
+                                    ))
+                                .toList(),
+                          )
+                        : MyText.bodyMedium('No selected Invites'),
+                  ),
+
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: MyText.bodyMedium(
+                      "Influencers",
+                      fontWeight: 600,
+                      muted: true,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+
+                  MySpacing.height(formSpacing),
+                  SizedBox(
+                    height: 90,
+                    child: ListView(
+                      scrollDirection: Axis.horizontal,
+                      children: currentUsersStream
+                          .whenData((value) => currentUsers
+                              .where((element) =>
+                                  element.userId != userData?.userId)
+                              .map((e) => InviteAvatar(
+                                    user: e,
+                                    isInvited: isInvited(e),
+                                    isMobile: widget.isMobile,
+                                    onTap: () {
+                                      modifyInvites(e);
+                                    },
+                                  ))
+                              .toList())
+                          .when(
+                            loading: () => [
+                              Center(
+                                child: CircularProgressIndicator(),
+                              )
+                            ],
+                            error: (error, stack) => [
+                              Center(
+                                child: MyText.bodyMedium(
+                                  'Error loading users $error',
+                                  fontWeight: 600,
+                                  muted: true,
+                                  color: kAlertColor,
+                                  textAlign: TextAlign.start,
+                                ),
+                              )
+                            ],
+                            data: (List<InviteAvatar> data) {
+                              return data;
+                            },
+                          ),
+                    ),
+                  ),
+                  SizedBox(height: formSpacing),
+                  if (isSubmitted && invites.isEmpty)
+                    StreamBuilder<Object>(
+                        stream: null,
+                        builder: (context, snapshot) {
+                          return SizedBox(
+                            width: double.infinity,
+                            child: MyText.bodyMedium(
+                              'At least one influencer must be invited',
                               fontWeight: 600,
                               muted: true,
                               color: kAlertColor,
                               textAlign: TextAlign.start,
-                            );
-                          },
-                          data: (Widget appointmentData) {
-                            return appointmentData;
-                          },
+                            ),
+                          );
+                        }),
+                  MySpacing.height(formSpacing),
+                  Expanded(
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          width: double.infinity,
+                          child: MyText.bodyMedium(
+                            "Description",
+                            fontWeight: 600,
+                            muted: true,
+                            textAlign: TextAlign.start,
+                          ),
                         ),
-                  ],
-                ),
-                MySpacing.height(16),
-                if (isSubmitted && validateZone() != null)
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: MyText.bodyMedium(
-                      validateZone() ?? '',
+                        MySpacing.height(8),
+                        TextFormField(
+                          maxLines: 3,
+                          onChanged: (value) {
+                            setState(() {
+                              description = value;
+                            });
+                          },
+                          decoration: InputDecoration(
+                            hintText: "Appointment Description",
+                            hintStyle: MyTextStyle.bodySmall(xMuted: true),
+                            border: outlineInputBorder,
+                            enabledBorder: outlineInputBorder,
+                            focusedBorder: focusedInputBorder,
+                            contentPadding: MySpacing.all(16),
+                            isCollapsed: true,
+                            floatingLabelBehavior: FloatingLabelBehavior.never,
+                          ),
+                        ),
+                        if (isSubmitted &&
+                            validateDescription(description) != null)
+                          SizedBox(
+                            width: double.infinity,
+                            child: MyText.bodyMedium(
+                              validateDescription(description) ?? '',
+                              fontWeight: 600,
+                              muted: true,
+                              color: kAlertColor,
+                              textAlign: TextAlign.start,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  MySpacing.height(formSpacing),
+                  MyFlex(
+                    contentPadding: false,
+                    children: [
+                      MyFlexItem(
+                        sizes: "lg-6",
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            MyText.bodyMedium(
+                              "Start Time",
+                              fontWeight: 600,
+                              muted: true,
+                            ),
+                            MySpacing.height(8),
+                            MyContainer.bordered(
+                              paddingAll: 12,
+                              onTap: () async {
+                                if (isSubmitting) {
+                                  return;
+                                }
+                                if (widget.isMobile) {
+                                  bottomTimePicker(context,
+                                      widget.startDate.applied(startTime),
+                                      (date) {
+                                    setState(() {
+                                      startTime = TimeOfDay(
+                                          hour: date.hour, minute: date.minute);
+                                    });
+
+                                    filterUser();
+                                  });
+                                } else {
+                                  TimeOfDay? t =
+                                      await pickTime(context, startTime);
+                                  if (t != null) {
+                                    setState(() {
+                                      startTime = t;
+                                    });
+                                    filterUser();
+                                  }
+                                }
+                              },
+                              borderColor: theme.colorScheme.secondary,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Icon(
+                                    LucideIcons.calendar,
+                                    color: theme.colorScheme.secondary,
+                                    size: 16,
+                                  ),
+                                  MySpacing.width(10),
+                                  MyText.bodyMedium(
+                                    timeHourFormatter.format(
+                                      widget.startDate.applied(startTime),
+                                    ),
+                                    fontWeight: 600,
+                                    color: theme.colorScheme.secondary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      MyFlexItem(
+                        sizes: "lg-6",
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            MyText.bodyMedium(
+                              "End Time",
+                              fontWeight: 600,
+                              muted: true,
+                            ),
+                            MySpacing.height(8),
+                            MyContainer.bordered(
+                              paddingAll: 12,
+                              onTap: () async {
+                                if (isSubmitting) {
+                                  return;
+                                }
+                                if (widget.isMobile) {
+                                  bottomTimePicker(context,
+                                      widget.startDate.applied(endTime),
+                                      (date) {
+                                    setState(() {
+                                      endTime = TimeOfDay(
+                                          hour: date.hour, minute: date.minute);
+                                    });
+                                  });
+                                } else {
+                                  TimeOfDay? t =
+                                      await pickTime(context, endTime);
+                                  if (t != null) {
+                                    setState(() {
+                                      endTime = t;
+                                    });
+                                    filterUser();
+                                  }
+                                }
+                              },
+                              borderColor: theme.colorScheme.secondary,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  Icon(
+                                    LucideIcons.calendar,
+                                    color: theme.colorScheme.secondary,
+                                    size: 16,
+                                  ),
+                                  MySpacing.width(10),
+                                  MyText.bodyMedium(
+                                    timeHourFormatter.format(
+                                      widget.startDate.applied(endTime),
+                                    ),
+                                    fontWeight: 600,
+                                    color: theme.colorScheme.secondary,
+                                  ),
+                                ],
+                              ),
+                            ),
+                            // if (isAppointmentExist(
+                            //         widget.startDate.applied(endTime)) &&
+                            //     isSubmitted)
+                            //   MyText.bodyMedium(
+                            //     'This Time is occupied',
+                            //     fontWeight: 600,
+                            //     muted: true,
+                            //     color: kAlertColor,
+                            //     textAlign: TextAlign.start,
+                            //   ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: formSpacing),
+                  if (isSubmitted && validateTime() != null)
+                    MyText.bodyMedium(
+                      validateTime()!,
                       fontWeight: 600,
                       muted: true,
                       color: kAlertColor,
                       textAlign: TextAlign.start,
                     ),
-                  ),
-                if (isSubmitted && validateZone() != null) MySpacing.height(16),
-                Row(
-                  children: [
-                    MyText.bodyMedium(
-                      "Thumbnail",
-                      fontWeight: 600,
-                      muted: true,
-                      textAlign: TextAlign.start,
-                    ),
-                    MySpacing.width(20),
-                    MyButton.outlined(
-                      onPressed: () async {
-                        if (pickedImage != null) return;
-                        await handleUploadImage();
-                      },
-                      borderColor: imageUrl != "" || pickedImage != null
-                          ? Colors.transparent
-                          : contentTheme.secondary,
-                      padding: imageUrl != "" || pickedImage != null
-                          ? MySpacing.zero
-                          : MySpacing.xy(16, 16),
-                      child: imageUrl != ""
-                          ? Stack(
-                              alignment: Alignment.topRight,
-                              children: [
-                                Image.network(imageUrl, width: 60),
-                                Positioned(
-                                    child: InkWell(
-                                  onTap: () {
-                                    deleteImage(imageUrl).then((value) {
-                                      setState(() {
-                                        pickedImage = null;
-                                        imageUrl = "";
-                                      });
-                                    });
-                                  },
-                                  child: Icon(
-                                    Icons.close_rounded,
-                                    color: Colors.white,
-                                  ),
-                                ))
-                              ],
-                            )
-                          : pickedImage != null
-                              ? Stack(
-                                  alignment: Alignment.center,
-                                  children: [
-                                    kIsWeb
-                                        ? Image.network(
-                                            pickedImage?.path ?? "",
-                                            width: 50,
-                                          )
-                                        : Image.file(
-                                            File(pickedImage?.path ?? ""),
-                                            width: 50,
-                                          ),
-                                    SizedBox(
-                                      height: 20,
-                                      width: 20,
-                                      child: CircularProgressIndicator(
-                                        strokeWidth: 2,
-                                      ),
-                                    ),
-                                  ],
-                                )
-                              : MyText.labelMedium(
-                                  'Select Thumbnail',
-                                  fontWeight: 600,
-                                ),
-                    )
-                  ],
-                ),
-
-                MySpacing.height(16),
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: MyText.bodyMedium(
-                    "Invites",
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-
-                MySpacing.height(16),
-                SizedBox(
-                  height: invites.isEmpty ? 30 : 90,
-                  child: invites.isNotEmpty
-                      ? ListView(
-                          scrollDirection: Axis.horizontal,
-                          children: invites
-                              .where((element) =>
-                                  element.userId != userData?.userId)
-                              .map((e) => InviteAvatar(
-                                    user: e,
-                                    isInvited: false,
-                                    isMobile: widget.isMobile,
-                                    onTap: () {},
-                                  ))
-                              .toList(),
-                        )
-                      : MyText.bodyMedium('No selected Invites'),
-                ),
-
-                Container(
-                  alignment: Alignment.centerLeft,
-                  child: MyText.bodyMedium(
-                    "Influencers",
-                    fontWeight: 600,
-                    muted: true,
-                    textAlign: TextAlign.start,
-                  ),
-                ),
-
-                MySpacing.height(8),
-                SizedBox(
-                  height: 90,
-                  child: ListView(
-                    scrollDirection: Axis.horizontal,
-                    children: currentUsersStream
-                        .whenData((value) => currentUsers
-                            .where(
-                                (element) => element.userId != userData?.userId)
-                            .map((e) => InviteAvatar(
-                                  user: e,
-                                  isInvited: isInvited(e),
-                                  isMobile: widget.isMobile,
-                                  onTap: () {
-                                    modifyInvites(e);
-                                  },
-                                ))
-                            .toList())
-                        .when(
-                          loading: () => [
-                            Center(
-                              child: CircularProgressIndicator(),
-                            )
-                          ],
-                          error: (error, stack) => [
-                            Center(
-                              child: MyText.bodyMedium(
-                                'Error loading users $error',
-                                fontWeight: 600,
-                                muted: true,
-                                color: kAlertColor,
-                                textAlign: TextAlign.start,
-                              ),
-                            )
-                          ],
-                          data: (List<InviteAvatar> data) {
-                            return data;
-                          },
-                        ),
-                  ),
-                ),
-                SizedBox(height: 16),
-                if (isSubmitted && invites.isEmpty)
-                  StreamBuilder<Object>(
-                      stream: null,
-                      builder: (context, snapshot) {
-                        return SizedBox(
-                          width: double.infinity,
-                          child: MyText.bodyMedium(
-                            'At least one influencer must be invited',
-                            fontWeight: 600,
-                            muted: true,
-                            color: kAlertColor,
-                            textAlign: TextAlign.start,
-                          ),
-                        );
-                      }),
-                MySpacing.height(8),
-                Expanded(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        child: MyText.bodyMedium(
-                          "Description",
-                          fontWeight: 600,
-                          muted: true,
-                          textAlign: TextAlign.start,
-                        ),
-                      ),
-                      TextFormField(
-                        maxLines: 3,
-                        onChanged: (value) {
-                          setState(() {
-                            description = value;
-                          });
-                        },
-                        decoration: InputDecoration(
-                          hintText: "Appointment Description",
-                          hintStyle: MyTextStyle.bodySmall(xMuted: true),
-                          border: outlineInputBorder,
-                          enabledBorder: outlineInputBorder,
-                          focusedBorder: focusedInputBorder,
-                          contentPadding: MySpacing.all(16),
-                          isCollapsed: true,
-                          floatingLabelBehavior: FloatingLabelBehavior.never,
-                        ),
-                      ),
-                      if (isSubmitted &&
-                          validateDescription(description) != null)
-                        SizedBox(
-                          width: double.infinity,
-                          child: MyText.bodyMedium(
-                            validateDescription(description) ?? '',
-                            fontWeight: 600,
-                            muted: true,
-                            color: kAlertColor,
-                            textAlign: TextAlign.start,
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-                MySpacing.height(16),
-                MyFlex(
-                  contentPadding: false,
-                  children: [
-                    MyFlexItem(
-                      sizes: "lg-6",
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          MyText.bodyMedium(
-                            "Start Time",
-                            fontWeight: 600,
-                            muted: true,
-                          ),
-                          MySpacing.height(8),
-                          MyContainer.bordered(
-                            paddingAll: 12,
-                            onTap: () async {
+                  // action buttons
+                  Expanded(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Expanded(
+                          child: MyButton.block(
+                            backgroundColor: theme.colorScheme.error,
+                            borderRadiusAll: AppStyle.buttonRadius.medium,
+                            elevation: 0,
+                            onPressed: () {
                               if (isSubmitting) {
                                 return;
                               }
-                              if (widget.isMobile) {
-                                bottomTimePicker(context,
-                                    widget.startDate.applied(startTime),
-                                    (date) {
-                                  setState(() {
-                                    startTime = TimeOfDay(
-                                        hour: date.hour, minute: date.minute);
-                                  });
-
-                                  filterUser();
-                                });
-                              } else {
-                                TimeOfDay? t =
-                                    await pickTime(context, startTime);
-                                if (t != null) {
-                                  setState(() {
-                                    startTime = t;
-                                  });
-                                  filterUser();
-                                }
-                              }
+                              Navigator.of(context).pop();
                             },
-                            borderColor: theme.colorScheme.secondary,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  LucideIcons.calendar,
-                                  color: theme.colorScheme.secondary,
-                                  size: 16,
-                                ),
-                                MySpacing.width(10),
-                                MyText.bodyMedium(
-                                  timeHourFormatter.format(
-                                    widget.startDate.applied(startTime),
-                                  ),
-                                  fontWeight: 600,
-                                  color: theme.colorScheme.secondary,
-                                ),
-                              ],
+                            child: MyText.bodyLarge(
+                              'Cancel',
+                              fontWeight: 600,
+                              color: theme.colorScheme.onError,
                             ),
                           ),
-                          // if (isAppointmentExist(
-                          //         widget.startDate.applied(startTime)) &&
-                          //     isSubmitted)
-                          //   MyText.bodyMedium(
-                          //     'This Time is occupied',
-                          //     fontWeight: 600,
-                          //     muted: true,
-                          //     color: kAlertColor,
-                          //     textAlign: TextAlign.start,
-                          //   ),
-                        ],
-                      ),
-                    ),
-                    MyFlexItem(
-                      sizes: "lg-6",
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          MyText.bodyMedium(
-                            "End Time",
-                            fontWeight: 600,
-                            muted: true,
-                          ),
-                          MySpacing.height(8),
-                          MyContainer.bordered(
-                            paddingAll: 12,
-                            onTap: () async {
-                              if (isSubmitting) {
-                                return;
-                              }
-                              if (widget.isMobile) {
-                                bottomTimePicker(
-                                    context, widget.startDate.applied(endTime),
-                                    (date) {
-                                  setState(() {
-                                    endTime = TimeOfDay(
-                                        hour: date.hour, minute: date.minute);
-                                  });
-                                });
-                              } else {
-                                TimeOfDay? t = await pickTime(context, endTime);
-                                if (t != null) {
-                                  setState(() {
-                                    endTime = t;
-                                  });
-                                  filterUser();
-                                }
-                              }
+                        ),
+                        const SizedBox(
+                          width: 10,
+                        ),
+                        Expanded(
+                          child: MyButton.block(
+                            backgroundColor: theme.colorScheme.primary
+                                .withOpacity(isSubmitting ? 0.8 : 1),
+                            borderRadiusAll: AppStyle.buttonRadius.medium,
+                            elevation: 0,
+                            onPressed: () {
+                              handleSubmit();
                             },
-                            borderColor: theme.colorScheme.secondary,
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                Icon(
-                                  LucideIcons.calendar,
-                                  color: theme.colorScheme.secondary,
-                                  size: 16,
-                                ),
-                                MySpacing.width(10),
-                                MyText.bodyMedium(
-                                  timeHourFormatter.format(
-                                    widget.startDate.applied(endTime),
-                                  ),
-                                  fontWeight: 600,
-                                  color: theme.colorScheme.secondary,
-                                ),
-                              ],
+                            child: MyText.bodyLarge(
+                              isSubmitting ? 'Submitting' : 'Submit',
+                              fontWeight: 600,
+                              color: theme.colorScheme.onError,
                             ),
                           ),
-                          // if (isAppointmentExist(
-                          //         widget.startDate.applied(endTime)) &&
-                          //     isSubmitted)
-                          //   MyText.bodyMedium(
-                          //     'This Time is occupied',
-                          //     fontWeight: 600,
-                          //     muted: true,
-                          //     color: kAlertColor,
-                          //     textAlign: TextAlign.start,
-                          //   ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
-                ),
-                SizedBox(height: 16),
-                if (isSubmitted && validateTime() != null)
-                  MyText.bodyMedium(
-                    validateTime()!,
-                    fontWeight: 600,
-                    muted: true,
-                    color: kAlertColor,
-                    textAlign: TextAlign.start,
                   ),
-                // action buttons
-                Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Expanded(
-                        child: MyButton.block(
-                          backgroundColor: theme.colorScheme.error,
-                          borderRadiusAll: AppStyle.buttonRadius.medium,
-                          elevation: 0,
-                          onPressed: () {
-                            if (isSubmitting) {
-                              return;
-                            }
-                            Navigator.of(context).pop();
-                          },
-                          child: MyText.bodyLarge(
-                            'Cancel',
-                            fontWeight: 600,
-                            color: theme.colorScheme.onError,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Expanded(
-                        child: MyButton.block(
-                          backgroundColor: theme.colorScheme.primary
-                              .withOpacity(isSubmitting ? 0.8 : 1),
-                          borderRadiusAll: AppStyle.buttonRadius.medium,
-                          elevation: 0,
-                          onPressed: () {
-                            handleSubmit();
-                          },
-                          child: MyText.bodyLarge(
-                            isSubmitting ? 'Submitting' : 'Submit',
-                            fontWeight: 600,
-                            color: theme.colorScheme.onError,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
@@ -883,7 +878,7 @@ class InviteAvatar extends StatelessWidget {
                 if (isInvited)
                   Icon(
                     Icons.done,
-                    color: kSecondaryColor,
+                    color: theme.colorScheme.secondary,
                   )
               ],
             ),

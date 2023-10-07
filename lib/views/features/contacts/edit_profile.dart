@@ -7,7 +7,8 @@ import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
@@ -27,18 +28,19 @@ import 'package:barrani/views/layouts/layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
-class EditProfile extends StatefulWidget {
+class EditProfile extends ConsumerStatefulWidget {
   static const routeName = "/contacts/edit-profile";
   const EditProfile({super.key});
 
   @override
-  State<EditProfile> createState() => _EditProfileState();
+  ConsumerState<EditProfile> createState() => _EditProfileState();
 }
 
-class _EditProfileState extends State<EditProfile>
+class _EditProfileState extends ConsumerState<EditProfile>
     with SingleTickerProviderStateMixin, UIMixin {
   late EditProfileController controller;
   final firstNameController = TextEditingController();
@@ -84,6 +86,7 @@ class _EditProfileState extends State<EditProfile>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     return Layout(
       child: GetBuilder(
         init: controller,
