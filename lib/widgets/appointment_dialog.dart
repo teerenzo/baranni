@@ -252,13 +252,12 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
     var placeZones = ref.watch(kIsWeb
         ? FirebaseWebHelper.allZonesStreamProvider
         : allZonesStreamProvider);
-    final double formSpacing = 16;
     return SafeArea(
       child: SingleChildScrollView(
         child: MyContainer(
           width:
               MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
-          height: widget.isMobile ? MediaQuery.of(context).size.height : 810,
+          height: widget.isMobile ? MediaQuery.of(context).size.height : 900,
           padding: EdgeInsets.only(
             left: widget.isMobile ? 16 : 20,
             right: widget.isMobile ? 16 : 20,
@@ -285,7 +284,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                       ),
                     ],
                   ),
-                  MySpacing.height(formSpacing),
+                  MySpacing.height(kInputSpacing),
                   Row(
                     children: [
                       MyText.bodyMedium(
@@ -358,7 +357,9 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                           ),
                     ],
                   ),
-                  MySpacing.height(formSpacing),
+
+                  if (isSubmitted && validateZone() != null)
+                    MySpacing.height(kLabelSpacing),
                   if (isSubmitted && validateZone() != null)
                     Container(
                       alignment: Alignment.centerLeft,
@@ -370,8 +371,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                         textAlign: TextAlign.start,
                       ),
                     ),
-                  if (isSubmitted && validateZone() != null)
-                    MySpacing.height(formSpacing),
+                  MySpacing.height(kInputSpacing),
                   Row(
                     children: [
                       MyText.bodyMedium(
@@ -444,7 +444,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                     ],
                   ),
 
-                  MySpacing.height(formSpacing),
+                  MySpacing.height(kInputSpacing),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: MyText.bodyMedium(
@@ -455,7 +455,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                     ),
                   ),
 
-                  MySpacing.height(formSpacing),
+                  MySpacing.height(kLabelSpacing),
                   SizedBox(
                     height: 90,
                     child: invites.isNotEmpty
@@ -474,7 +474,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                           )
                         : MyText.bodyMedium('No selected Invites'),
                   ),
-
+                  MySpacing.height(kInputSpacing),
                   Container(
                     alignment: Alignment.centerLeft,
                     child: MyText.bodyMedium(
@@ -485,7 +485,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                     ),
                   ),
 
-                  MySpacing.height(formSpacing),
+                  MySpacing.height(kLabelSpacing),
                   SizedBox(
                     height: 90,
                     child: ListView(
@@ -526,7 +526,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                           ),
                     ),
                   ),
-                  SizedBox(height: formSpacing),
+                  SizedBox(height: kInputSpacing),
                   if (isSubmitted && invites.isEmpty)
                     StreamBuilder<Object>(
                         stream: null,
@@ -542,7 +542,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                             ),
                           );
                         }),
-                  MySpacing.height(formSpacing),
+                  MySpacing.height(kInputSpacing),
                   Expanded(
                     child: Column(
                       children: [
@@ -555,7 +555,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                             textAlign: TextAlign.start,
                           ),
                         ),
-                        MySpacing.height(8),
+                        MySpacing.height(kLabelSpacing),
                         TextFormField(
                           maxLines: 3,
                           onChanged: (value) {
@@ -589,7 +589,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                       ],
                     ),
                   ),
-                  MySpacing.height(formSpacing),
+                  MySpacing.height(kInputSpacing),
                   MyFlex(
                     contentPadding: false,
                     children: [
@@ -603,7 +603,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                               fontWeight: 600,
                               muted: true,
                             ),
-                            MySpacing.height(8),
+                            MySpacing.height(kLabelSpacing),
                             MyContainer.bordered(
                               paddingAll: 12,
                               onTap: () async {
@@ -666,7 +666,7 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                               fontWeight: 600,
                               muted: true,
                             ),
-                            MySpacing.height(8),
+                            MySpacing.height(kLabelSpacing),
                             MyContainer.bordered(
                               paddingAll: 12,
                               onTap: () async {
@@ -714,22 +714,12 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
                                 ],
                               ),
                             ),
-                            // if (isAppointmentExist(
-                            //         widget.startDate.applied(endTime)) &&
-                            //     isSubmitted)
-                            //   MyText.bodyMedium(
-                            //     'This Time is occupied',
-                            //     fontWeight: 600,
-                            //     muted: true,
-                            //     color: kAlertColor,
-                            //     textAlign: TextAlign.start,
-                            //   ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: formSpacing),
+                  SizedBox(height: kInputSpacing),
                   if (isSubmitted && validateTime() != null)
                     MyText.bodyMedium(
                       validateTime()!,

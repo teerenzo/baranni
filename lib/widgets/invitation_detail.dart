@@ -1,4 +1,5 @@
 import 'package:barrani/app_constant.dart';
+import 'package:barrani/constants.dart';
 import 'package:barrani/global_functions.dart';
 import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
@@ -94,80 +95,85 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
         height: widget.isMobile
             ? MediaQuery.of(context).size.height *
                 (isAccepted ? 0.82 : (isDeclined ? 0.68 : 0.8))
-            : 620,
-        padding: EdgeInsets.all(widget.isMobile ? 16 : 30),
+            : 630,
+        padding: EdgeInsets.only(
+          top: 0,
+          left: widget.isMobile ? 16 : 30,
+          right: widget.isMobile ? 16 : 30,
+          bottom: widget.isMobile ? 16 : 30,
+        ),
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             return Column(
               children: [
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Expanded(
-                        child: Column(
-                      children: [
-                        Row(
-                          children: [
-                            MyText.bodyMedium(
-                              "Zone",
-                              fontWeight: 700,
-                              textAlign: TextAlign.start,
-                            ),
-                            MySpacing.width(16),
-                            MyText.bodyMedium(
-                              widget.appointment.notes!,
-                              fontWeight: 600,
-                              muted: true,
-                              textAlign: TextAlign.start,
-                            ),
-                          ],
-                        ),
-                        MySpacing.height(16),
-                        MySpacing.height(16),
-                        Row(
-                          children: [
-                            MyText.bodyMedium(
-                              "Host",
-                              fontWeight: 700,
-                              textAlign: TextAlign.start,
-                            ),
-                            MySpacing.width(16),
-                            MyText.bodyMedium(
-                              hoster.names,
-                              fontWeight: 600,
-                              muted: true,
-                              textAlign: TextAlign.start,
-                            ),
-                          ],
-                        ),
-                        MySpacing.height(16),
-                        MySpacing.height(16),
-                        Row(
-                          children: [
-                            MyText.bodyMedium(
-                              "Status",
-                              fontWeight: 700,
-                              textAlign: TextAlign.start,
-                            ),
-                            MySpacing.width(16),
-                            MyContainer(
-                              padding: MySpacing.xy(12, 2),
-                              color: getStatusColor(
-                                  invitation.status, contentTheme),
-                              child: MyText.bodyMedium(
-                                capitalize(invitation.status),
-                                fontSize: 12,
-                                color: getStatusBgColor(
-                                    invitation.status, contentTheme),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              MyText.bodyMedium(
+                                "Zone",
+                                fontWeight: 700,
+                                textAlign: TextAlign.start,
                               ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    )),
+                              MySpacing.width(16),
+                              MyText.bodyMedium(
+                                widget.appointment.notes!,
+                                fontWeight: 600,
+                                muted: true,
+                                textAlign: TextAlign.start,
+                              ),
+                            ],
+                          ),
+                          MySpacing.height(kInputSpacing),
+                          Row(
+                            children: [
+                              MyText.bodyMedium(
+                                "Host",
+                                fontWeight: 700,
+                                textAlign: TextAlign.start,
+                              ),
+                              MySpacing.width(16),
+                              MyText.bodyMedium(
+                                hoster.names,
+                                fontWeight: 600,
+                                muted: true,
+                                textAlign: TextAlign.start,
+                              ),
+                            ],
+                          ),
+                          MySpacing.height(kInputSpacing),
+                          Row(
+                            children: [
+                              MyText.bodyMedium(
+                                "Status",
+                                fontWeight: 700,
+                                textAlign: TextAlign.start,
+                              ),
+                              MySpacing.width(16),
+                              MyContainer(
+                                padding: MySpacing.xy(12, 2),
+                                color: getStatusColor(
+                                    invitation.status, contentTheme),
+                                child: MyText.bodyMedium(
+                                  capitalize(invitation.status),
+                                  fontSize: 12,
+                                  color: getStatusBgColor(
+                                      invitation.status, contentTheme),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
                     if (imgUrl != null) Expanded(child: Image.network(imgUrl))
                   ],
                 ),
-                MySpacing.height(16),
+                MySpacing.height(kInputSpacing),
                 if (isAccepted)
                   Container(
                     alignment: Alignment.centerLeft,
@@ -177,7 +183,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                       textAlign: TextAlign.start,
                     ),
                   ),
-                if (isAccepted) MySpacing.height(8),
+                if (isAccepted) MySpacing.height(kLabelSpacing),
                 if (isAccepted)
                   SizedBox(
                     height: 70,
@@ -191,8 +197,18 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                       }).toList(),
                     ),
                   ),
-                MySpacing.height(16),
-                if (widget.appointment.notes != null) MySpacing.height(8),
+                MySpacing.height(kInputSpacing),
+                if (widget.appointment.notes != null)
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    child: MyText.bodyMedium(
+                      "Description",
+                      fontWeight: 700,
+                      textAlign: TextAlign.start,
+                    ),
+                  ),
+                if (widget.appointment.notes != null)
+                  MySpacing.height(kLabelSpacing),
                 if (widget.appointment.notes != null)
                   Container(
                     alignment: Alignment.centerLeft,
@@ -204,7 +220,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                     ),
                   ),
 
-                MySpacing.height(16),
+                MySpacing.height(kInputSpacing),
                 Row(
                   children: [
                     MyText.bodyMedium(
@@ -221,7 +237,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                     ),
                   ],
                 ),
-                MySpacing.height(16),
+                MySpacing.height(kInputSpacing),
                 MyFlex(
                   contentPadding: false,
                   children: [
@@ -234,7 +250,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                             "Start Time",
                             fontWeight: 700,
                           ),
-                          MySpacing.height(8),
+                          MySpacing.height(kLabelSpacing),
                           MyContainer.bordered(
                             paddingAll: 12,
                             onTap: () {},
@@ -271,7 +287,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                             "End Time",
                             fontWeight: 700,
                           ),
-                          MySpacing.height(8),
+                          MySpacing.height(kLabelSpacing),
                           MyContainer.bordered(
                             paddingAll: 12,
                             onTap: () {},
@@ -301,7 +317,7 @@ class _InvitationDetailState extends State<InvitationDetail> with UIMixin {
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: kInputSpacing),
                 // action buttons
                 if (invitation.status == 'pending')
                   Expanded(

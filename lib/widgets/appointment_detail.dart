@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:barrani/app_constant.dart';
+import 'package:barrani/constants.dart';
 import 'package:barrani/controller/features/chat_controller.dart';
 import 'package:barrani/global_functions.dart';
 import 'package:barrani/global_variables.dart';
@@ -40,35 +41,18 @@ class AppointmentDetail extends StatelessWidget {
       child: MyContainer(
         width: MediaQuery.of(context).size.width * (isMobile ? 1 : 0.4),
         height: isMobile ? MediaQuery.of(context).size.height * 0.7 : 600,
-        padding: EdgeInsets.all(isMobile ? 16 : 30),
+        padding: EdgeInsets.only(
+          top: 0,
+          left: isMobile ? 16 : 30,
+          right: isMobile ? 16 : 30,
+          bottom: isMobile ? 16 : 30,
+        ),
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {
             return Column(
               children: [
                 Row(
                   children: [
-                    Expanded(
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              MyText.bodyMedium(
-                                "Zone",
-                                fontWeight: 700,
-                                textAlign: TextAlign.start,
-                              ),
-                              MySpacing.width(16),
-                              MyText.bodyMedium(
-                                appointment.notes!,
-                                fontWeight: 600,
-                                muted: true,
-                                textAlign: TextAlign.start,
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
                     if (imgUrl != null)
                       Expanded(
                         child: Image.network(
@@ -80,7 +64,7 @@ class AppointmentDetail extends StatelessWidget {
                       ),
                   ],
                 ),
-                MySpacing.height(16),
+                MySpacing.height(kInputSpacing),
                 Container(
                   alignment: Alignment.centerLeft,
                   child: MyText.bodyMedium(
@@ -128,8 +112,7 @@ class AppointmentDetail extends StatelessWidget {
                     );
                   }),
                 ),
-                MySpacing.height(16),
-                MySpacing.height(16),
+                MySpacing.height(kInputSpacing),
                 Container(
                   alignment: Alignment.centerLeft,
                   child: MyText.bodyMedium(
@@ -138,7 +121,7 @@ class AppointmentDetail extends StatelessWidget {
                     textAlign: TextAlign.start,
                   ),
                 ),
-                if (appointment.notes != null) MySpacing.height(8),
+                if (appointment.notes != null) MySpacing.height(kLabelSpacing),
                 if (appointment.notes != null)
                   Container(
                     alignment: Alignment.centerLeft,
@@ -149,7 +132,24 @@ class AppointmentDetail extends StatelessWidget {
                       textAlign: TextAlign.start,
                     ),
                   ),
-                MySpacing.height(16),
+                MySpacing.height(kInputSpacing),
+                Row(
+                  children: [
+                    MyText.bodyMedium(
+                      "Zone",
+                      fontWeight: 700,
+                      textAlign: TextAlign.start,
+                    ),
+                    MySpacing.width(16),
+                    MyText.bodyMedium(
+                      appointment.notes!,
+                      fontWeight: 600,
+                      muted: true,
+                      textAlign: TextAlign.start,
+                    ),
+                  ],
+                ),
+                MySpacing.height(kInputSpacing),
                 Row(
                   children: [
                     MyText.bodyMedium(
