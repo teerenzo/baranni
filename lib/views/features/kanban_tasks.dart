@@ -7,7 +7,9 @@ import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/extensions.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
+import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/models/kanbanProject.dart';
@@ -56,470 +58,477 @@ class _KanBanTaskPageState extends ConsumerState<KanBanTaskPage>
 
   @override
   Widget build(BuildContext context) {
-    final Map<String, KanbanProject> args = ModalRoute.of(context)!
-        .settings
-        .arguments as Map<String, KanbanProject>;
-
-    final projectId = args['project']!.id;
+    final projectId = LocalStorage.getProjectId();
 
     final kanbanTasKProvider = ref.watch(
         kIsWeb ? FirebaseWebHelper.kanbanTasksProvider : kanbanTasksProvider);
     final currentUsersStream = ref.watch(kIsWeb
         ? FirebaseWebHelper.allUsersStreamProvider
         : allUsersStreamProvider);
+    ref.watch(themesProvider);
 
-    return Layout(
-      child: Consumer(
-        // init: controller,
-        builder: (context, watch, child) {
-          final controller = ref.watch(kanbanControllerProvider);
-          controller.boardController = AppFlowyBoardScrollController();
+    return Scaffold(
+        floatingActionButton: !kIsWeb
+            ? FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/kanban/task/add');
+                },
+                child: Icon(Icons.add),
+              )
+            : null,
+        body: Layout(
+          child: Consumer(
+            // init: controller,
+            builder: (context, watch, child) {
+              final controller = ref.watch(kanbanControllerProvider);
+              controller.boardController = AppFlowyBoardScrollController();
 
-          return Column(
-            children: [
-              Padding(
-                padding: MySpacing.x(flexSpacing),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    MyText.titleMedium(
-                      "KanBan",
-                      fontSize: 18,
-                      fontWeight: 600,
-                    ),
-                    MyBreadcrumb(
+              return Column(
+                children: [
+                  Padding(
+                    padding: MySpacing.x(flexSpacing),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        MyBreadcrumbItem(name: 'Apps'),
-                        MyBreadcrumbItem(name: 'KanBan', active: true),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              MySpacing.height(flexSpacing),
-              Padding(
-                padding: MySpacing.x(flexSpacing),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    if (kIsWeb)
-                      MyButton(
-                        onPressed: () {
-                          Navigator.of(context).pushNamed('/kanban/task/add',
-                              arguments: args['project']);
-                        },
-                        elevation: 0,
-                        padding: MySpacing.xy(20, 16),
-                        backgroundColor: contentTheme.primary,
-                        borderRadiusAll: AppStyle.buttonRadius.medium,
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        MyText.titleMedium(
+                          "KanBan",
+                          fontSize: 18,
+                          fontWeight: 600,
+                        ),
+                        MyBreadcrumb(
                           children: [
-                            Icon(
-                              LucideIcons.plus,
-                              color: Color(0xffffffff),
-                            ),
-                            MySpacing.width(8),
-                            MyText.labelMedium(
-                              'create_task'.tr().capitalizeWords,
-                              color: contentTheme.onPrimary,
-                            ),
+                            MyBreadcrumbItem(name: 'Apps'),
+                            MyBreadcrumbItem(name: 'KanBan', active: true),
                           ],
                         ),
-                      ),
-                  ],
-                ),
-              ),
-              MySpacing.height(flexSpacing),
-              Padding(
-                  padding: MySpacing.x(flexSpacing / 2),
-                  child: kanbanTasKProvider.whenData(
-                    (data) {
-                      controller.boardData.clear();
-                      allGroups.clear();
-                      List<KanbanTask> projects = data
-                          .where((element) => element.projectId == projectId)
-                          .toList();
-
-                      List<TextItem> statusItemsToDo = projects
-                          .where((project) => project.status == 'To Do')
-                          .toList()
-                          .map((project) {
-                        // Determine the appropriate photoUrl based on the assignedTo field
-                        List<String> userImages = [];
-
-                        currentUsersStream.whenData((currentUsers) {
-                          // Filter out the current user
-                          filteredUsers = currentUsers
-                              .where((element) =>
-                                  element.userId != userData?.userId)
-                              .toList();
-
-                          // Loop through all current users and check if their ID exists in project.assignedTo
-                          for (var user in filteredUsers) {
-                            if (project.assignedTo.contains(user.userId)) {
-                              if (user.photoUrl.isNotEmpty) {
-                                userImages.add(user.photoUrl);
-                              }
-                              userImages.add(profileImageUrl);
-                            }
-                          }
-                        });
-
-                        // Determine color based on kanbanPriority
-                        Color priorityColor;
-                        switch (project.kanbanLevel) {
-                          case "High":
-                            priorityColor = Colors.red.shade400;
-                            break;
-                          case "Medium":
-                            priorityColor = Colors.brown;
-                            break;
-                          case "Low":
-                          default:
-                            priorityColor = Colors.green.shade400;
-                            break;
-                        }
-
-                        String? formattedStartTime = project.startTime != null
-                            ? DateFormat('jm').format(project.startTime)
-                            : null;
-                        String? formattedEndTime = project.endTime != null
-                            ? DateFormat('jm').format(project.endTime)
-                            : null;
-
-                        String? timeRange = formattedStartTime != null &&
-                                formattedEndTime != null
-                            ? 'From: $formattedStartTime - To: $formattedEndTime'
-                            : null;
-
-                        return TextItem(
-                          kanbanLevel: project.kanbanLevel,
-                          color: priorityColor,
-                          date: timeRange,
-                          title: project.projectName,
-                          name: userData!.names,
-                          image: userData!.photoUrl,
-                          jobTypeName: project.jobTypeName,
-                          images: userImages,
-                          kanbanProjectID: project.id,
-                          groupId:
-                              'To Do', // Set the groupId to the current status
-                        );
-                      }).toList();
-
-                      List<TextItem> statusItemsInProgress = projects
-                          .where((project) =>
-                              project.status == 'In Progress' &&
-                              project.projectId == projectId)
-                          .map((project) {
-                        // Determine the appropriate photoUrl based on the assignedTo field
-                        List<String> userImages = [];
-
-                        currentUsersStream.whenData((currentUsers) {
-                          // Filter out the current user
-                          filteredUsers = currentUsers
-                              .where((element) =>
-                                  element.userId != userData?.userId)
-                              .toList();
-
-                          // Loop through all current users and check if their ID exists in project.assignedTo
-                          for (var user in filteredUsers) {
-                            if (project.assignedTo.contains(user.userId)) {
-                              if (user.photoUrl.isNotEmpty) {
-                                userImages.add(user.photoUrl);
-                              }
-                              userImages.add(profileImageUrl);
-                            }
-                          }
-                        });
-
-                        // Determine color based on kanbanPriority
-                        Color priorityColor;
-                        switch (project.kanbanLevel) {
-                          case "High":
-                            priorityColor = Colors.red.shade400;
-                            break;
-                          case "Medium":
-                            priorityColor = Colors.brown;
-                            break;
-                          case "Low":
-                          default:
-                            priorityColor = Colors.green.shade400;
-                            break;
-                        }
-
-                        String? formattedStartTime = project.startTime != null
-                            ? DateFormat('jm').format(project.startTime)
-                            : null;
-                        String? formattedEndTime = project.endTime != null
-                            ? DateFormat('jm').format(project.endTime)
-                            : null;
-
-                        String? timeRange = formattedStartTime != null &&
-                                formattedEndTime != null
-                            ? 'From: $formattedStartTime - To: $formattedEndTime'
-                            : null;
-
-                        return TextItem(
-                          kanbanLevel: project.kanbanLevel,
-                          color: priorityColor,
-                          date: timeRange,
-                          title: project.projectName,
-                          name: userData!.names,
-                          image: userData!.photoUrl,
-                          jobTypeName: project.jobTypeName,
-                          images: userImages,
-                          kanbanProjectID: project.id,
-                          groupId:
-                              'In Progress', // Set the groupId to the current status
-                        );
-                      }).toList();
-
-                      List<TextItem> statusItemsWait = projects
-                          .where((project) =>
-                              project.status == 'Wait' &&
-                              project.projectId == projectId)
-                          .toList()
-                          .map((project) {
-                        // Determine the appropriate photoUrl based on the assignedTo field
-                        List<String> userImages = [];
-
-                        currentUsersStream.whenData((currentUsers) {
-                          // Filter out the current user
-                          filteredUsers = currentUsers
-                              .where((element) =>
-                                  element.userId != userData?.userId)
-                              .toList();
-
-                          // Loop through all current users and check if their ID exists in project.assignedTo
-                          for (var user in filteredUsers) {
-                            if (project.assignedTo.contains(user.userId)) {
-                              if (user.photoUrl.isNotEmpty) {
-                                userImages.add(user.photoUrl);
-                              }
-                              userImages.add(profileImageUrl);
-                            }
-                          }
-                        });
-
-                        // Determine color based on kanbanPriority
-                        Color priorityColor;
-                        switch (project.kanbanLevel) {
-                          case "High":
-                            priorityColor = Colors.red.shade400;
-                            break;
-                          case "Medium":
-                            priorityColor = Colors.brown;
-                            break;
-                          case "Low":
-                          default:
-                            priorityColor = Colors.green.shade400;
-                            break;
-                        }
-
-                        String? formattedStartTime = project.startTime != null
-                            ? DateFormat('jm').format(project.startTime)
-                            : null;
-                        String? formattedEndTime = project.endTime != null
-                            ? DateFormat('jm').format(project.endTime)
-                            : null;
-
-                        String? timeRange = formattedStartTime != null &&
-                                formattedEndTime != null
-                            ? 'From: $formattedStartTime - To: $formattedEndTime'
-                            : null;
-
-                        return TextItem(
-                          kanbanLevel: project.kanbanLevel,
-                          color: priorityColor,
-                          date: timeRange,
-                          title: project.projectName,
-                          name: userData!.names,
-                          image: userData!.photoUrl,
-                          jobTypeName: project.jobTypeName,
-                          images: userImages,
-                          kanbanProjectID: project.id,
-                          groupId:
-                              'Wait', // Set the groupId to the current status
-                        );
-                      }).toList();
-
-                      List<TextItem> statusItemsDone = projects
-                          .where((project) =>
-                              project.status == 'Done' &&
-                              project.projectId == projectId)
-                          .toList()
-                          .map((project) {
-                        // Determine the appropriate photoUrl based on the assignedTo field
-                        List<String> userImages = [];
-
-                        currentUsersStream.whenData((currentUsers) {
-                          // Filter out the current user
-                          filteredUsers = currentUsers
-                              .where((element) =>
-                                  element.userId != userData?.userId)
-                              .toList();
-
-                          // Loop through all current users and check if their ID exists in project.assignedTo
-                          for (var user in filteredUsers) {
-                            if (project.assignedTo.contains(user.userId)) {
-                              if (user.photoUrl.isNotEmpty) {
-                                userImages.add(user.photoUrl);
-                              }
-                              userImages.add(profileImageUrl);
-                            }
-                          }
-                        });
-
-                        // Determine color based on kanbanPriority
-                        Color priorityColor;
-                        switch (project.kanbanLevel) {
-                          case "High":
-                            priorityColor = Colors.red.shade400;
-                            break;
-                          case "Medium":
-                            priorityColor = Colors.brown;
-                            break;
-                          case "Low":
-                          default:
-                            priorityColor = Colors.green.shade400;
-                            break;
-                        }
-
-                        String? formattedStartTime = project.startTime != null
-                            ? DateFormat('jm').format(project.startTime)
-                            : null;
-                        String? formattedEndTime = project.endTime != null
-                            ? DateFormat('jm').format(project.endTime)
-                            : null;
-
-                        String? timeRange = formattedStartTime != null &&
-                                formattedEndTime != null
-                            ? 'From: $formattedStartTime - To: $formattedEndTime'
-                            : null;
-
-                        return TextItem(
-                          kanbanLevel: project.kanbanLevel,
-                          color: priorityColor,
-                          date: timeRange,
-                          title: project.projectName,
-                          name: userData!.names,
-                          image: userData!.photoUrl,
-                          jobTypeName: project.jobTypeName,
-                          images: userImages,
-                          kanbanProjectID: project.id,
-                          groupId:
-                              'Done', // Set the groupId to the current status
-                        );
-                      }).toList();
-
-                      final todo = AppFlowyGroupData(
-                        id: 'To Do',
-                        items: List<AppFlowyGroupItem>.from(statusItemsToDo),
-                        name: 'To Do', // Use "Unknown" as a fallback,
-                      );
-
-                      final inProgress = AppFlowyGroupData(
-                        id: 'In Progress',
-                        items:
-                            List<AppFlowyGroupItem>.from(statusItemsInProgress),
-                        name: 'In Progress', // Use "Unknown" as a fallback,
-                      );
-
-                      final wait = AppFlowyGroupData(
-                        id: 'Wait',
-                        items: List<AppFlowyGroupItem>.from(statusItemsWait),
-                        name: 'Wait', // Use "Unknown" as a fallback,
-                      );
-
-                      final done = AppFlowyGroupData(
-                        id: 'Done',
-                        items: List<AppFlowyGroupItem>.from(statusItemsDone),
-                        name: 'Done', // Use "Unknown" as a fallback,
-                      );
-                      controller.boardData!.addGroup(todo);
-                      controller.boardData!.addGroup(inProgress);
-                      controller.boardData!.addGroup(wait);
-
-                      controller.boardData!.addGroup(done);
-
-                      allGroups.addAll(controller.boardData.groupDatas);
-
-                      return PrimaryScrollController(
-                        controller: ScrollController(),
-                        child: AppFlowyBoard(
-                          config: AppFlowyBoardConfig(
-                            stretchGroupHeight: false,
-                            groupBackgroundColor:
-                                contentTheme.primary.withAlpha(20),
-                          ),
-                          controller: controller.boardData,
-                          cardBuilder: (context, group, groupItem) {
-                            // int index = statuses.indexOf(group.id);
-                            return AppFlowyGroupCard(
-                              key: ValueKey(group.id),
-                              decoration: BoxDecoration(
-                                  color: theme.colorScheme.background),
-                              child: buildCard(groupItem),
-                            );
-                          },
-                          boardScrollController: controller.boardController,
-                          footerBuilder: (context, columnData) {
-                            return MySpacing.height(16);
-                          },
-                          headerBuilder: (context, columnData) {
-                            return SizedBox(
-                              height: 40,
-                              child: ListView.builder(
-                                controller: _controller,
-                                shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  return AppFlowyGroupHeader(
-                                    title: MyText.bodyMedium(
-                                      columnData.headerData.groupName,
-                                      fontSize: 16,
-                                      fontWeight: 600,
-                                      muted: true,
-                                    ),
-                                    margin: MySpacing.x(16),
-                                    height: 40,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          groupConstraints: const BoxConstraints.tightFor(
-                            width: 400,
-                          ),
-                        ),
-                      );
-                    },
-                  ).when(data: (data) {
-                    return data;
-                  }, error: (error, s) {
-                    return Text(error.toString());
-                  }, loading: () {
-                    return Center(child: CircularProgressIndicator());
-                  })),
-              if (!kIsWeb) // Only show this FAB if it's not on web
-                Positioned(
-                  bottom: 16,
-                  right: 16,
-                  child: FloatingActionButton(
-                    onPressed: controller.goToCreateKanbanTask,
-                    backgroundColor: contentTheme.primary,
-                    child: Icon(
-                      LucideIcons.plus,
-                      color: Color(0xffffffff),
+                      ],
                     ),
                   ),
-                ),
-            ],
-          );
-        },
-      ),
-    );
+                  MySpacing.height(flexSpacing),
+                  Padding(
+                    padding: MySpacing.x(flexSpacing),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        if (kIsWeb)
+                          MyButton(
+                            onPressed: () {
+                              Navigator.of(context).pushNamed(
+                                '/kanban/task/add',
+                              );
+                            },
+                            elevation: 0,
+                            padding: MySpacing.xy(20, 16),
+                            backgroundColor: contentTheme.primary,
+                            borderRadiusAll: AppStyle.buttonRadius.medium,
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  LucideIcons.plus,
+                                  color: Color(0xffffffff),
+                                ),
+                                MySpacing.width(8),
+                                MyText.labelMedium(
+                                  'create_task'.tr().capitalizeWords,
+                                  color: contentTheme.onPrimary,
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
+                  MySpacing.height(flexSpacing),
+                  Padding(
+                      padding: MySpacing.x(flexSpacing / 2),
+                      child: kanbanTasKProvider.whenData(
+                        (data) {
+                          controller.boardData.clear();
+                          allGroups.clear();
+                          List<KanbanTask> projects = data
+                              .where(
+                                  (element) => element.projectId == projectId)
+                              .toList();
+
+                          List<TextItem> statusItemsToDo = projects
+                              .where((project) => project.status == 'To Do')
+                              .toList()
+                              .map((project) {
+                            // Determine the appropriate photoUrl based on the assignedTo field
+                            List<String> userImages = [];
+
+                            currentUsersStream.whenData(
+                              (currentUsers) {
+                                // Filter out the current user
+                                filteredUsers = currentUsers
+                                    .where((element) =>
+                                        element.userId != userData?.userId)
+                                    .toList();
+
+                                // Loop through all current users and check if their ID exists in project.assignedTo
+                                for (var user in filteredUsers) {
+                                  if (project.assignedTo
+                                      .contains(user.userId)) {
+                                    if (user.photoUrl.isNotEmpty) {
+                                      userImages.add(user.photoUrl);
+                                    }
+                                    userImages.add(profileImageUrl);
+                                  }
+                                }
+                              },
+                            );
+
+                            // Determine color based on kanbanPriority
+                            Color priorityColor;
+                            switch (project.kanbanLevel) {
+                              case "High":
+                                priorityColor = Colors.red.shade400;
+                                break;
+                              case "Medium":
+                                priorityColor = Colors.brown;
+                                break;
+                              case "Low":
+                              default:
+                                priorityColor = Colors.green.shade400;
+                                break;
+                            }
+
+                            String? formattedStartTime =
+                                project.startTime != null
+                                    ? DateFormat('jm').format(project.startTime)
+                                    : null;
+                            String? formattedEndTime = project.endTime != null
+                                ? DateFormat('jm').format(project.endTime)
+                                : null;
+
+                            String? timeRange = formattedStartTime != null &&
+                                    formattedEndTime != null
+                                ? 'From: $formattedStartTime - To: $formattedEndTime'
+                                : null;
+
+                            return TextItem(
+                              kanbanLevel: project.kanbanLevel,
+                              color: priorityColor,
+                              date: timeRange,
+                              title: project.projectName,
+                              name: userData!.names,
+                              image: userData!.photoUrl,
+                              jobTypeName: project.jobTypeName,
+                              images: userImages,
+                              kanbanProjectID: project.id,
+                              groupId:
+                                  'To Do', // Set the groupId to the current status
+                            );
+                          }).toList();
+
+                          List<TextItem> statusItemsInProgress = projects
+                              .where((project) =>
+                                  project.status == 'In Progress' &&
+                                  project.projectId == projectId)
+                              .map((project) {
+                            // Determine the appropriate photoUrl based on the assignedTo field
+                            List<String> userImages = [];
+
+                            currentUsersStream.whenData(
+                              (currentUsers) {
+                                // Filter out the current user
+                                filteredUsers = currentUsers
+                                    .where((element) =>
+                                        element.userId != userData?.userId)
+                                    .toList();
+
+                                // Loop through all current users and check if their ID exists in project.assignedTo
+                                for (var user in filteredUsers) {
+                                  if (project.assignedTo
+                                      .contains(user.userId)) {
+                                    if (user.photoUrl.isNotEmpty) {
+                                      userImages.add(user.photoUrl);
+                                    }
+                                    userImages.add(profileImageUrl);
+                                  }
+                                }
+                              },
+                            );
+
+                            // Determine color based on kanbanPriority
+                            Color priorityColor;
+                            switch (project.kanbanLevel) {
+                              case "High":
+                                priorityColor = Colors.red.shade400;
+                                break;
+                              case "Medium":
+                                priorityColor = Colors.brown;
+                                break;
+                              case "Low":
+                              default:
+                                priorityColor = Colors.green.shade400;
+                                break;
+                            }
+
+                            String? formattedStartTime =
+                                project.startTime != null
+                                    ? DateFormat('jm').format(project.startTime)
+                                    : null;
+                            String? formattedEndTime = project.endTime != null
+                                ? DateFormat('jm').format(project.endTime)
+                                : null;
+
+                            String? timeRange = formattedStartTime != null &&
+                                    formattedEndTime != null
+                                ? 'From: $formattedStartTime - To: $formattedEndTime'
+                                : null;
+
+                            return TextItem(
+                              kanbanLevel: project.kanbanLevel,
+                              color: priorityColor,
+                              date: timeRange,
+                              title: project.projectName,
+                              name: userData!.names,
+                              image: userData!.photoUrl,
+                              jobTypeName: project.jobTypeName,
+                              images: userImages,
+                              kanbanProjectID: project.id,
+                              groupId:
+                                  'In Progress', // Set the groupId to the current status
+                            );
+                          }).toList();
+
+                          List<TextItem> statusItemsWait = projects
+                              .where((project) =>
+                                  project.status == 'Wait' &&
+                                  project.projectId == projectId)
+                              .toList()
+                              .map((project) {
+                            // Determine the appropriate photoUrl based on the assignedTo field
+                            List<String> userImages = [];
+
+                            currentUsersStream.whenData((currentUsers) {
+                              // Filter out the current user
+                              filteredUsers = currentUsers
+                                  .where((element) =>
+                                      element.userId != userData?.userId)
+                                  .toList();
+
+                              // Loop through all current users and check if their ID exists in project.assignedTo
+                              for (var user in filteredUsers) {
+                                if (project.assignedTo.contains(user.userId)) {
+                                  if (user.photoUrl.isNotEmpty) {
+                                    userImages.add(user.photoUrl);
+                                  }
+                                  userImages.add(profileImageUrl);
+                                }
+                              }
+                            });
+
+                            // Determine color based on kanbanPriority
+                            Color priorityColor;
+                            switch (project.kanbanLevel) {
+                              case "High":
+                                priorityColor = Colors.red.shade400;
+                                break;
+                              case "Medium":
+                                priorityColor = Colors.brown;
+                                break;
+                              case "Low":
+                              default:
+                                priorityColor = Colors.green.shade400;
+                                break;
+                            }
+
+                            String? formattedStartTime =
+                                project.startTime != null
+                                    ? DateFormat('jm').format(project.startTime)
+                                    : null;
+                            String? formattedEndTime = project.endTime != null
+                                ? DateFormat('jm').format(project.endTime)
+                                : null;
+
+                            String? timeRange = formattedStartTime != null &&
+                                    formattedEndTime != null
+                                ? 'From: $formattedStartTime - To: $formattedEndTime'
+                                : null;
+
+                            return TextItem(
+                              kanbanLevel: project.kanbanLevel,
+                              color: priorityColor,
+                              date: timeRange,
+                              title: project.projectName,
+                              name: userData!.names,
+                              image: userData!.photoUrl,
+                              jobTypeName: project.jobTypeName,
+                              images: userImages,
+                              kanbanProjectID: project.id,
+                              groupId:
+                                  'Wait', // Set the groupId to the current status
+                            );
+                          }).toList();
+
+                          List<TextItem> statusItemsDone = projects
+                              .where((project) =>
+                                  project.status == 'Done' &&
+                                  project.projectId == projectId)
+                              .toList()
+                              .map((project) {
+                            // Determine the appropriate photoUrl based on the assignedTo field
+                            List<String> userImages = [];
+
+                            currentUsersStream.whenData((currentUsers) {
+                              // Filter out the current user
+                              filteredUsers = currentUsers
+                                  .where((element) =>
+                                      element.userId != userData?.userId)
+                                  .toList();
+
+                              // Loop through all current users and check if their ID exists in project.assignedTo
+                              for (var user in filteredUsers) {
+                                if (project.assignedTo.contains(user.userId)) {
+                                  if (user.photoUrl.isNotEmpty) {
+                                    userImages.add(user.photoUrl);
+                                  }
+                                  userImages.add(profileImageUrl);
+                                }
+                              }
+                            });
+
+                            // Determine color based on kanbanPriority
+                            Color priorityColor;
+                            switch (project.kanbanLevel) {
+                              case "High":
+                                priorityColor = Colors.red.shade400;
+                                break;
+                              case "Medium":
+                                priorityColor = Colors.brown;
+                                break;
+                              case "Low":
+                              default:
+                                priorityColor = Colors.green.shade400;
+                                break;
+                            }
+
+                            String? formattedStartTime =
+                                project.startTime != null
+                                    ? DateFormat('jm').format(project.startTime)
+                                    : null;
+                            String? formattedEndTime = project.endTime != null
+                                ? DateFormat('jm').format(project.endTime)
+                                : null;
+
+                            String? timeRange = formattedStartTime != null &&
+                                    formattedEndTime != null
+                                ? 'From: $formattedStartTime - To: $formattedEndTime'
+                                : null;
+
+                            return TextItem(
+                              kanbanLevel: project.kanbanLevel,
+                              color: priorityColor,
+                              date: timeRange,
+                              title: project.projectName,
+                              name: userData!.names,
+                              image: userData!.photoUrl,
+                              jobTypeName: project.jobTypeName,
+                              images: userImages,
+                              kanbanProjectID: project.id,
+                              groupId:
+                                  'Done', // Set the groupId to the current status
+                            );
+                          }).toList();
+
+                          final todo = AppFlowyGroupData(
+                            id: 'To Do',
+                            items:
+                                List<AppFlowyGroupItem>.from(statusItemsToDo),
+                            name: 'To Do', // Use "Unknown" as a fallback,
+                          );
+
+                          final inProgress = AppFlowyGroupData(
+                            id: 'In Progress',
+                            items: List<AppFlowyGroupItem>.from(
+                                statusItemsInProgress),
+                            name: 'In Progress', // Use "Unknown" as a fallback,
+                          );
+
+                          final wait = AppFlowyGroupData(
+                            id: 'Wait',
+                            items:
+                                List<AppFlowyGroupItem>.from(statusItemsWait),
+                            name: 'Wait', // Use "Unknown" as a fallback,
+                          );
+
+                          final done = AppFlowyGroupData(
+                            id: 'Done',
+                            items:
+                                List<AppFlowyGroupItem>.from(statusItemsDone),
+                            name: 'Done', // Use "Unknown" as a fallback,
+                          );
+                          controller.boardData.addGroup(todo);
+                          controller.boardData.addGroup(inProgress);
+                          controller.boardData.addGroup(wait);
+
+                          controller.boardData.addGroup(done);
+
+                          allGroups.addAll(controller.boardData.groupDatas);
+
+                          return PrimaryScrollController(
+                            controller: ScrollController(),
+                            child: AppFlowyBoard(
+                              config: AppFlowyBoardConfig(
+                                stretchGroupHeight: false,
+                                groupBackgroundColor:
+                                    contentTheme.primary.withAlpha(20),
+                              ),
+                              controller: controller.boardData,
+                              cardBuilder: (context, group, groupItem) {
+                                return AppFlowyGroupCard(
+                                  key: ValueKey(group.id),
+                                  decoration: BoxDecoration(
+                                      color: theme.colorScheme.background),
+                                  child: buildCard(groupItem),
+                                );
+                              },
+                              boardScrollController: controller.boardController,
+                              footerBuilder: (context, columnData) {
+                                return MySpacing.height(16);
+                              },
+                              headerBuilder: (context, columnData) {
+                                return SizedBox(
+                                  height: 40,
+                                  child: ListView.builder(
+                                    controller: _controller,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, index) {
+                                      return AppFlowyGroupHeader(
+                                        title: MyText.bodyMedium(
+                                          columnData.headerData.groupName,
+                                          fontSize: 16,
+                                          fontWeight: 600,
+                                          muted: true,
+                                        ),
+                                        margin: MySpacing.x(16),
+                                        height: 40,
+                                      );
+                                    },
+                                  ),
+                                );
+                              },
+                              groupConstraints: const BoxConstraints.tightFor(
+                                width: 400,
+                              ),
+                            ),
+                          );
+                        },
+                      ).when(data: (data) {
+                        return data;
+                      }, error: (error, s) {
+                        return Text(error.toString());
+                      }, loading: () {
+                        return Center(child: CircularProgressIndicator());
+                      })),
+                ],
+              );
+            },
+          ),
+        ));
   }
 
   Widget buildCard(AppFlowyGroupItem item) {
@@ -618,72 +627,72 @@ class _KanBanTaskPageState extends ConsumerState<KanBanTaskPage>
                     ),
                   ],
                 ),
-                MyContainer.none(
-                  paddingAll: 8,
-                  borderRadiusAll: 5,
-                  child: PopupMenuButton(
-                    offset: const Offset(-150, 15),
-                    position: PopupMenuPosition.under,
-                    itemBuilder: (BuildContext context) => [
-                      PopupMenuItem(
-                          padding: MySpacing.xy(16, 8),
-                          height: 10,
-                          child: Row(
-                            children: [
-                              const Icon(
-                                LucideIcons.plusCircle,
-                                size: 20,
-                              ),
-                              MySpacing.width(8),
-                              MyText.bodySmall("Add People"),
-                            ],
-                          )),
-                      PopupMenuItem(
-                          padding: MySpacing.xy(16, 8),
-                          height: 10,
-                          child: Row(
-                            children: [
-                              const Icon(
-                                LucideIcons.edit,
-                                size: 20,
-                              ),
-                              MySpacing.width(8),
-                              MyText.bodySmall("Edit"),
-                            ],
-                          )),
-                      PopupMenuItem(
-                          padding: MySpacing.xy(16, 8),
-                          height: 10,
-                          child: Row(
-                            children: [
-                              const Icon(
-                                LucideIcons.trash,
-                                size: 20,
-                              ),
-                              MySpacing.width(8),
-                              MyText.bodySmall("Delete"),
-                            ],
-                          )),
-                      PopupMenuItem(
-                          padding: MySpacing.xy(16, 8),
-                          height: 10,
-                          child: Row(
-                            children: [
-                              const Icon(
-                                LucideIcons.logOut,
-                                size: 20,
-                              ),
-                              MySpacing.width(8),
-                              MyText.bodySmall("Leave"),
-                            ],
-                          )),
-                    ],
-                    child: const Icon(
-                      LucideIcons.moreVertical,
-                      size: 18,
-                    ),
-                  ),
-                ),
+                // MyContainer.none(
+                //   paddingAll: 8,
+                //   borderRadiusAll: 5,
+                //   child: PopupMenuButton(
+                //     offset: const Offset(-150, 15),
+                //     position: PopupMenuPosition.under,
+                //     itemBuilder: (BuildContext context) => [
+                //       PopupMenuItem(
+                //           padding: MySpacing.xy(16, 8),
+                //           height: 10,
+                //           child: Row(
+                //             children: [
+                //               const Icon(
+                //                 LucideIcons.plusCircle,
+                //                 size: 20,
+                //               ),
+                //               MySpacing.width(8),
+                //               MyText.bodySmall("Add People"),
+                //             ],
+                //           )),
+                //       PopupMenuItem(
+                //           padding: MySpacing.xy(16, 8),
+                //           height: 10,
+                //           child: Row(
+                //             children: [
+                //               const Icon(
+                //                 LucideIcons.edit,
+                //                 size: 20,
+                //               ),
+                //               MySpacing.width(8),
+                //               MyText.bodySmall("Edit"),
+                //             ],
+                //           )),
+                //       PopupMenuItem(
+                //           padding: MySpacing.xy(16, 8),
+                //           height: 10,
+                //           child: Row(
+                //             children: [
+                //               const Icon(
+                //                 LucideIcons.trash,
+                //                 size: 20,
+                //               ),
+                //               MySpacing.width(8),
+                //               MyText.bodySmall("Delete"),
+                //             ],
+                //           )),
+                //       PopupMenuItem(
+                //           padding: MySpacing.xy(16, 8),
+                //           height: 10,
+                //           child: Row(
+                //             children: [
+                //               const Icon(
+                //                 LucideIcons.logOut,
+                //                 size: 20,
+                //               ),
+                //               MySpacing.width(8),
+                //               MyText.bodySmall("Leave"),
+                //             ],
+                //           )),
+                //     ],
+                //     child: const Icon(
+                //       LucideIcons.moreVertical,
+                //       size: 18,
+                //     ),
+                //   ),
+                // ),
               ],
             )
           ],

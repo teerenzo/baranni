@@ -331,6 +331,120 @@ class MyData extends DataTableSource with UIMixin {
                     color: contentTheme.primary,
                   ),
                 ),
+                MySpacing.width(8),
+                MyContainer.bordered(
+                  onTap: () async => {
+                    showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (_) {
+                          TextEditingController _nameController =
+                              TextEditingController();
+                          bool _isLoading = false;
+                          return LayoutBuilder(
+                            builder: (BuildContext context,
+                                BoxConstraints constraints) {
+                              return Dialog(
+                                child: SizedBox(
+                                  width: 400,
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: MySpacing.all(16),
+                                        child: MyText.labelLarge(
+                                            'Update Zone'.tr().capitalizeWords),
+                                      ),
+                                      const Divider(height: 0, thickness: 1),
+                                      Padding(
+                                        padding: MySpacing.all(16),
+                                        child: Column(children: [
+                                          TextFormField(
+                                            maxLines: 1,
+                                            initialValue: data[index].name,
+                                            onChanged: (value) {
+                                              _nameController.text = value;
+                                            },
+                                            decoration: InputDecoration(
+                                              hintText: "Zone 2",
+                                              hintStyle: MyTextStyle.bodySmall(
+                                                  xMuted: true),
+                                              border: outlineInputBorder,
+                                              enabledBorder: outlineInputBorder,
+                                              focusedBorder: focusedInputBorder,
+                                              contentPadding: MySpacing.all(16),
+                                              isCollapsed: true,
+                                              floatingLabelBehavior:
+                                                  FloatingLabelBehavior.never,
+                                            ),
+                                          ),
+                                        ]),
+                                      ),
+                                      const Divider(height: 0, thickness: 1),
+                                      Padding(
+                                        padding: MySpacing.all(16),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            MyButton.rounded(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              elevation: 0,
+                                              padding: MySpacing.xy(20, 16),
+                                              backgroundColor: theme.colorScheme
+                                                  .secondaryContainer,
+                                              child: MyText.labelMedium(
+                                                "close".tr(),
+                                                color: theme.colorScheme
+                                                    .onSecondaryContainer,
+                                              ),
+                                            ),
+                                            MySpacing.width(16),
+                                            MyButton.rounded(
+                                              onPressed: () async {
+                                                if (_nameController
+                                                    .text.isNotEmpty) {
+                                                  await FirebaseWebHelper
+                                                      .updateZone(
+                                                          data[index].id,
+                                                          _nameController.text);
+
+                                                  Navigator.pop(context);
+                                                }
+                                              },
+                                              elevation: 0,
+                                              padding: MySpacing.xy(20, 16),
+                                              backgroundColor:
+                                                  theme.colorScheme.primary,
+                                              child: MyText.labelMedium(
+                                                "save",
+                                                color:
+                                                    theme.colorScheme.onPrimary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          );
+                        })
+                  },
+                  padding: MySpacing.xy(6, 6),
+                  borderColor: contentTheme.primary.withAlpha(40),
+                  child: Icon(
+                    LucideIcons.edit3,
+                    size: 12,
+                    color: contentTheme.primary,
+                  ),
+                ),
               ],
             ),
           ),

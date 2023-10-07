@@ -878,7 +878,7 @@ class InviteAvatar extends StatelessWidget {
                 if (isInvited)
                   Icon(
                     Icons.done,
-                    color: kSecondaryColor,
+                    color: theme.colorScheme.secondary,
                   )
               ],
             ),

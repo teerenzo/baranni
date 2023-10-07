@@ -442,7 +442,10 @@ abstract class FirebaseWebHelper {
         fireBaseCollections
             .projects); // Assuming your kanban projects are in a collection named 'projects'
 
-    return fireStoreQuery.snapshots().map((querySnapshot) {
+    return fireStoreQuery
+        .orderBy("startTime", descending: true)
+        .snapshots()
+        .map((querySnapshot) {
       List<KanbanProject> currentProjects_ = [];
 
       for (var element in querySnapshot.docs) {
@@ -782,6 +785,15 @@ abstract class FirebaseWebHelper {
       'name': name,
       'userId': userData!.userId,
       'createdDate': DateTime.now(),
+    });
+  }
+
+  static Future<void> updateZone(String id, String name) async {
+    await FirebaseFirestore.instance
+        .collection(fireBaseCollections.zones)
+        .doc(id)
+        .update({
+      'name': name,
     });
   }
 

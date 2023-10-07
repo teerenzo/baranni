@@ -81,4 +81,21 @@ class LocalStorage {
   static bool getAppTheme() {
     return preferences.getBool(_themeKey) ?? true;
   }
+
+  static Future<void> setProjectData(String id, name) async {
+    await preferences.setString("projectId", id);
+    await preferences.setString(id, name);
+  }
+
+  static String? getProjectId() {
+    return preferences.getString("projectId");
+  }
+
+  static String? getProjectName(String id) {
+    return preferences.getString(id);
+  }
+
+  static Future<void> removeProjectData() async {
+    await preferences.remove("projectId");
+  }
 }
