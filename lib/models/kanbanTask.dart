@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class KanbanProject {
+class KanbanTask {
   final String kanbanLevel;
   final String jobTypeName;
   final String? userId;
@@ -11,8 +11,9 @@ class KanbanProject {
   final DateTime endTime;
   final List<String> assignedTo;
   final String? id; // optional field for document ID
+  final String? projectId;
 
-  KanbanProject({
+  KanbanTask({
     required this.kanbanLevel,
     required this.jobTypeName,
     required this.userId,
@@ -23,6 +24,7 @@ class KanbanProject {
     required this.endTime,
     required this.assignedTo,
     this.id,
+    this.projectId,
   });
 
   static DateTime _convertToDateTime(dynamic timestamp) {
@@ -34,18 +36,19 @@ class KanbanProject {
     throw ArgumentError('Expected Timestamp or DateTime, but got $timestamp');
   }
 
-  factory KanbanProject.fromMap(Map<String, dynamic> map) {
-    return KanbanProject(
+  factory KanbanTask.fromMap(Map<String, dynamic> map) {
+    return KanbanTask(
       kanbanLevel: map['kanbanLevel'],
       jobTypeName: map['jobTypeName'],
       userId: map['userId'],
-      projectName: map['projectName'],
+      projectName: map['taskName'],
       description: map['description'],
       status: map['status'],
-      startTime: KanbanProject._convertToDateTime(map['startTime']),
-      endTime: KanbanProject._convertToDateTime(map['endTime']),
+      startTime: KanbanTask._convertToDateTime(map['startTime']),
+      endTime: KanbanTask._convertToDateTime(map['endTime']),
       assignedTo: List<String>.from(map['assignedTo']),
       id: map['id'],
+      projectId: map['projectId'],
     );
   }
 
@@ -54,18 +57,19 @@ class KanbanProject {
       'kanbanLevel': kanbanLevel,
       'jobTypeName': jobTypeName,
       'userId': userId,
-      'projectName': projectName,
+      'taskName': projectName,
       'description': description,
       'status': status,
       'startTime': startTime,
       'endTime': endTime,
       'assignedTo': assignedTo,
+      'projectId': projectId,
       // 'id': id,  // This is optional, you might not want to include the document ID when writing back to Firestore
     };
   }
 
   @override
   toString() {
-    return 'KanbanProject: $id $projectName';
+    return 'KanbanTask: $id $projectName';
   }
 }

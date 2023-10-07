@@ -7,7 +7,8 @@ import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/models/appointment.dart';
 import 'package:barrani/models/invitation.dart';
-import 'package:barrani/models/kanban.dart';
+import 'package:barrani/models/kanbanTask.dart';
+import 'package:barrani/models/kanbanProject.dart';
 import 'package:barrani/models/notification.dart';
 import 'package:barrani/models/projects.dart';
 import 'package:barrani/models/user.dart';
@@ -36,7 +37,7 @@ final allUsersStreamProvider = StreamProvider<List<UserModal>>((ref) {
 
 final kanbanProjectsProvider = StreamProvider<List<KanbanProject>>((ref) {
   CollectionReference fireStoreQuery = Firestore.instance.collection(
-      fireBaseCollections.project); // 'project' collection in Firestore
+      fireBaseCollections.projects); // 'project' collection in Firestore
   return fireStoreQuery.stream.map((querySnapshot) {
     List<KanbanProject> projects = [];
 
@@ -51,20 +52,18 @@ final kanbanProjectsProvider = StreamProvider<List<KanbanProject>>((ref) {
   });
 });
 
-final projectsProvider = StreamProvider<List<Projects>>((ref) {
-  CollectionReference fireStoreQuery = Firestore.instance.collection(
-      fireBaseCollections.projects); // 'project' collection in Firestore
+final kanbanTasksProvider = StreamProvider<List<KanbanTask>>((ref) {
+  CollectionReference fireStoreQuery =
+      Firestore.instance.collection(fireBaseCollections.tasks);
   return fireStoreQuery.stream.map((querySnapshot) {
-    List<Projects> projects = [];
+    List<KanbanTask> tasks = [];
 
     for (var element in querySnapshot) {
       Map<String, dynamic> element_ = element.map;
-      element_['id'] = element
-          .id; // Assuming you have an 'id' field in your KanbanProject model
-      projects.add(Projects.fromMap(
-          element_)); // Assuming you have a fromMap constructor
+      element_['id'] = element.id;
+      tasks.add(KanbanTask.fromMap(element_));
     }
-    return projects;
+    return tasks;
   });
 });
 
@@ -191,7 +190,7 @@ Future<void> onSavePressed(
   });
 }
 
-Future<void> onCreateKanbanProject({
+Future<void> onCreateKanbanTask({
   required String? userId,
   required String projectName,
   required String description,
@@ -200,6 +199,7 @@ Future<void> onCreateKanbanProject({
   required List<String> inviteeIds,
   required String kanbanLevel,
   required String jobTypeName,
+  required String projectId,
 }) async {
   // Construct the document data
   Map<String, dynamic> data = {
@@ -211,10 +211,11 @@ Future<void> onCreateKanbanProject({
     'endTime': endTimeDate,
     'assignedTo': inviteeIds,
     'kanbanLevel': kanbanLevel,
-    'jobTypeName': jobTypeName
+    'jobTypeName': jobTypeName,
+    'projectId': projectId,
   };
   // Submit to Firestore
-  await Firestore.instance.collection(fireBaseCollections.project).add(data);
+  await Firestore.instance.collection(fireBaseCollections.tasks).add(data);
 }
 
 Future<void> onUpdateKanbanProject({
@@ -224,7 +225,7 @@ Future<void> onUpdateKanbanProject({
   // Construct the document data
   // Submit to Firestore
   await Firestore.instance
-      .collection(fireBaseCollections.project)
+      .collection(fireBaseCollections.tasks)
       .document(projectId!)
       .update({'status': status});
 }

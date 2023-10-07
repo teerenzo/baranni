@@ -24,6 +24,7 @@ import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
 import 'package:barrani/helpers/widgets/responsive.dart';
+import 'package:barrani/models/kanbanProject.dart';
 import 'package:barrani/models/user.dart';
 import 'package:barrani/views/layouts/layout.dart';
 import 'package:barrani/widgets/appointment_dialog.dart';
@@ -36,7 +37,7 @@ import 'package:get/get_core/src/get_main.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 
 class AddTask extends ConsumerStatefulWidget {
-  static const routeName = '/features/add_kanban_task';
+  static const routeName = '/kanban/task/add';
   const AddTask({Key? key}) : super(key: key);
 
   @override
@@ -63,6 +64,7 @@ class _AddTaskState extends ConsumerState<AddTask>
   late TimeOfDay endTime;
   bool isSubmitting = false;
   bool isSubmitted = false;
+  String projectId = "";
 
   void filterUser() {
     List<UserModal> filteredUsers = invites
@@ -105,7 +107,7 @@ class _AddTaskState extends ConsumerState<AddTask>
     List<String> inviteeIds = invites.map((user) => user.userId).toList();
 
     kIsWeb
-        ? FirebaseWebHelper.onCreateKanbanProject(
+        ? FirebaseWebHelper.onCreateKanbanTask(
             userId: userData?.userId,
             projectName: _projectName.text,
             description: _description.text,
@@ -114,8 +116,8 @@ class _AddTaskState extends ConsumerState<AddTask>
             inviteeIds: inviteeIds,
             kanbanLevel: selectedKanbanPriority,
             jobTypeName: _jobTypeName.text,
-          )
-        : onCreateKanbanProject(
+            projectId: projectId)
+        : onCreateKanbanTask(
             userId: userData?.userId,
             projectName: _projectName.text,
             description: _description.text,
@@ -124,6 +126,7 @@ class _AddTaskState extends ConsumerState<AddTask>
             inviteeIds: inviteeIds,
             kanbanLevel: selectedKanbanPriority,
             jobTypeName: _jobTypeName.text,
+            projectId: projectId,
           );
 
     setState(() {
@@ -159,6 +162,13 @@ class _AddTaskState extends ConsumerState<AddTask>
     var currentUsersStream = ref.watch(kIsWeb
         ? FirebaseWebHelper.allUsersStreamProvider
         : allUsersStreamProvider);
+    final KanbanProject project =
+        ModalRoute.of(context)!.settings.arguments as KanbanProject;
+
+    setState(() {
+      projectId = project.id!;
+    });
+
     return Layout(
       child: GetBuilder(
         init: controller,
@@ -171,7 +181,7 @@ class _AddTaskState extends ConsumerState<AddTask>
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     MyText.titleMedium(
-                      Trans("Add Project").tr.capitalizeWords,
+                      Trans("Add Task").tr.capitalizeWords,
                       fontSize: 18,
                       fontWeight: 600,
                     ),
@@ -187,9 +197,9 @@ class _AddTaskState extends ConsumerState<AddTask>
                   ],
                 ),
               ),
-              MySpacing.height(flexSpacing * 3),
+              MySpacing.height(flexSpacing * 1),
               Padding(
-                padding: MySpacing.x(flexSpacing / 2),
+                padding: MySpacing.x(flexSpacing / 1),
                 child: MyFlex(
                   children: [
                     MyFlexItem(
@@ -231,8 +241,9 @@ class _AddTaskState extends ConsumerState<AddTask>
                                         ),
                                         MySpacing.height(8),
                                         TextFormField(
-                                          controller: _projectName,
                                           keyboardType: TextInputType.name,
+                                          initialValue: project.projectName,
+                                          readOnly: true,
                                           decoration: InputDecoration(
                                             hintText: "eg: kanban",
                                             hintStyle: MyTextStyle.bodySmall(
@@ -249,6 +260,28 @@ class _AddTaskState extends ConsumerState<AddTask>
                                       ],
                                     ),
                                   ),
+                                  MySpacing.height(25),
+                                  MyText.labelMedium(
+                                    Trans("Task Name").tr.capitalizeWords,
+                                  ),
+                                  MySpacing.height(8),
+                                  TextFormField(
+                                    controller: _projectName,
+                                    keyboardType: TextInputType.name,
+                                    decoration: InputDecoration(
+                                      hintText: "eg: login",
+                                      hintStyle:
+                                          MyTextStyle.bodySmall(xMuted: true),
+                                      border: outlineInputBorder,
+                                      enabledBorder: outlineInputBorder,
+                                      focusedBorder: focusedInputBorder,
+                                      contentPadding: MySpacing.all(16),
+                                      isCollapsed: true,
+                                      floatingLabelBehavior:
+                                          FloatingLabelBehavior.never,
+                                    ),
+                                  ),
+
                                   MySpacing.height(25),
                                   MyText.labelMedium(
                                     Trans("Description").tr,

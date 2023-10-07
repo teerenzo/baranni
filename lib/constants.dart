@@ -168,7 +168,7 @@ class FireBaseCollections {
   final String userInvitations = 'userInvitations';
   final String users = 'users';
   final String zones = 'zones';
-  final String project = 'project';
+  final String tasks = 'tasks';
   final String projects = 'projects';
   final String products = 'products';
   final String categories = 'categories';
