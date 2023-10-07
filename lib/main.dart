@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/config.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/views/auth/forgot_password.dart';
 import 'package:barrani/views/auth/login.dart';
 import 'package:barrani/views/auth/register.dart';
@@ -32,7 +33,6 @@ import 'package:one_context/one_context.dart';
 import 'helpers/localizations/language.dart';
 import 'helpers/storage/local_storage.dart';
 import 'helpers/theme/app_style.dart';
-import 'helpers/theme/theme_customizer.dart';
 import 'package:timezone/data/latest_all.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
@@ -238,7 +238,7 @@ Future<void> _configureLocalTimeZone() async {
   tz.setLocalLocation(tz.getLocation(timeZoneName!));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   final List<NavigatorObserver> navigatorObservers;
   final initialRoute;
 
@@ -249,12 +249,13 @@ class MyApp extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final themeMode = ref.watch(themesProvider);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeCustomizer.instance.theme,
+      themeMode: themeMode,
       navigatorKey: OneContext().key,
       builder: OneContext().builder,
       initialRoute: initialRoute,

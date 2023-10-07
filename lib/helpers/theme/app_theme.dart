@@ -3,7 +3,9 @@
 * Version : 1.0.0
 * */
 
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:barrani/helpers/theme/custom_theme.dart';
 import 'package:barrani/helpers/theme/theme_type.dart';
@@ -12,7 +14,7 @@ import 'package:barrani/helpers/widgets/my_text_style.dart';
 export 'custom_theme.dart';
 export 'navigation_theme.dart';
 
-ThemeData get theme => AppTheme.theme;
+// ThemeData theme = AppTheme.getTheme();
 
 class AppTheme {
   static ThemeType themeType = ThemeType.light;
@@ -24,9 +26,8 @@ class AppTheme {
   static ThemeData nftTheme = getNFTTheme();
   static ThemeData rentalServiceTheme = getRentalServiceTheme();
 
-  static ThemeData cookifyTheme = AppTheme.themeType == ThemeType.light
-      ? cookifyLightTheme
-      : cookifyDarkTheme;
+  static ThemeData cookifyTheme =
+      ThemeMode == ThemeType.light ? cookifyLightTheme : cookifyDarkTheme;
 
 //---------------------------NEW-----------------------------------------
 
@@ -263,9 +264,9 @@ class AppTheme {
     });
   }
 
-  static ThemeData getTheme([ThemeType? themeType]) {
-    themeType = themeType ?? AppTheme.themeType;
-    if (themeType == ThemeType.light) return lightTheme;
+  static ThemeData getTheme() {
+    final container = ProviderContainer();
+    if (container.read(themesProvider) == ThemeMode.light) return lightTheme;
     return darkTheme;
   }
 
@@ -544,39 +545,26 @@ class AppTheme {
               brightness: Brightness.dark,
               onBackground: Color(0xFFDAD9CA)));
     }
-    // return createTheme(ColorScheme.fromSeed(seedColor: Color(0xff232245)));
   }
 
   static ThemeData getRentalServiceTheme() {
     return createThemeM3(themeType, Color(0xff2e87a6));
   }
 
-  static resetThemeData() {
+  static resetThemeData(value) {
     nftTheme = getNFTTheme();
 
-    estateTheme = AppTheme.themeType == ThemeType.light
-        ? estateLightTheme
-        : estateDarkTheme;
+    estateTheme = value ? estateLightTheme : estateDarkTheme;
 
-    shoppingTheme = AppTheme.themeType == ThemeType.light
-        ? shoppingLightTheme
-        : shoppingDarkTheme;
+    shoppingTheme = value ? shoppingLightTheme : shoppingDarkTheme;
 
-    cookifyTheme = AppTheme.themeType == ThemeType.light
-        ? cookifyLightTheme
-        : cookifyDarkTheme;
+    cookifyTheme = value ? cookifyLightTheme : cookifyDarkTheme;
 
-    datingTheme = AppTheme.themeType == ThemeType.light
-        ? datingLightTheme
-        : datingDarkTheme;
+    datingTheme = value ? datingLightTheme : datingDarkTheme;
 
-    homemadeTheme = AppTheme.themeType == ThemeType.light
-        ? homemadeLightTheme
-        : homemadeDarkTheme;
+    homemadeTheme = value ? homemadeLightTheme : homemadeDarkTheme;
 
-    learningTheme = AppTheme.themeType == ThemeType.light
-        ? learningLightTheme
-        : learningDarkTheme;
+    learningTheme = value ? learningLightTheme : learningDarkTheme;
 
     shoppingManagerTheme = getShoppingManagerTheme();
     rentalServiceTheme = getRentalServiceTheme();

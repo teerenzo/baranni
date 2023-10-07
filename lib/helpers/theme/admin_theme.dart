@@ -257,18 +257,17 @@ class AdminTheme {
       rightBarTheme: RightBarTheme.lightRightBarTheme,
       contentTheme: ContentTheme.lightContentTheme);
 
-  static void setTheme() {
+  static void setTheme(value) {
     theme = AdminTheme(
-        leftBarTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
+        leftBarTheme: value
             ? LeftBarTheme.darkLeftBarTheme
             : LeftBarTheme.lightLeftBarTheme,
-        topBarTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
-            ? TopBarTheme.darkTopBarTheme
-            : TopBarTheme.lightTopBarTheme,
-        rightBarTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
+        topBarTheme:
+            value ? TopBarTheme.darkTopBarTheme : TopBarTheme.lightTopBarTheme,
+        rightBarTheme: value
             ? RightBarTheme.darkRightBarTheme
             : RightBarTheme.lightRightBarTheme,
-        contentTheme: ThemeCustomizer.instance.theme == ThemeMode.dark
+        contentTheme: value
             ? ContentTheme.darkContentTheme
             : ContentTheme.lightContentTheme);
   }

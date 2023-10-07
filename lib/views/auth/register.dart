@@ -1,7 +1,9 @@
 import 'package:barrani/data/providers/auth/authentication_provider.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
@@ -42,6 +44,7 @@ class _RegisterState extends ConsumerState<Register>
   @override
   Widget build(BuildContext context) {
     var authenticationProvider = ref.read(authProvider);
+    ref.watch(themesProvider);
 
     return AuthLayout(
       child: Padding(

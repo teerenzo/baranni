@@ -1,7 +1,8 @@
 import 'package:barrani/app_constant.dart';
 import 'package:barrani/controller/forms/wizard_controller.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';

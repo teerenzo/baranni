@@ -178,30 +178,19 @@ class MaterialTheme {
       ? homemadeLightTheme
       : homemadeDarkTheme;
 
-  static resetThemeData() {
-    materialThemeData = AppTheme.themeType == ThemeType.light
-        ? MaterialThemeData().light()
-        : MaterialThemeData().dark();
+  static resetThemeData(value) {
+    materialThemeData =
+        value ? MaterialThemeData().light() : MaterialThemeData().dark();
 
-    learningTheme = AppTheme.themeType == ThemeType.light
-        ? learningLightTheme
-        : learningDarkTheme;
+    learningTheme = value ? learningLightTheme : learningDarkTheme;
 
-    cookifyTheme = AppTheme.themeType == ThemeType.light
-        ? cookifyLightTheme
-        : cookifyDarkTheme;
+    cookifyTheme = value ? cookifyLightTheme : cookifyDarkTheme;
 
-    estateTheme = AppTheme.themeType == ThemeType.light
-        ? estateLightTheme
-        : estateDarkTheme;
+    estateTheme = value ? estateLightTheme : estateDarkTheme;
 
-    homemadeTheme = AppTheme.themeType == ThemeType.light
-        ? homemadeLightTheme
-        : homemadeDarkTheme;
+    homemadeTheme = value ? homemadeLightTheme : homemadeDarkTheme;
 
-    datingTheme = AppTheme.themeType == ThemeType.light
-        ? datingLightTheme
-        : datingDarkTheme;
+    datingTheme = value ? datingLightTheme : datingDarkTheme;
   }
 }
 

@@ -159,6 +159,7 @@ class _AuthNotifier extends StateNotifier<_AuthState> {
       state.basicValidator.clearErrors();
     } else {
       state = state.copyWith(errors: {});
+      state = state.copyWith(isSubmitted: false);
       NavigatorHelper.pushNamed('/dashboard');
     }
     state = state.copyWith(loading: false);

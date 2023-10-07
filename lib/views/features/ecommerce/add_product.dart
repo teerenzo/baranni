@@ -1,10 +1,12 @@
 import 'dart:io';
 
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/firebase/product_provider.dart';
 import 'package:barrani/helpers/firebase/product_provider_web_helper.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/widgets/my_dotted_line.dart';
 import 'package:barrani/helpers/widgets/my_list_extension.dart';
 import 'package:barrani/images.dart';
@@ -19,7 +21,7 @@ import 'package:lucide_icons/lucide_icons.dart';
 import 'package:barrani/controller/ecommerce/add_product_controller.dart';
 import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
@@ -160,6 +162,7 @@ class _AddProductState extends ConsumerState<AddProduct>
         : allCategoriesStreamProvider);
     var groups = ref.watch(
         kIsWeb ? allGroupsStreamProviderWebHelper : allGroupsStreamProvider);
+    ref.watch(themesProvider);
     return Layout(
       child: Column(
         children: [

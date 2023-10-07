@@ -5,15 +5,14 @@
 import 'dart:io';
 import 'dart:math';
 
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:barrani/helpers/theme/admin_theme.dart';
 import 'package:barrani/helpers/widgets/my.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb_item.dart';
 import 'package:barrani/helpers/widgets/my_constant.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
-
-import 'theme_customizer.dart';
 
 class MaterialRadius {
   double xs, small, medium, large;
@@ -29,17 +28,15 @@ class ColorGroup {
 }
 
 class AppTheme {
-  static ThemeData theme = AppTheme.getThemeFromThemeMode();
+  static ThemeData theme = getTheme();
   static TextDirection textDirection = TextDirection.ltr;
 
   static Color primaryColor = Color(0xff3874ff);
 
-  // static Color primaryColor = Color(0xff006784);
-
-  static ThemeData getThemeFromThemeMode() {
-    return ThemeCustomizer.instance.theme == ThemeMode.light
-        ? lightTheme
-        : darkTheme;
+  static ThemeData getTheme() {
+    final container = ProviderContainer();
+    final p = container.read(themesProvider);
+    return p == ThemeMode.light ? AppTheme.lightTheme : AppTheme.darkTheme;
   }
 
   /// -------------------------- Light Theme  -------------------------------------------- ///
@@ -237,7 +234,6 @@ class AppTheme {
 class AppStyle {
   static void init() {
     initMyStyle();
-    AdminTheme.setTheme();
   }
 
   static void changeMyTheme() {

@@ -1,5 +1,6 @@
+import 'package:barrani/global_variables.dart';
 import 'package:flutter/material.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/utils/constant_data.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';

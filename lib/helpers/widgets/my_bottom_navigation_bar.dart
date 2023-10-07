@@ -1,7 +1,8 @@
 // ignore_for_file: unrelated_type_equality_checks
 
+import 'package:barrani/global_variables.dart';
 import 'package:flutter/material.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
 import 'package:barrani/helpers/widgets/my_bottom_navigation_bar_item.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_spacing.dart';

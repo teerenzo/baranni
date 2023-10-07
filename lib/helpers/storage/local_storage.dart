@@ -11,6 +11,7 @@ class LocalStorage {
   static const String _loggedInUserData = "userData";
   static const String _themeCustomizerKey = "theme_customizer";
   static const String _languageKey = "lang_code";
+  static const String _themeKey = "themeKey";
 
   static SharedPreferences? _preferencesInstance;
 
@@ -71,5 +72,13 @@ class LocalStorage {
 
   static Future<void> removeUserData() async {
     await preferences.remove(_loggedInUserData);
+  }
+
+  static Future<void> setAppTheme(value) async {
+    await preferences.setBool(_themeKey, value);
+  }
+
+  static bool getAppTheme() {
+    return preferences.getBool(_themeKey) ?? true;
   }
 }

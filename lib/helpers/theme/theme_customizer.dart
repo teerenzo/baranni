@@ -6,13 +6,10 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:barrani/helpers/localizations/language.dart';
 import 'package:barrani/helpers/localizations/translator.dart';
 import 'package:barrani/helpers/services/json_decoder.dart';
-import 'package:barrani/helpers/services/navigation_service.dart';
 import 'package:barrani/helpers/theme/admin_theme.dart';
-import 'package:barrani/helpers/theme/app_notifier.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
 
 typedef ThemeChangeCallback = void Function(
@@ -25,10 +22,10 @@ class ThemeCustomizer {
 
   Language currentLanguage = Language.languages.first;
 
-  ThemeMode theme = ThemeMode.light;
-  ThemeMode leftBarTheme = ThemeMode.light;
-  ThemeMode rightBarTheme = ThemeMode.light;
-  ThemeMode topBarTheme = ThemeMode.light;
+  ThemeMode theme = ThemeMode.dark;
+  ThemeMode leftBarTheme = ThemeMode.dark;
+  ThemeMode rightBarTheme = ThemeMode.dark;
+  ThemeMode topBarTheme = ThemeMode.dark;
 
   bool rightBarOpen = false;
   bool leftBarCondensed = false;
@@ -58,24 +55,12 @@ class ThemeCustomizer {
     return instance;
   }
 
-  static void addListener(ThemeChangeCallback callback) {
-    _notifier.add(callback);
-  }
-
   static void removeListener(ThemeChangeCallback callback) {
     _notifier.remove(callback);
   }
 
   static void _notify() {
-    AdminTheme.setTheme();
     AppStyle.changeMyTheme();
-    if (NavigationService.globalContext != null) {
-      Provider.of<AppNotifier>(NavigationService.globalContext!, listen: false)
-          .updateTheme(instance);
-    }
-    for (var value in _notifier) {
-      value(oldInstance, instance);
-    }
   }
 
   static void notify() {

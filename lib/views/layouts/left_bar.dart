@@ -2,6 +2,7 @@ import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/navigator_helper.dart';
 import 'package:barrani/helpers/services/url_service.dart';
 import 'package:barrani/helpers/theme/theme_customizer.dart';
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_card.dart';
@@ -10,6 +11,7 @@ import 'package:barrani/helpers/widgets/my_spacing.dart';
 import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/widgets/custom_pop_menu.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:lucide_icons/lucide_icons.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,7 +36,22 @@ class LeftbarObserver {
   }
 }
 
-class LeftBar extends StatefulWidget {
+// class LeftBar extends ConsumerStatefulWidget {
+//   const LeftBar({super.key});
+
+//   @override
+//   ConsumerState<ConsumerStatefulWidget> createState() => _LeftBarState();
+// }
+
+// class _LeftBarState extends ConsumerState<LeftBar> {
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container();
+//   }
+// }
+
+class LeftBar extends ConsumerStatefulWidget {
   final bool isCondensed;
 
   const LeftBar({Key? key, this.isCondensed = false}) : super(key: key);
@@ -43,7 +60,7 @@ class LeftBar extends StatefulWidget {
   _LeftBarState createState() => _LeftBarState();
 }
 
-class _LeftBarState extends State<LeftBar>
+class _LeftBarState extends ConsumerState<LeftBar>
     with SingleTickerProviderStateMixin, UIMixin {
   final ThemeCustomizer customizer = ThemeCustomizer.instance;
 
@@ -57,6 +74,7 @@ class _LeftBarState extends State<LeftBar>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     isCondensed = widget.isCondensed;
     return MyCard(
       paddingAll: 0,

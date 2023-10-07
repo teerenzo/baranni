@@ -1,10 +1,9 @@
 import 'package:barrani/data/providers/auth/authentication_provider.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
-import 'package:barrani/helpers/firebase/auth.dart';
-import 'package:barrani/helpers/navigator_helper.dart';
-import 'package:barrani/helpers/services/auth_services.dart';
-import 'package:barrani/helpers/services/web_auth_services.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+import 'package:barrani/helpers/theme/admin_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
@@ -15,7 +14,6 @@ import 'package:barrani/helpers/widgets/my_text.dart';
 import 'package:barrani/helpers/widgets/my_text_style.dart';
 import 'package:barrani/helpers/widgets/responsive.dart';
 import 'package:barrani/images.dart';
-import 'package:barrani/views/dashboard.dart';
 import 'package:barrani/views/layouts/auth_layout.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -33,8 +31,10 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin, UIMixin {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(text: 'fabrice@gmail.com');
+  final TextEditingController _passwordController =
+      TextEditingController(text: '123456');
   GlobalKey<FormState> formKey = GlobalKey();
 
   @override
@@ -44,9 +44,11 @@ class _LoginPageState extends ConsumerState<LoginPage>
 
   @override
   Widget build(BuildContext context) {
+    final contentTheme = AdminTheme.theme.contentTheme;
     // var authenticationProvider = ref.read(authProvider);
     final authenticationProvider =
         ref.watch(authProvider); // Use ref.watch here
+    ref.watch(themesProvider);
 
     return AuthLayout(
         child: Padding(
@@ -118,7 +120,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       },
                       decoration: InputDecoration(
                         labelText: "Email Address",
-                        labelStyle: MyTextStyle.bodySmall(xMuted: true),
+                        labelStyle: MyTextStyle.bodySmall(
+                          xMuted: true,
+                        ),
                         border: outlineInputBorder,
                         prefixIcon: const Icon(
                           LucideIcons.mail,
@@ -156,7 +160,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       },
                       decoration: InputDecoration(
                         labelText: "Password",
-                        labelStyle: MyTextStyle.bodySmall(xMuted: true),
+                        labelStyle: MyTextStyle.bodySmall(
+                          xMuted: true,
+                        ),
                         border: outlineInputBorder,
                         prefixIcon: const Icon(
                           LucideIcons.lock,

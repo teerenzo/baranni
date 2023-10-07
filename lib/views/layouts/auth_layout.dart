@@ -1,6 +1,8 @@
 import 'package:barrani/controller/layouts/auth_layout_controller.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/theme/admin_theme.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_customizer.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
 import 'package:barrani/helpers/widgets/my_flex.dart';
 import 'package:barrani/helpers/widgets/my_flex_item.dart';
@@ -12,6 +14,7 @@ import 'package:get/get_state_manager/get_state_manager.dart';
 
 class AuthLayout extends StatelessWidget {
   final Widget? child;
+  final contentTheme = AdminTheme.theme.contentTheme;
 
   final AuthLayoutController controller = AuthLayoutController();
 
@@ -71,8 +74,7 @@ class AuthLayout extends StatelessWidget {
                     // sizes: "xxl-3 lg-4 md-6 sm-8",
                     child: MyContainer(
                       paddingAll: 0,
-                      color: AdminTheme.theme.contentTheme.background
-                          .withAlpha(230),
+                      color: contentTheme.background,
                       child: child ?? Container(),
                     ),
                   ),

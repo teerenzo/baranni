@@ -10,7 +10,6 @@ import 'package:barrani/helpers/firebase/firestore.dart';
 import 'package:barrani/helpers/services/appointment_services.dart';
 import 'package:barrani/helpers/services/appointment_web_services.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_button.dart';
 import 'package:barrani/helpers/widgets/my_container.dart';
@@ -254,13 +253,13 @@ class _AppointmentDialogState extends ConsumerState<AppointmentDialog>
         ? FirebaseWebHelper.allZonesStreamProvider
         : allZonesStreamProvider);
     return SafeArea(
-      child: Container(
+      child: MyContainer(
         width: MediaQuery.of(context).size.width * (widget.isMobile ? 1 : 0.4),
         height: widget.isMobile ? MediaQuery.of(context).size.height : 800,
         padding: EdgeInsets.only(
-          left: widget.isMobile ? 16 : 0,
-          right: widget.isMobile ? 16 : 0,
-          top: widget.isMobile ? 24 : 0,
+          left: widget.isMobile ? 16 : 20,
+          right: widget.isMobile ? 16 : 20,
+          top: widget.isMobile ? 24 : 30,
         ),
         child: LayoutBuilder(
           builder: (BuildContext context, BoxConstraints constraints) {

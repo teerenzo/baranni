@@ -1,8 +1,10 @@
 import 'package:barrani/data/providers/ui/dashboard_provider.dart';
+import 'package:barrani/global_variables.dart';
 import 'package:barrani/helpers/extensions/string.dart';
 import 'package:barrani/helpers/firebase/firebase_web_helper.dart';
 import 'package:barrani/helpers/firebase/firestore.dart';
-import 'package:barrani/helpers/theme/app_theme.dart';
+
+import 'package:barrani/helpers/theme/theme_provider.dart';
 import 'package:barrani/helpers/utils/my_shadow.dart';
 import 'package:barrani/helpers/utils/ui_mixins.dart';
 import 'package:barrani/helpers/widgets/my_breadcrumb.dart';
@@ -57,6 +59,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
     ref.watch(kIsWeb
         ? FirebaseWebHelper.userNotificationsStreamProvider
         : userNotificationsStreamProvider);
+    ref.watch(themesProvider);
     return Layout(
         child: Column(
       children: [
@@ -69,10 +72,10 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                 "dashboard".tr(),
                 fontSize: 18,
                 fontWeight: 600,
+                color: contentTheme.onBackground,
               ),
               MyBreadcrumb(
                 children: [
-                  MyBreadcrumbItem(name: 'ecommerce'.tr()),
                   MyBreadcrumbItem(name: 'dashboard'.tr(), active: true),
                 ],
               ),
@@ -105,7 +108,6 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                             sizes: "lg-4",
                             child: buildCard(
                                 contentTheme.warning.withAlpha(28),
-                                // contentTheme.pink,
                                 LucideIcons.clock4,
                                 "Reached",
                                 "\$152",
