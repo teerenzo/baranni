@@ -43,7 +43,7 @@ class _RegisterState extends ConsumerState<Register>
 
   @override
   Widget build(BuildContext context) {
-    var authenticationProvider = ref.read(authProvider);
+    final authenticationProvider = ref.watch(authProvider);
     ref.watch(themesProvider);
 
     return AuthLayout(
@@ -125,7 +125,7 @@ class _RegisterState extends ConsumerState<Register>
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                         ),
                       ),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider
                                   .errors['invitation_code_error'] !=
                               null)
@@ -162,7 +162,7 @@ class _RegisterState extends ConsumerState<Register>
                           floatingLabelBehavior: FloatingLabelBehavior.never,
                         ),
                       ),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider.errors['email_error'] != null)
                         MyText.bodyMedium(
                           authenticationProvider.errors['email_error']!,
@@ -207,7 +207,7 @@ class _RegisterState extends ConsumerState<Register>
                             isCollapsed: true,
                             floatingLabelBehavior: FloatingLabelBehavior.never),
                       ),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider.errors['password_error'] !=
                               null)
                         MyText.bodyMedium(
@@ -215,7 +215,7 @@ class _RegisterState extends ConsumerState<Register>
                           color: Colors.red,
                         ),
                       MySpacing.height(16),
-                      if (authenticationProvider.errors.isNotEmpty &&
+                      if (authenticationProvider.isSubmitted &&
                           authenticationProvider.errors['error'] != null)
                         Center(
                           child: MyText.bodyMedium(
@@ -270,12 +270,7 @@ class _RegisterState extends ConsumerState<Register>
                           MySpacing.width(5),
                           MyButton.text(
                             onPressed: () {
-                              ref.read(authProvider.notifier).state = ref
-                                  .read(authProvider.notifier)
-                                  .state
-                                  .copyWith(
-                                errors: {},
-                              );
+                              ref.read(authProvider.notifier).gotoLogin();
                               NavigatorHelper.pushNamed('/auth/login');
                             },
                             elevation: 0,

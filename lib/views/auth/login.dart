@@ -31,10 +31,8 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin, UIMixin {
-  final TextEditingController _emailController =
-      TextEditingController(text: 'fabrice@gmail.com');
-  final TextEditingController _passwordController =
-      TextEditingController(text: '123456');
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey();
 
   @override
@@ -45,9 +43,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
   @override
   Widget build(BuildContext context) {
     final contentTheme = AdminTheme.theme.contentTheme;
-    // var authenticationProvider = ref.read(authProvider);
-    final authenticationProvider =
-        ref.watch(authProvider); // Use ref.watch here
+    final authenticationProvider = ref.watch(authProvider);
     ref.watch(themesProvider);
 
     return AuthLayout(
@@ -115,7 +111,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (value) {
                         if (authenticationProvider.isSubmitted) {
-                          ref.read(authProvider.notifier).validateEmail(value);
+                          ref
+                              .read(authProvider.notifier)
+                              .validateEmail(_emailController.text);
                         }
                       },
                       decoration: InputDecoration(
@@ -134,7 +132,6 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       ),
                     ),
                     if (authenticationProvider.isSubmitted &&
-                        authenticationProvider.errors.isNotEmpty &&
                         authenticationProvider.errors['email_error'] != null)
                       MyText.bodyMedium(
                         authenticationProvider.errors['email_error']!,
@@ -153,9 +150,13 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       obscureText: !authenticationProvider.showPassword,
                       onChanged: (value) {
                         if (authenticationProvider.isSubmitted) {
+                          print(authenticationProvider.errors);
                           ref
                               .read(authProvider.notifier)
-                              .validatePassword(value);
+                              .validateEmail(_emailController.text);
+                          ref
+                              .read(authProvider.notifier)
+                              .validatePassword(_passwordController.text);
                         }
                       },
                       decoration: InputDecoration(
@@ -185,10 +186,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       ),
                     ),
                     if (authenticationProvider.isSubmitted &&
-                        authenticationProvider.errors.isNotEmpty &&
                         authenticationProvider.errors['password_error'] != null)
                       MyText.bodyMedium(
-                        authenticationProvider.errors['password_error']!,
+                        authenticationProvider.errors['password_error'],
                         color: Colors.red,
                       ),
                     MySpacing.height(16),
