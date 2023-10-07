@@ -449,9 +449,14 @@ abstract class FirebaseWebHelper {
       List<KanbanProject> currentProjects_ = [];
 
       for (var element in querySnapshot.docs) {
-        Map<String, dynamic> element_ = element.data() as Map<String, dynamic>;
-        element_['id'] = element.id;
-        currentProjects_.add(KanbanProject.fromMap(element_));
+        print(element['userId']);
+        print(userData!.userId);
+        if (element['userId'] == userData!.userId) {
+          Map<String, dynamic> element_ =
+              element.data() as Map<String, dynamic>;
+          element_['id'] = element.id;
+          currentProjects_.add(KanbanProject.fromMap(element_));
+        }
       }
 
       return currentProjects_;

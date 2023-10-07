@@ -82,9 +82,12 @@ class LocalStorage {
     return preferences.getBool(_themeKey) ?? true;
   }
 
-  static Future<void> setProjectData(String id, name) async {
+  static Future<void> setProjectData(
+      String id, name, description, imageUrl) async {
     await preferences.setString("projectId", id);
     await preferences.setString(id, name);
+    await preferences.setString("projectDes", description);
+    await preferences.setString("projectUrl", imageUrl);
   }
 
   static String? getProjectId() {
@@ -93,6 +96,14 @@ class LocalStorage {
 
   static String? getProjectName(String id) {
     return preferences.getString(id);
+  }
+
+  static String? getProjectDescription() {
+    return preferences.getString("projectDes");
+  }
+
+  static String? getProjectImageUrl() {
+    return preferences.getString("projectUrl");
   }
 
   static Future<void> removeProjectData() async {

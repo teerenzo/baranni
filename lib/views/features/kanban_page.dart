@@ -1,4 +1,5 @@
 import 'package:barrani/helpers/extensions/extensions.dart';
+import 'package:barrani/helpers/navigator_helper.dart';
 import 'package:barrani/helpers/storage/local_storage.dart';
 import 'package:barrani/helpers/theme/app_style.dart';
 import 'package:barrani/helpers/theme/theme_provider.dart';
@@ -66,7 +67,7 @@ class _KanBanPageState extends State<KanBanPage>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         MyText.titleMedium(
-                          "KanBan",
+                          "Kanban",
                           fontSize: 18,
                           fontWeight: 600,
                         ),
@@ -161,10 +162,12 @@ class _KanBanPageState extends State<KanBanPage>
                                       child: InkWell(
                                         onTap: () async {
                                           await LocalStorage.setProjectData(
-                                              e.id!, e.projectName);
+                                              e.id!,
+                                              e.projectName,
+                                              e.description,
+                                              e.thumbnail);
                                           Navigator.pushNamed(
-                                              context, '/kanban/tasks',
-                                              arguments: {'project': e});
+                                              context, '/kanban/tasks');
                                         },
                                         child: Stack(
                                           alignment: Alignment.center,
@@ -233,14 +236,16 @@ class _KanBanPageState extends State<KanBanPage>
                                                       ),
                                                       Spacer(),
                                                       IconButton(
-                                                          onPressed: () {
-                                                            Navigator.of(
-                                                                    context)
+                                                          onPressed: () async {
+                                                            await LocalStorage
+                                                                .setProjectData(
+                                                                    e.id!,
+                                                                    e.projectName,
+                                                                    e.description,
+                                                                    e.thumbnail);
+                                                            NavigatorHelper
                                                                 .pushNamed(
-                                                                    '/kanban/project/edit',
-                                                                    arguments: {
-                                                                  'project': e
-                                                                });
+                                                                    '/kanban/project/edit');
                                                           },
                                                           icon: Icon(
                                                             LucideIcons.edit,
