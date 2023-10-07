@@ -31,10 +31,8 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin, UIMixin {
-  final TextEditingController _emailController =
-      TextEditingController(text: 'fabrice@gmail.com');
-  final TextEditingController _passwordController =
-      TextEditingController(text: '123456');
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey();
 
   @override
