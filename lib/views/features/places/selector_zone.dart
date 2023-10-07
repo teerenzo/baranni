@@ -34,7 +34,7 @@ class _SelectZoneState extends ConsumerState<SelectZone> with UIMixin {
     ref.watch(themesProvider);
     return Container(
       width: 400,
-      color: contentTheme.background,
+      color: theme.colorScheme.background,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

@@ -47,7 +47,7 @@ class NotificationPopUp extends ConsumerWidget {
     return MyContainer.bordered(
       paddingAll: 0,
       width: 250,
-      color: contentTheme.background,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

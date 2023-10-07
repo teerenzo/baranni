@@ -41,6 +41,7 @@ class _TopBarState extends ConsumerState<TopBar>
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(themesProvider);
     Widget buildNotification(String title, String description) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -54,8 +55,6 @@ class _TopBarState extends ConsumerState<TopBar>
         ],
       );
     }
-
-    // check if notification time is less done 2 minutes and not read and show snackbar
 
     if (notifications.isNotEmpty) {
       notifications.forEach((element) async {
@@ -91,7 +90,7 @@ class _TopBarState extends ConsumerState<TopBar>
                 splashColor: theme.colorScheme.onBackground,
                 highlightColor: theme.colorScheme.onBackground,
                 onTap: () {
-                  ThemeCustomizer.toggleLeftBarCondensed();
+                  ref.read(themeProvider.notifier).toggleLeftBarCondensed();
                 },
                 child: Icon(
                   LucideIcons.menu,
@@ -222,7 +221,7 @@ class _TopBarState extends ConsumerState<TopBar>
     return MyContainer.bordered(
       padding: MySpacing.xy(8, 8),
       width: 125,
-      color: contentTheme.background,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: Language.languages
@@ -265,7 +264,7 @@ class _TopBarState extends ConsumerState<TopBar>
     return MyContainer.bordered(
       paddingAll: 0,
       width: 150,
-      color: contentTheme.background,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

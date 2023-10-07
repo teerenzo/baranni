@@ -36,25 +36,8 @@ class LeftbarObserver {
   }
 }
 
-// class LeftBar extends ConsumerStatefulWidget {
-//   const LeftBar({super.key});
-
-//   @override
-//   ConsumerState<ConsumerStatefulWidget> createState() => _LeftBarState();
-// }
-
-// class _LeftBarState extends ConsumerState<LeftBar> {
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Container();
-//   }
-// }
-
 class LeftBar extends ConsumerStatefulWidget {
-  final bool isCondensed;
-
-  const LeftBar({Key? key, this.isCondensed = false}) : super(key: key);
+  const LeftBar({Key? key}) : super(key: key);
 
   @override
   _LeftBarState createState() => _LeftBarState();
@@ -64,7 +47,6 @@ class _LeftBarState extends ConsumerState<LeftBar>
     with SingleTickerProviderStateMixin, UIMixin {
   final ThemeCustomizer customizer = ThemeCustomizer.instance;
 
-  bool isCondensed = false;
   String path = UrlService.getCurrentUrl();
 
   @override
@@ -75,7 +57,8 @@ class _LeftBarState extends ConsumerState<LeftBar>
   @override
   Widget build(BuildContext context) {
     ref.watch(themesProvider);
-    isCondensed = widget.isCondensed;
+    final themeProvider_ = ref.watch(themeProvider);
+    bool isCondensed = themeProvider_.leftBarCondensed;
     return MyCard(
       paddingAll: 0,
       shadow: MyShadow(position: MyShadowPosition.centerRight, elevation: 0.2),
@@ -96,14 +79,14 @@ class _LeftBarState extends ConsumerState<LeftBar>
                     onTap: () {
                       NavigatorHelper.pushNamed('/dashboard');
                     },
-                    child: widget.isCondensed
+                    child: isCondensed
                         ? SvgPicture.asset(
                             'assets/images/logo/logo_small.svg',
-                            height: widget.isCondensed ? 24 : 32,
+                            height: isCondensed ? 24 : 32,
                           )
                         : SvgPicture.asset(
                             'assets/images/logo/logo.svg',
-                            height: widget.isCondensed ? 24 : 32,
+                            height: isCondensed ? 24 : 32,
                           ),
                   ),
                 ],
@@ -124,12 +107,6 @@ class _LeftBarState extends ConsumerState<LeftBar>
                   labelWidget("apps".tr()),
 
                   //-----------------CALENDAR-----------------//
-                  // NavigationItem(
-                  //   iconData: LucideIcons.calendarDays,
-                  //   title: "calendar".tr(),
-                  //   route: '/calendar',
-                  //   isCondensed: isCondensed,
-                  // ),
                   NavigationItem(
                     iconData: LucideIcons.calendarDays,
                     title: "appointments".tr(),
@@ -183,6 +160,8 @@ class _LeftBarState extends ConsumerState<LeftBar>
   }
 
   Widget labelWidget(String label) {
+    // bool isCondensed = ref.watch();
+    bool isCondensed = false;
     return isCondensed
         ? MySpacing.empty()
         : Container(
@@ -472,7 +451,7 @@ class _MenuItemState extends State<MenuItem> with UIMixin {
   }
 }
 
-class NavigationItem extends StatefulWidget {
+class NavigationItem extends ConsumerStatefulWidget {
   final IconData? iconData;
   final String title;
   final bool isCondensed;
@@ -490,12 +469,13 @@ class NavigationItem extends StatefulWidget {
   _NavigationItemState createState() => _NavigationItemState();
 }
 
-class _NavigationItemState extends State<NavigationItem> with UIMixin {
+class _NavigationItemState extends ConsumerState<NavigationItem> with UIMixin {
   bool isHover = false;
 
   @override
   Widget build(BuildContext context) {
     bool isActive = UrlService.getCurrentUrl() == widget.route;
+
     return GestureDetector(
       onTap: () {
         if (widget.route != null) {

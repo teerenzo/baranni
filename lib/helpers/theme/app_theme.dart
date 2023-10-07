@@ -293,8 +293,8 @@ class AppTheme {
         actionsIconTheme: IconThemeData(color: Color(0xff495057))),
 
     /// Card Theme
-    cardTheme: CardTheme(color: Color(0xfff0f0f0)),
-    cardColor: Color(0xfff0f0f0),
+    cardTheme: CardTheme(color: Color(0xFFFFFFFF)),
+    cardColor: Color(0xFFFFFFFF),
 
     textTheme: TextTheme(
         titleLarge: GoogleFonts.aBeeZee(), bodyLarge: GoogleFonts.abel()),
@@ -409,8 +409,8 @@ class AppTheme {
     appBarTheme: AppBarTheme(backgroundColor: Color(0xff161616)),
 
     /// Card Theme
-    cardTheme: CardTheme(color: Color(0xff222327)),
-    cardColor: Color(0xff222327),
+    cardTheme: CardTheme(color: Color(0xFF1c1c1c)),
+    cardColor: Color(0xFF1c1c1c),
 
     /// Input (Text-Field) Theme
     inputDecorationTheme: InputDecorationTheme(

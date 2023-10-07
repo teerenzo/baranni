@@ -237,7 +237,7 @@ class _LayoutState extends ConsumerState<Layout> {
       endDrawer: RightBar(),
       body: Row(
         children: [
-          LeftBar(isCondensed: ThemeCustomizer.instance.leftBarCondensed),
+          LeftBar(),
           Expanded(
               child: Stack(
             children: [
@@ -334,6 +334,7 @@ class _LayoutState extends ConsumerState<Layout> {
     return MyContainer.bordered(
       paddingAll: 0,
       width: 150,
+      color: theme.colorScheme.background,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

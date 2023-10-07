@@ -31,8 +31,10 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin, UIMixin {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(text: 'fabrice@gmail.com');
+  final TextEditingController _passwordController =
+      TextEditingController(text: '123456');
   GlobalKey<FormState> formKey = GlobalKey();
 
   @override
@@ -226,7 +228,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                           splashColor: contentTheme.secondary.withOpacity(0.1),
                           child: MyText.labelSmall(
                             'forgot_password?'.tr().capitalizeWords,
-                            color: contentTheme.secondary,
+                            color: contentTheme.primary,
                           ),
                         ),
                       ],
@@ -275,17 +277,25 @@ class _LoginPageState extends ConsumerState<LoginPage>
                         ),
                       ),
                     ),
-                    Center(
-                      child: MyButton.text(
-                        onPressed: ref.read(authProvider.notifier).gotoRegister,
-                        elevation: 0,
-                        padding: MySpacing.x(16),
-                        splashColor: contentTheme.secondary.withOpacity(0.1),
-                        child: MyText.labelMedium(
-                          'Don\'t have account? register'.tr(),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        MyText.labelMedium(
+                          'Don\'t have account?'.tr(),
                           color: contentTheme.secondary,
                         ),
-                      ),
+                        MySpacing.width(5),
+                        MyButton.text(
+                          onPressed:
+                              ref.read(authProvider.notifier).gotoRegister,
+                          elevation: 0,
+                          splashColor: contentTheme.secondary.withOpacity(0.1),
+                          child: MyText.labelMedium(
+                            'register'.tr(),
+                            color: contentTheme.primary,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),

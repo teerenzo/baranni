@@ -11,6 +11,38 @@ final themesProvider = StateNotifierProvider<ThemesProvider, ThemeMode?>((_) {
   return ThemesProvider();
 });
 
+class _ThemeState {
+  bool leftBarCondensed;
+
+  _ThemeState({
+    this.leftBarCondensed = false,
+  });
+
+  _ThemeState copyWith({
+    bool? leftBarCondensed,
+  }) {
+    return _ThemeState(
+      leftBarCondensed: leftBarCondensed ?? this.leftBarCondensed,
+    );
+  }
+}
+
+class ThemeNotifier extends StateNotifier<_ThemeState> {
+  final Ref ref;
+  ThemeNotifier({
+    required this.ref,
+  }) : super(_ThemeState());
+
+  void toggleLeftBarCondensed() {
+    print('object ${state.leftBarCondensed}');
+    state = state.copyWith(leftBarCondensed: !state.leftBarCondensed);
+  }
+}
+
+final themeProvider = StateNotifierProvider<ThemeNotifier, _ThemeState>(
+  (ref) => ThemeNotifier(ref: ref),
+);
+
 class ThemesProvider extends StateNotifier<ThemeMode?> {
   ThemesProvider() : super(ThemeMode.system) {
     _initializeTheme();

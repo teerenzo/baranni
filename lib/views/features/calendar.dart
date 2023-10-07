@@ -261,17 +261,31 @@ class _CalenderState extends ConsumerState<Calender> with UIMixin {
                                         return AlertDialog(
                                           backgroundColor:
                                               theme.cardTheme.color,
-                                          title: MyContainer(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                horizontal: 20,
-                                                vertical: 15,
+                                          title: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                'Make Appointment',
                                               ),
-                                              child: MyText.titleMedium(
-                                                  'Make Appointment')),
+                                              InkWell(
+                                                onTap: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Icon(
+                                                    LucideIcons.x,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
                                           contentPadding:
                                               const EdgeInsets.all(0),
-                                          titlePadding: const EdgeInsets.all(0),
+                                          titlePadding:
+                                              const EdgeInsets.all(30),
                                           content: AppointmentDialog(
                                             isMobile: type.isMobile,
                                             startDate: pickedDate,

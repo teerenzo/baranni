@@ -187,7 +187,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                         height: 305,
                         clipBehavior: Clip.antiAliasWithSaveLayer,
                         padding: MySpacing.only(left: 24, right: 12, top: 12),
-                        color: contentTheme.dark,
+                        color: theme.colorScheme.background,
                         child: Stack(
                           clipBehavior: Clip.antiAliasWithSaveLayer,
                           children: [
@@ -203,7 +203,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                       children: [
                                         MyText.titleMedium(
                                           "New Visitors",
-                                          color: contentTheme.light,
+                                          color: theme.colorScheme.onBackground,
                                           fontWeight: 600,
                                         ),
                                         MySpacing.width(8),
@@ -223,7 +223,7 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                         icon: Icon(
                                           LucideIcons.moveRight,
                                           size: 16,
-                                          color: contentTheme.light,
+                                          color: theme.colorScheme.secondary,
                                         ))
                                   ],
                                 ),
@@ -243,12 +243,13 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                             MyText.bodyMedium(
                                               "\$5,943",
                                               fontSize: 20,
-                                              color: contentTheme.light,
+                                              color: theme.colorScheme.tertiary,
                                             ),
                                             MySpacing.height(8),
                                             MyText.bodyMedium(
                                               "New Followers",
-                                              color: contentTheme.light,
+                                              color:
+                                                  theme.colorScheme.onTertiary,
                                               fontWeight: 600,
                                               muted: true,
                                             ),
@@ -270,12 +271,14 @@ class DashboardPageState extends ConsumerState<DashboardPage>
                                             MyText.bodyMedium(
                                               "150,000",
                                               fontSize: 20,
-                                              color: contentTheme.light,
+                                              color: theme
+                                                  .colorScheme.onBackground,
                                             ),
                                             MySpacing.height(8),
                                             MyText.bodyMedium(
                                               "Followers Goal",
-                                              color: contentTheme.light,
+                                              color: theme
+                                                  .colorScheme.onBackground,
                                               fontWeight: 600,
                                               muted: true,
                                             ),

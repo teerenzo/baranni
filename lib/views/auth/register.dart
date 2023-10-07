@@ -260,23 +260,33 @@ class _RegisterState extends ConsumerState<Register>
                           ),
                         ),
                       ),
-                      Center(
-                        child: MyButton.text(
-                          onPressed: () {
-                            ref.read(authProvider.notifier).state =
-                                ref.read(authProvider.notifier).state.copyWith(
-                              errors: {},
-                            );
-                            NavigatorHelper.pushNamed('/auth/login');
-                          },
-                          elevation: 0,
-                          padding: MySpacing.x(16),
-                          splashColor: contentTheme.secondary.withOpacity(0.1),
-                          child: MyText.labelMedium(
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          MyText.labelMedium(
                             'already_have_account_?'.tr(),
                             color: contentTheme.secondary,
                           ),
-                        ),
+                          MySpacing.width(5),
+                          MyButton.text(
+                            onPressed: () {
+                              ref.read(authProvider.notifier).state = ref
+                                  .read(authProvider.notifier)
+                                  .state
+                                  .copyWith(
+                                errors: {},
+                              );
+                              NavigatorHelper.pushNamed('/auth/login');
+                            },
+                            elevation: 0,
+                            splashColor:
+                                contentTheme.secondary.withOpacity(0.1),
+                            child: MyText.labelMedium(
+                              'Login'.tr(),
+                              color: contentTheme.primary,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),

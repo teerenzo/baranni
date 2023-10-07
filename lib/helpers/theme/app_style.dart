@@ -31,7 +31,7 @@ class AppTheme {
   static ThemeData theme = getTheme();
   static TextDirection textDirection = TextDirection.ltr;
 
-  static Color primaryColor = Color(0xff3874ff);
+  static Color primaryColor = Color(0xff006cea);
 
   static ThemeData getTheme() {
     final container = ProviderContainer();
@@ -64,7 +64,7 @@ class AppTheme {
 
     /// Colorscheme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Color(0xff3874ff),
+      seedColor: Color(0xff3f97ff),
       // seedColor: Color(0xff2e87a6),
       brightness: Brightness.light,
     ),
@@ -141,13 +141,13 @@ class AppTheme {
     /// Brightness
 
     /// Scaffold and Background color
-    scaffoldBackgroundColor: Color(0xff262729),
+    scaffoldBackgroundColor: Color(0xff121212),
     canvasColor: Colors.transparent,
 
     primaryColor: Color(0xff4ddada),
 
     /// AppBar Theme
-    appBarTheme: AppBarTheme(backgroundColor: Color(0xff262729)),
+    appBarTheme: AppBarTheme(backgroundColor: Color(0xff121212)),
 
     /// Card Theme
     cardTheme: CardTheme(color: Color(0xff1b1b1c)),
@@ -155,9 +155,9 @@ class AppTheme {
 
     /// Colorscheme
     colorScheme: ColorScheme.fromSeed(
-      seedColor: Color(0xff3874ff),
+      seedColor: Color(0xff3f97ff),
       // seedColor: Color(0xff067070),
-      background: Color(0xff262729),
+      background: Color(0xff121212),
       onBackground: Color(0xFFD7D7D7),
       brightness: Brightness.dark,
     ),
@@ -302,7 +302,7 @@ class AppColors {
 
   static Color notificationErrorBGColor = Color(0xfffcd9df);
   static Color notificationErrorTextColor = Color(0xffFF3B0A);
-  static Color notificationErrorActionColor = Color(0xff3874ff);
+  static Color notificationErrorActionColor = Color(0xff3f97ff);
 
   // static Color notificationErrorActionColor = Color(0xff006784);
 
