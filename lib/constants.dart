@@ -148,6 +148,8 @@ const kSmallTextFieldCountSize = 44;
 const kBigTextFieldCountSize = 500;
 const kTopMgFormInput = 15;
 const kTopMgFormButton = 23;
+const double kInputSpacing = 16;
+const double kLabelSpacing = 16;
 
 const double kBigCircleButton = 70.0;
 const double kBigCircleIconSize = 20.0;

@@ -31,8 +31,10 @@ class LoginPage extends ConsumerStatefulWidget {
 
 class _LoginPageState extends ConsumerState<LoginPage>
     with SingleTickerProviderStateMixin, UIMixin {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _emailController =
+      TextEditingController(text: 'fabrice@gmail.com');
+  final TextEditingController _passwordController =
+      TextEditingController(text: '123456');
   GlobalKey<FormState> formKey = GlobalKey();
 
   @override
@@ -111,9 +113,7 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       keyboardType: TextInputType.emailAddress,
                       onChanged: (value) {
                         if (authenticationProvider.isSubmitted) {
-                          ref
-                              .read(authProvider.notifier)
-                              .validateEmail(_emailController.text);
+                          ref.read(authProvider.notifier).validateEmail(value);
                         }
                       },
                       decoration: InputDecoration(
@@ -150,13 +150,9 @@ class _LoginPageState extends ConsumerState<LoginPage>
                       obscureText: !authenticationProvider.showPassword,
                       onChanged: (value) {
                         if (authenticationProvider.isSubmitted) {
-                          print(authenticationProvider.errors);
                           ref
                               .read(authProvider.notifier)
-                              .validateEmail(_emailController.text);
-                          ref
-                              .read(authProvider.notifier)
-                              .validatePassword(_passwordController.text);
+                              .validatePassword(value);
                         }
                       },
                       decoration: InputDecoration(
